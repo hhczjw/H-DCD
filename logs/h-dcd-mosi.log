@@ -1,0 +1,1685 @@
+2025-12-09 12:06:19,803 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:06:19,803 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:06:19,803 - H-DCD [INFO] - Mode: train
+2025-12-09 12:06:19,803 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:06:19,803 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:06:19,803 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:06:19,803 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:06:19,803 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:06:19,803 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:06:19,803 - H-DCD [INFO] - Loading data...
+2025-12-09 12:08:27,370 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:08:27,370 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:08:27,370 - H-DCD [INFO] - Mode: train
+2025-12-09 12:08:27,370 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:08:27,370 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:08:27,370 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:08:27,370 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:08:27,370 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:08:27,370 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:08:27,370 - H-DCD [INFO] - Loading data...
+2025-12-09 12:08:52,635 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:08:52,635 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:08:52,635 - H-DCD [INFO] - Mode: train
+2025-12-09 12:08:52,635 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:08:52,635 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:08:52,635 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:08:52,635 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:08:52,635 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:08:52,635 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:08:52,635 - H-DCD [INFO] - Loading data...
+2025-12-09 12:08:52,954 - H-DCD [INFO] - Creating model...
+2025-12-09 12:09:33,678 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:09:33,679 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:09:33,679 - H-DCD [INFO] - Mode: train
+2025-12-09 12:09:33,679 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:09:33,679 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:09:33,679 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:09:33,679 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:09:33,679 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:09:33,679 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:09:33,679 - H-DCD [INFO] - Loading data...
+2025-12-09 12:09:33,997 - H-DCD [INFO] - Creating model...
+2025-12-09 12:10:10,805 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:10:10,805 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:10:10,805 - H-DCD [INFO] - Mode: train
+2025-12-09 12:10:10,805 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:10:10,805 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:10:10,805 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:10:10,805 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:10:10,805 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:10:10,806 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:10:10,806 - H-DCD [INFO] - Loading data...
+2025-12-09 12:10:11,122 - H-DCD [INFO] - Creating model...
+2025-12-09 12:10:11,161 - H-DCD [INFO] - Total parameters: 9,198,146 (9.20M)
+2025-12-09 12:10:11,161 - H-DCD [INFO] - Trainable parameters: 9,198,146 (9.20M)
+2025-12-09 12:10:11,411 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 12:10:11,411 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:10:11,411 - H-DCD [INFO] - Starting training...
+2025-12-09 12:10:11,411 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 12:10:11,411 - H-DCD [INFO] - Patience: 10
+2025-12-09 12:10:11,411 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:11:09,021 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:11:09,021 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:11:09,021 - H-DCD [INFO] - Mode: train
+2025-12-09 12:11:09,021 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:11:09,021 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:11:09,021 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:11:09,021 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:11:09,021 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:11:09,021 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:11:09,022 - H-DCD [INFO] - Loading data...
+2025-12-09 12:11:09,346 - H-DCD [INFO] - Creating model...
+2025-12-09 12:11:09,385 - H-DCD [INFO] - Total parameters: 9,198,146 (9.20M)
+2025-12-09 12:11:09,385 - H-DCD [INFO] - Trainable parameters: 9,198,146 (9.20M)
+2025-12-09 12:11:09,634 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 12:11:09,634 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:11:09,634 - H-DCD [INFO] - Starting training...
+2025-12-09 12:11:09,634 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 12:11:09,634 - H-DCD [INFO] - Patience: 10
+2025-12-09 12:11:09,634 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:11:42,619 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:11:42,619 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:11:42,619 - H-DCD [INFO] - Mode: train
+2025-12-09 12:11:42,619 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:11:42,619 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:11:42,619 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:11:42,619 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:11:42,619 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:11:42,619 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:11:42,619 - H-DCD [INFO] - Loading data...
+2025-12-09 12:11:42,940 - H-DCD [INFO] - Creating model...
+2025-12-09 12:11:42,980 - H-DCD [INFO] - Total parameters: 9,198,146 (9.20M)
+2025-12-09 12:11:42,980 - H-DCD [INFO] - Trainable parameters: 9,198,146 (9.20M)
+2025-12-09 12:11:43,233 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 12:11:43,233 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:11:43,233 - H-DCD [INFO] - Starting training...
+2025-12-09 12:11:43,233 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 12:11:43,233 - H-DCD [INFO] - Patience: 10
+2025-12-09 12:11:43,233 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:12:00,409 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:12:00,409 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:12:00,409 - H-DCD [INFO] - Mode: train
+2025-12-09 12:12:00,409 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:12:00,409 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:12:00,409 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:12:00,409 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:12:00,409 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:12:00,409 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:12:00,409 - H-DCD [INFO] - Loading data...
+2025-12-09 12:12:00,512 - H-DCD [INFO] - Loaded text shape: (1284, 3, 50)
+2025-12-09 12:12:00,514 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 12:12:00,619 - H-DCD [INFO] - Loaded text shape: (229, 3, 50)
+2025-12-09 12:12:00,619 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 12:12:00,720 - H-DCD [INFO] - Loaded text shape: (686, 3, 50)
+2025-12-09 12:12:00,721 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 12:12:00,727 - H-DCD [INFO] - Creating model...
+2025-12-09 12:12:00,765 - H-DCD [INFO] - Total parameters: 9,198,146 (9.20M)
+2025-12-09 12:12:00,765 - H-DCD [INFO] - Trainable parameters: 9,198,146 (9.20M)
+2025-12-09 12:12:01,008 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 12:12:01,008 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:12:01,008 - H-DCD [INFO] - Starting training...
+2025-12-09 12:12:01,008 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 12:12:01,008 - H-DCD [INFO] - Patience: 10
+2025-12-09 12:12:01,008 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:13:59,355 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:13:59,355 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:13:59,355 - H-DCD [INFO] - Mode: train
+2025-12-09 12:13:59,355 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:13:59,355 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:13:59,355 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:13:59,355 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:13:59,355 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:13:59,355 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:13:59,355 - H-DCD [INFO] - Loading data...
+2025-12-09 12:13:59,459 - H-DCD [INFO] - Loaded text shape: (1284, 3, 50)
+2025-12-09 12:13:59,460 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 12:13:59,567 - H-DCD [INFO] - Loaded text shape: (229, 3, 50)
+2025-12-09 12:13:59,567 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 12:13:59,669 - H-DCD [INFO] - Loaded text shape: (686, 3, 50)
+2025-12-09 12:13:59,670 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 12:13:59,676 - H-DCD [INFO] - Creating model...
+2025-12-09 12:13:59,715 - H-DCD [INFO] - Total parameters: 9,198,146 (9.20M)
+2025-12-09 12:13:59,715 - H-DCD [INFO] - Trainable parameters: 9,198,146 (9.20M)
+2025-12-09 12:13:59,958 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 12:13:59,958 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:13:59,958 - H-DCD [INFO] - Starting training...
+2025-12-09 12:13:59,958 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 12:13:59,958 - H-DCD [INFO] - Patience: 10
+2025-12-09 12:13:59,958 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:15:16,465 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:15:16,474 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:15:16,474 - H-DCD [INFO] - Mode: train
+2025-12-09 12:15:16,474 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:15:16,474 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:15:16,474 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:15:16,474 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:15:16,474 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:15:16,474 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:15:16,474 - H-DCD [INFO] - Loading data...
+2025-12-09 12:15:16,580 - H-DCD [INFO] - Loaded text shape: (1284, 3, 50)
+2025-12-09 12:15:16,582 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 12:15:16,698 - H-DCD [INFO] - Loaded text shape: (229, 3, 50)
+2025-12-09 12:15:16,698 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 12:15:16,804 - H-DCD [INFO] - Loaded text shape: (686, 3, 50)
+2025-12-09 12:15:16,806 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 12:15:16,816 - H-DCD [INFO] - Creating model...
+2025-12-09 12:15:16,854 - H-DCD [INFO] - Total parameters: 9,198,146 (9.20M)
+2025-12-09 12:15:16,854 - H-DCD [INFO] - Trainable parameters: 9,198,146 (9.20M)
+2025-12-09 12:15:17,103 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 12:15:17,104 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:15:17,104 - H-DCD [INFO] - Starting training...
+2025-12-09 12:15:17,104 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 12:15:17,104 - H-DCD [INFO] - Patience: 10
+2025-12-09 12:15:17,104 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:15:49,556 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:15:49,556 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:15:49,556 - H-DCD [INFO] - Mode: train
+2025-12-09 12:15:49,556 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:15:49,556 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:15:49,556 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:15:49,556 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:15:49,556 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:15:49,556 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:15:49,556 - H-DCD [INFO] - Loading data...
+2025-12-09 12:15:49,659 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:15:49,659 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:15:49,660 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 12:15:49,660 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 12:15:49,660 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 12:15:49,662 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 12:15:49,775 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:15:49,775 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:15:49,775 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 12:15:49,775 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 12:15:49,776 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 12:15:49,776 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 12:15:49,881 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:15:49,881 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:15:49,881 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 12:15:49,881 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 12:15:49,881 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 12:15:49,882 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 12:15:49,892 - H-DCD [INFO] - Creating model...
+2025-12-09 12:15:49,927 - H-DCD [INFO] - Total parameters: 8,023,106 (8.02M)
+2025-12-09 12:15:49,927 - H-DCD [INFO] - Trainable parameters: 8,023,106 (8.02M)
+2025-12-09 12:15:50,168 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 12:15:50,168 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:15:50,168 - H-DCD [INFO] - Starting training...
+2025-12-09 12:15:50,168 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 12:15:50,168 - H-DCD [INFO] - Patience: 10
+2025-12-09 12:15:50,168 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:16:13,100 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:16:13,100 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:16:13,100 - H-DCD [INFO] - Mode: train
+2025-12-09 12:16:13,100 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:16:13,100 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:16:13,100 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:16:13,100 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:16:13,100 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:16:13,100 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:16:13,100 - H-DCD [INFO] - Loading data...
+2025-12-09 12:16:13,204 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:16:13,204 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:16:13,204 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 12:16:13,204 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 12:16:13,204 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 12:16:13,206 - H-DCD [INFO] - Final audio shape: (1284, 50, 5), audio_input_dim: 5
+2025-12-09 12:16:13,206 - H-DCD [INFO] - Final vision shape: (1284, 50, 20), video_input_dim: 20
+2025-12-09 12:16:13,206 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 12:16:13,318 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:16:13,318 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:16:13,318 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 12:16:13,318 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 12:16:13,319 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 12:16:13,319 - H-DCD [INFO] - Final audio shape: (229, 50, 5), audio_input_dim: 5
+2025-12-09 12:16:13,319 - H-DCD [INFO] - Final vision shape: (229, 50, 20), video_input_dim: 20
+2025-12-09 12:16:13,319 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 12:16:13,423 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:16:13,423 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:16:13,423 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 12:16:13,424 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 12:16:13,424 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 12:16:13,425 - H-DCD [INFO] - Final audio shape: (686, 50, 5), audio_input_dim: 5
+2025-12-09 12:16:13,425 - H-DCD [INFO] - Final vision shape: (686, 50, 20), video_input_dim: 20
+2025-12-09 12:16:13,425 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 12:16:13,433 - H-DCD [INFO] - Creating model...
+2025-12-09 12:16:13,468 - H-DCD [INFO] - Total parameters: 8,001,602 (8.00M)
+2025-12-09 12:16:13,468 - H-DCD [INFO] - Trainable parameters: 8,001,602 (8.00M)
+2025-12-09 12:16:13,714 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 12:16:13,714 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:16:13,714 - H-DCD [INFO] - Starting training...
+2025-12-09 12:16:13,714 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 12:16:13,714 - H-DCD [INFO] - Patience: 10
+2025-12-09 12:16:13,714 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:18:42,684 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:18:42,684 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:18:42,684 - H-DCD [INFO] - Mode: train
+2025-12-09 12:18:42,684 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:18:42,684 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:18:42,684 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:18:42,684 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:18:42,684 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:18:42,684 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:18:42,684 - H-DCD [INFO] - Loading data...
+2025-12-09 12:18:42,786 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:18:42,786 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:18:42,786 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 12:18:42,786 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 12:18:42,786 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 12:18:42,787 - H-DCD [INFO] - Final audio shape: (1284, 50, 5), audio_input_dim: 5
+2025-12-09 12:18:42,788 - H-DCD [INFO] - Final vision shape: (1284, 50, 20), video_input_dim: 20
+2025-12-09 12:18:42,788 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 12:18:42,901 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:18:42,901 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:18:42,901 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 12:18:42,901 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 12:18:42,901 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 12:18:42,901 - H-DCD [INFO] - Final audio shape: (229, 50, 5), audio_input_dim: 5
+2025-12-09 12:18:42,901 - H-DCD [INFO] - Final vision shape: (229, 50, 20), video_input_dim: 20
+2025-12-09 12:18:42,901 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 12:18:43,006 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:18:43,006 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:18:43,006 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 12:18:43,006 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 12:18:43,006 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 12:18:43,007 - H-DCD [INFO] - Final audio shape: (686, 50, 5), audio_input_dim: 5
+2025-12-09 12:18:43,007 - H-DCD [INFO] - Final vision shape: (686, 50, 20), video_input_dim: 20
+2025-12-09 12:18:43,007 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 12:18:43,016 - H-DCD [INFO] - Creating model...
+2025-12-09 12:18:43,051 - H-DCD [INFO] - Total parameters: 8,001,602 (8.00M)
+2025-12-09 12:18:43,051 - H-DCD [INFO] - Trainable parameters: 8,001,602 (8.00M)
+2025-12-09 12:18:43,293 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 12:18:43,293 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:18:43,293 - H-DCD [INFO] - Starting training...
+2025-12-09 12:18:43,293 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 12:18:43,293 - H-DCD [INFO] - Patience: 10
+2025-12-09 12:18:43,293 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:19:34,199 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:19:34,199 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:19:34,199 - H-DCD [INFO] - Mode: train
+2025-12-09 12:19:34,199 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:19:34,199 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:19:34,199 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:19:34,199 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:19:34,199 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:19:34,199 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:19:34,199 - H-DCD [INFO] - Loading data...
+2025-12-09 12:19:34,301 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:19:34,302 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:19:34,302 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 12:19:34,302 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 12:19:34,302 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 12:19:34,303 - H-DCD [INFO] - Final audio shape: (1284, 50, 5), audio_input_dim: 5
+2025-12-09 12:19:34,303 - H-DCD [INFO] - Final vision shape: (1284, 50, 20), video_input_dim: 20
+2025-12-09 12:19:34,304 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 12:19:34,415 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:19:34,415 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:19:34,415 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 12:19:34,415 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 12:19:34,415 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 12:19:34,415 - H-DCD [INFO] - Final audio shape: (229, 50, 5), audio_input_dim: 5
+2025-12-09 12:19:34,415 - H-DCD [INFO] - Final vision shape: (229, 50, 20), video_input_dim: 20
+2025-12-09 12:19:34,415 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 12:19:34,519 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:19:34,519 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:19:34,519 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 12:19:34,519 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 12:19:34,519 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 12:19:34,520 - H-DCD [INFO] - Final audio shape: (686, 50, 5), audio_input_dim: 5
+2025-12-09 12:19:34,520 - H-DCD [INFO] - Final vision shape: (686, 50, 20), video_input_dim: 20
+2025-12-09 12:19:34,520 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 12:19:34,529 - H-DCD [INFO] - Creating model...
+2025-12-09 12:19:34,563 - H-DCD [INFO] - Total parameters: 8,001,602 (8.00M)
+2025-12-09 12:19:34,563 - H-DCD [INFO] - Trainable parameters: 8,001,602 (8.00M)
+2025-12-09 12:19:34,801 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 12:19:34,801 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:19:34,801 - H-DCD [INFO] - Starting training...
+2025-12-09 12:19:34,801 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 12:19:34,801 - H-DCD [INFO] - Patience: 10
+2025-12-09 12:19:34,801 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:20:11,682 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:20:11,682 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 12:20:11,682 - H-DCD [INFO] - Mode: train
+2025-12-09 12:20:11,682 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 12:20:11,682 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 12:20:11,682 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:20:11,682 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 12:20:11,682 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 12:20:11,682 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:20:11,682 - H-DCD [INFO] - Loading data...
+2025-12-09 12:20:11,785 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:20:11,785 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:20:11,786 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 12:20:11,786 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 12:20:11,786 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 12:20:11,788 - H-DCD [INFO] - Final audio shape: (1284, 50, 5), audio_input_dim: 5
+2025-12-09 12:20:11,788 - H-DCD [INFO] - Final vision shape: (1284, 50, 20), video_input_dim: 20
+2025-12-09 12:20:11,788 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 12:20:11,900 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:20:11,901 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:20:11,901 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 12:20:11,901 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 12:20:11,901 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 12:20:11,901 - H-DCD [INFO] - Final audio shape: (229, 50, 5), audio_input_dim: 5
+2025-12-09 12:20:11,901 - H-DCD [INFO] - Final vision shape: (229, 50, 20), video_input_dim: 20
+2025-12-09 12:20:11,901 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 12:20:12,006 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 12:20:12,006 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 12:20:12,006 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 12:20:12,007 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 12:20:12,007 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 12:20:12,008 - H-DCD [INFO] - Final audio shape: (686, 50, 5), audio_input_dim: 5
+2025-12-09 12:20:12,008 - H-DCD [INFO] - Final vision shape: (686, 50, 20), video_input_dim: 20
+2025-12-09 12:20:12,008 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 12:20:12,016 - H-DCD [INFO] - Creating model...
+2025-12-09 12:20:12,051 - H-DCD [INFO] - Total parameters: 8,001,602 (8.00M)
+2025-12-09 12:20:12,051 - H-DCD [INFO] - Trainable parameters: 8,001,602 (8.00M)
+2025-12-09 12:20:12,292 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 12:20:12,292 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:20:12,292 - H-DCD [INFO] - Starting training...
+2025-12-09 12:20:12,292 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 12:20:12,292 - H-DCD [INFO] - Patience: 10
+2025-12-09 12:20:12,292 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:20:29,444 - H-DCD [INFO] - Valid - Loss: 5.8647, Has0_acc_2: 0.5895, Has0_F1_score: 0.7353, Non0_acc_2: 0.5648, Non0_F1_score: 0.7152, Mult_acc_5: 0.2140, Mult_acc_7: 0.2140, MAE: 1.4214, Corr: 0.0141
+2025-12-09 12:20:29,483 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4214
+2025-12-09 12:20:29,483 - H-DCD [INFO] - Epoch 1 completed in 17.19s
+2025-12-09 12:20:29,483 - H-DCD [INFO] - Train Loss: 5.8316
+2025-12-09 12:20:29,483 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:20:35,895 - H-DCD [INFO] - Valid - Loss: 5.5125, Has0_acc_2: 0.5764, Has0_F1_score: 0.6096, Non0_acc_2: 0.5694, Non0_F1_score: 0.6061, Mult_acc_5: 0.2140, Mult_acc_7: 0.2140, MAE: 1.4238, Corr: 0.0124
+2025-12-09 12:20:35,895 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 12:20:35,895 - H-DCD [INFO] - Epoch 2 completed in 6.41s
+2025-12-09 12:20:35,895 - H-DCD [INFO] - Train Loss: 5.4296
+2025-12-09 12:20:35,895 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:20:42,252 - H-DCD [INFO] - Valid - Loss: 5.6149, Has0_acc_2: 0.5633, Has0_F1_score: 0.5887, Non0_acc_2: 0.5556, Non0_F1_score: 0.5839, Mult_acc_5: 0.2140, Mult_acc_7: 0.2140, MAE: 1.4180, Corr: 0.0201
+2025-12-09 12:20:42,300 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4180
+2025-12-09 12:20:42,300 - H-DCD [INFO] - Epoch 3 completed in 6.40s
+2025-12-09 12:20:42,300 - H-DCD [INFO] - Train Loss: 5.2899
+2025-12-09 12:20:42,300 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:20:48,791 - H-DCD [INFO] - Valid - Loss: 5.8583, Has0_acc_2: 0.5939, Has0_F1_score: 0.6749, Non0_acc_2: 0.5787, Non0_F1_score: 0.6642, Mult_acc_5: 0.2227, Mult_acc_7: 0.2227, MAE: 1.4045, Corr: 0.0369
+2025-12-09 12:20:48,846 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4045
+2025-12-09 12:20:48,846 - H-DCD [INFO] - Epoch 4 completed in 6.55s
+2025-12-09 12:20:48,847 - H-DCD [INFO] - Train Loss: 5.3226
+2025-12-09 12:20:48,847 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:20:55,316 - H-DCD [INFO] - Valid - Loss: 5.7045, Has0_acc_2: 0.6332, Has0_F1_score: 0.6762, Non0_acc_2: 0.6250, Non0_F1_score: 0.6709, Mult_acc_5: 0.2227, Mult_acc_7: 0.2227, MAE: 1.3984, Corr: 0.0569
+2025-12-09 12:20:55,371 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.3984
+2025-12-09 12:20:55,371 - H-DCD [INFO] - Epoch 5 completed in 6.52s
+2025-12-09 12:20:55,371 - H-DCD [INFO] - Train Loss: 5.2027
+2025-12-09 12:20:55,371 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:21:01,860 - H-DCD [INFO] - Valid - Loss: 5.4006, Has0_acc_2: 0.5983, Has0_F1_score: 0.7074, Non0_acc_2: 0.5787, Non0_F1_score: 0.6925, Mult_acc_5: 0.2009, Mult_acc_7: 0.2009, MAE: 1.4339, Corr: 0.0880
+2025-12-09 12:21:01,860 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 12:21:01,860 - H-DCD [INFO] - Epoch 6 completed in 6.49s
+2025-12-09 12:21:01,860 - H-DCD [INFO] - Train Loss: 5.1349
+2025-12-09 12:21:01,860 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:21:08,404 - H-DCD [INFO] - Valid - Loss: 5.8612, Has0_acc_2: 0.6245, Has0_F1_score: 0.6715, Non0_acc_2: 0.6157, Non0_F1_score: 0.6661, Mult_acc_5: 0.1747, Mult_acc_7: 0.1747, MAE: 1.3998, Corr: 0.1149
+2025-12-09 12:21:08,405 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 12:21:08,405 - H-DCD [INFO] - Epoch 7 completed in 6.54s
+2025-12-09 12:21:08,405 - H-DCD [INFO] - Train Loss: 5.0810
+2025-12-09 12:21:08,405 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:21:14,772 - H-DCD [INFO] - Valid - Loss: 6.0792, Has0_acc_2: 0.6114, Has0_F1_score: 0.6845, Non0_acc_2: 0.6019, Non0_F1_score: 0.6803, Mult_acc_5: 0.1790, Mult_acc_7: 0.1790, MAE: 1.4267, Corr: 0.1442
+2025-12-09 12:21:14,772 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 12:21:14,773 - H-DCD [INFO] - Epoch 8 completed in 6.37s
+2025-12-09 12:21:14,773 - H-DCD [INFO] - Train Loss: 5.0648
+2025-12-09 12:21:14,773 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:21:21,269 - H-DCD [INFO] - Valid - Loss: 5.5776, Has0_acc_2: 0.6419, Has0_F1_score: 0.6899, Non0_acc_2: 0.6343, Non0_F1_score: 0.6854, Mult_acc_5: 0.1921, Mult_acc_7: 0.1921, MAE: 1.4054, Corr: 0.1572
+2025-12-09 12:21:21,270 - H-DCD [INFO] - No improvement. Patience: 4/10
+2025-12-09 12:21:21,270 - H-DCD [INFO] - Epoch 9 completed in 6.50s
+2025-12-09 12:21:21,270 - H-DCD [INFO] - Train Loss: 4.9888
+2025-12-09 12:21:21,270 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:21:27,631 - H-DCD [INFO] - Valid - Loss: 5.7616, Has0_acc_2: 0.6376, Has0_F1_score: 0.6758, Non0_acc_2: 0.6296, Non0_F1_score: 0.6705, Mult_acc_5: 0.2052, Mult_acc_7: 0.2052, MAE: 1.3929, Corr: 0.1620
+2025-12-09 12:21:27,688 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.3929
+2025-12-09 12:21:27,688 - H-DCD [INFO] - Epoch 10 completed in 6.42s
+2025-12-09 12:21:27,688 - H-DCD [INFO] - Train Loss: 4.9592
+2025-12-09 12:21:27,688 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:21:34,136 - H-DCD [INFO] - Valid - Loss: 5.8632, Has0_acc_2: 0.5983, Has0_F1_score: 0.6392, Non0_acc_2: 0.5926, Non0_F1_score: 0.6375, Mult_acc_5: 0.2009, Mult_acc_7: 0.2009, MAE: 1.3802, Corr: 0.1749
+2025-12-09 12:21:34,191 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.3802
+2025-12-09 12:21:34,191 - H-DCD [INFO] - Epoch 11 completed in 6.50s
+2025-12-09 12:21:34,192 - H-DCD [INFO] - Train Loss: 5.0217
+2025-12-09 12:21:34,192 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:21:40,651 - H-DCD [INFO] - Valid - Loss: 5.6987, Has0_acc_2: 0.6114, Has0_F1_score: 0.6617, Non0_acc_2: 0.6111, Non0_F1_score: 0.6673, Mult_acc_5: 0.2271, Mult_acc_7: 0.2009, MAE: 1.4523, Corr: 0.1474
+2025-12-09 12:21:40,651 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 12:21:40,651 - H-DCD [INFO] - Epoch 12 completed in 6.46s
+2025-12-09 12:21:40,651 - H-DCD [INFO] - Train Loss: 4.8991
+2025-12-09 12:21:40,651 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:21:47,095 - H-DCD [INFO] - Valid - Loss: 5.6780, Has0_acc_2: 0.6070, Has0_F1_score: 0.6877, Non0_acc_2: 0.5972, Non0_F1_score: 0.6839, Mult_acc_5: 0.2358, Mult_acc_7: 0.2140, MAE: 1.4560, Corr: 0.1227
+2025-12-09 12:21:47,095 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 12:21:47,095 - H-DCD [INFO] - Epoch 13 completed in 6.44s
+2025-12-09 12:21:47,095 - H-DCD [INFO] - Train Loss: 4.8458
+2025-12-09 12:21:47,095 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:21:53,598 - H-DCD [INFO] - Valid - Loss: 5.7888, Has0_acc_2: 0.5808, Has0_F1_score: 0.6098, Non0_acc_2: 0.5741, Non0_F1_score: 0.6062, Mult_acc_5: 0.1921, Mult_acc_7: 0.1834, MAE: 1.4528, Corr: 0.1120
+2025-12-09 12:21:53,599 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 12:21:53,599 - H-DCD [INFO] - Epoch 14 completed in 6.50s
+2025-12-09 12:21:53,599 - H-DCD [INFO] - Train Loss: 4.7021
+2025-12-09 12:21:53,599 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:22:00,033 - H-DCD [INFO] - Valid - Loss: 6.0719, Has0_acc_2: 0.5852, Has0_F1_score: 0.5971, Non0_acc_2: 0.5926, Non0_F1_score: 0.6085, Mult_acc_5: 0.2314, Mult_acc_7: 0.2096, MAE: 1.4626, Corr: 0.1228
+2025-12-09 12:22:00,033 - H-DCD [INFO] - No improvement. Patience: 4/10
+2025-12-09 12:22:00,033 - H-DCD [INFO] - Epoch 15 completed in 6.43s
+2025-12-09 12:22:00,033 - H-DCD [INFO] - Train Loss: 4.7031
+2025-12-09 12:22:00,033 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:22:06,390 - H-DCD [INFO] - Valid - Loss: 5.7799, Has0_acc_2: 0.6157, Has0_F1_score: 0.6578, Non0_acc_2: 0.6157, Non0_F1_score: 0.6628, Mult_acc_5: 0.2140, Mult_acc_7: 0.1921, MAE: 1.4093, Corr: 0.1487
+2025-12-09 12:22:06,390 - H-DCD [INFO] - No improvement. Patience: 5/10
+2025-12-09 12:22:06,390 - H-DCD [INFO] - Epoch 16 completed in 6.36s
+2025-12-09 12:22:06,390 - H-DCD [INFO] - Train Loss: 4.7018
+2025-12-09 12:22:06,390 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:22:12,924 - H-DCD [INFO] - Valid - Loss: 5.4241, Has0_acc_2: 0.5764, Has0_F1_score: 0.5742, Non0_acc_2: 0.5880, Non0_F1_score: 0.5883, Mult_acc_5: 0.1921, Mult_acc_7: 0.1878, MAE: 1.4448, Corr: 0.1544
+2025-12-09 12:22:12,924 - H-DCD [INFO] - No improvement. Patience: 6/10
+2025-12-09 12:22:12,924 - H-DCD [INFO] - Epoch 17 completed in 6.53s
+2025-12-09 12:22:12,924 - H-DCD [INFO] - Train Loss: 4.6607
+2025-12-09 12:22:12,924 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:22:19,436 - H-DCD [INFO] - Valid - Loss: 5.8953, Has0_acc_2: 0.6245, Has0_F1_score: 0.7210, Non0_acc_2: 0.6065, Non0_F1_score: 0.7070, Mult_acc_5: 0.2445, Mult_acc_7: 0.2183, MAE: 1.4425, Corr: 0.1691
+2025-12-09 12:22:19,437 - H-DCD [INFO] - No improvement. Patience: 7/10
+2025-12-09 12:22:19,437 - H-DCD [INFO] - Epoch 18 completed in 6.51s
+2025-12-09 12:22:19,437 - H-DCD [INFO] - Train Loss: 4.6278
+2025-12-09 12:22:19,437 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:22:25,849 - H-DCD [INFO] - Valid - Loss: 5.7467, Has0_acc_2: 0.6288, Has0_F1_score: 0.7072, Non0_acc_2: 0.6250, Non0_F1_score: 0.7105, Mult_acc_5: 0.2838, Mult_acc_7: 0.2489, MAE: 1.4221, Corr: 0.1959
+2025-12-09 12:22:25,849 - H-DCD [INFO] - No improvement. Patience: 8/10
+2025-12-09 12:22:25,849 - H-DCD [INFO] - Epoch 19 completed in 6.41s
+2025-12-09 12:22:25,849 - H-DCD [INFO] - Train Loss: 4.5590
+2025-12-09 12:22:25,849 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:22:32,289 - H-DCD [INFO] - Valid - Loss: 5.8447, Has0_acc_2: 0.6026, Has0_F1_score: 0.6966, Non0_acc_2: 0.5833, Non0_F1_score: 0.6811, Mult_acc_5: 0.2489, Mult_acc_7: 0.2052, MAE: 1.4878, Corr: 0.1069
+2025-12-09 12:22:32,289 - H-DCD [INFO] - No improvement. Patience: 9/10
+2025-12-09 12:22:32,289 - H-DCD [INFO] - Epoch 20 completed in 6.44s
+2025-12-09 12:22:32,289 - H-DCD [INFO] - Train Loss: 4.3961
+2025-12-09 12:22:32,289 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 12:22:38,731 - H-DCD [INFO] - Valid - Loss: 5.5437, Has0_acc_2: 0.5721, Has0_F1_score: 0.5780, Non0_acc_2: 0.5833, Non0_F1_score: 0.5932, Mult_acc_5: 0.2314, Mult_acc_7: 0.2140, MAE: 1.4354, Corr: 0.1537
+2025-12-09 12:22:38,731 - H-DCD [INFO] - No improvement. Patience: 10/10
+2025-12-09 12:22:38,731 - H-DCD [INFO] - Early stopping triggered at epoch 21
+2025-12-09 12:22:38,731 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:22:38,731 - H-DCD [INFO] - Training completed!
+2025-12-09 12:22:38,731 - H-DCD [INFO] - Best validation metric: 1.3802
+2025-12-09 12:22:38,731 - H-DCD [INFO] - ================================================================================
+2025-12-09 12:22:38,731 - H-DCD [INFO] - 
+Testing with best model...
+2025-12-09 12:22:38,731 - H-DCD [INFO] - Loading best model from ./checkpoints/best_model.pth
+2025-12-09 12:22:40,116 - H-DCD [INFO] - Test - Loss: 5.6906, Has0_acc_2: 0.5510, Has0_F1_score: 0.5623, Non0_acc_2: 0.5427, Non0_F1_score: 0.5522, Mult_acc_5: 0.1895, Mult_acc_7: 0.1895, MAE: 1.4156, Corr: 0.2256
+2025-12-09 12:22:40,196 - H-DCD [INFO] - Results saved to results/mosi.csv
+2025-12-09 15:14:17,073 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:14:17,075 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 15:14:17,075 - H-DCD [INFO] - Mode: train
+2025-12-09 15:14:17,075 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 15:14:17,075 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 15:14:17,075 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:14:17,075 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 15:14:17,075 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 15:14:17,075 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:14:17,075 - H-DCD [INFO] - Loading data...
+2025-12-09 15:14:17,176 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:14:17,177 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:14:17,177 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 15:14:17,177 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 15:14:17,177 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 15:14:17,178 - H-DCD [INFO] - Final audio shape: (1284, 50, 5), audio_input_dim: 5
+2025-12-09 15:14:17,178 - H-DCD [INFO] - Final vision shape: (1284, 50, 20), video_input_dim: 20
+2025-12-09 15:14:17,178 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 15:14:17,290 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:14:17,291 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:14:17,291 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 15:14:17,291 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 15:14:17,291 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 15:14:17,291 - H-DCD [INFO] - Final audio shape: (229, 50, 5), audio_input_dim: 5
+2025-12-09 15:14:17,291 - H-DCD [INFO] - Final vision shape: (229, 50, 20), video_input_dim: 20
+2025-12-09 15:14:17,291 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 15:14:17,398 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:14:17,398 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:14:17,398 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 15:14:17,398 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 15:14:17,398 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 15:14:17,399 - H-DCD [INFO] - Final audio shape: (686, 50, 5), audio_input_dim: 5
+2025-12-09 15:14:17,399 - H-DCD [INFO] - Final vision shape: (686, 50, 20), video_input_dim: 20
+2025-12-09 15:14:17,399 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 15:14:17,409 - H-DCD [INFO] - Creating model...
+2025-12-09 15:14:17,425 - H-DCD [INFO] - Total parameters: 2,318,803 (2.32M)
+2025-12-09 15:14:17,425 - H-DCD [INFO] - Trainable parameters: 2,318,803 (2.32M)
+2025-12-09 15:14:17,659 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 15:14:17,659 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:14:17,659 - H-DCD [INFO] - Starting training...
+2025-12-09 15:14:17,659 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 15:14:17,659 - H-DCD [INFO] - Patience: 10
+2025-12-09 15:14:17,659 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:14:41,309 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:14:41,311 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 15:14:41,311 - H-DCD [INFO] - Mode: train
+2025-12-09 15:14:41,311 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 15:14:41,311 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 15:14:41,311 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:14:41,311 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 15:14:41,311 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 15:14:41,311 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:14:41,311 - H-DCD [INFO] - Loading data...
+2025-12-09 15:14:41,413 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:14:41,413 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:14:41,414 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 15:14:41,414 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 15:14:41,414 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 15:14:41,415 - H-DCD [INFO] - Final audio shape: (1284, 50, 5), audio_input_dim: 5
+2025-12-09 15:14:41,415 - H-DCD [INFO] - Final vision shape: (1284, 50, 20), video_input_dim: 20
+2025-12-09 15:14:41,415 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 15:14:41,528 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:14:41,528 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:14:41,528 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 15:14:41,528 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 15:14:41,528 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 15:14:41,529 - H-DCD [INFO] - Final audio shape: (229, 50, 5), audio_input_dim: 5
+2025-12-09 15:14:41,529 - H-DCD [INFO] - Final vision shape: (229, 50, 20), video_input_dim: 20
+2025-12-09 15:14:41,529 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 15:14:41,635 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:14:41,636 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:14:41,636 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 15:14:41,636 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 15:14:41,636 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 15:14:41,637 - H-DCD [INFO] - Final audio shape: (686, 50, 5), audio_input_dim: 5
+2025-12-09 15:14:41,637 - H-DCD [INFO] - Final vision shape: (686, 50, 20), video_input_dim: 20
+2025-12-09 15:14:41,637 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 15:14:41,646 - H-DCD [INFO] - Creating model...
+2025-12-09 15:14:41,663 - H-DCD [INFO] - Total parameters: 2,720,662 (2.72M)
+2025-12-09 15:14:41,663 - H-DCD [INFO] - Trainable parameters: 2,720,662 (2.72M)
+2025-12-09 15:14:41,892 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 15:14:41,892 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:14:41,892 - H-DCD [INFO] - Starting training...
+2025-12-09 15:14:41,892 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 15:14:41,892 - H-DCD [INFO] - Patience: 10
+2025-12-09 15:14:41,892 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:16:23,229 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:16:23,229 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 15:16:23,229 - H-DCD [INFO] - Mode: train
+2025-12-09 15:16:23,229 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 15:16:23,229 - H-DCD [INFO] - Seeds: [1111]
+2025-12-09 15:16:23,229 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:16:23,229 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 15:16:23,229 - H-DCD [INFO] - Running seed 1/1: 1111
+2025-12-09 15:16:23,229 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:16:23,229 - H-DCD [INFO] - Loading data...
+2025-12-09 15:16:23,331 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:16:23,332 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:16:23,332 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 15:16:23,332 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 15:16:23,332 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 15:16:23,334 - H-DCD [INFO] - Final audio shape: (1284, 50, 5), audio_input_dim: 5
+2025-12-09 15:16:23,334 - H-DCD [INFO] - Final vision shape: (1284, 50, 20), video_input_dim: 20
+2025-12-09 15:16:23,334 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 15:16:23,447 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:16:23,447 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:16:23,447 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 15:16:23,447 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 15:16:23,447 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 15:16:23,448 - H-DCD [INFO] - Final audio shape: (229, 50, 5), audio_input_dim: 5
+2025-12-09 15:16:23,448 - H-DCD [INFO] - Final vision shape: (229, 50, 20), video_input_dim: 20
+2025-12-09 15:16:23,448 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 15:16:23,555 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:16:23,555 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:16:23,555 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 15:16:23,555 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 15:16:23,555 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 15:16:23,556 - H-DCD [INFO] - Final audio shape: (686, 50, 5), audio_input_dim: 5
+2025-12-09 15:16:23,556 - H-DCD [INFO] - Final vision shape: (686, 50, 20), video_input_dim: 20
+2025-12-09 15:16:23,556 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 15:16:23,566 - H-DCD [INFO] - Creating model...
+2025-12-09 15:16:23,583 - H-DCD [INFO] - Total parameters: 2,720,662 (2.72M)
+2025-12-09 15:16:23,583 - H-DCD [INFO] - Trainable parameters: 2,720,662 (2.72M)
+2025-12-09 15:16:23,818 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 15:16:23,818 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:16:23,818 - H-DCD [INFO] - Starting training...
+2025-12-09 15:16:23,818 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 15:16:23,818 - H-DCD [INFO] - Patience: 10
+2025-12-09 15:16:23,818 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:25:01,448 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:25:01,448 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 15:25:01,448 - H-DCD [INFO] - Mode: train
+2025-12-09 15:25:01,448 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 15:25:01,448 - H-DCD [INFO] - Seeds: [1111, 1112, 1113]
+2025-12-09 15:25:01,448 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:25:01,448 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 15:25:01,448 - H-DCD [INFO] - Running seed 1/3: 1111
+2025-12-09 15:25:01,448 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:25:01,448 - H-DCD [INFO] - Loading data...
+2025-12-09 15:25:04,892 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:25:04,892 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:25:04,893 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 15:25:04,894 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 15:25:04,894 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 15:25:04,910 - H-DCD [INFO] - Final audio shape: (1284, 375, 5), audio_input_dim: 5
+2025-12-09 15:25:04,910 - H-DCD [INFO] - Final vision shape: (1284, 500, 20), video_input_dim: 20
+2025-12-09 15:26:45,926 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:26:45,926 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 15:26:45,926 - H-DCD [INFO] - Mode: train
+2025-12-09 15:26:45,926 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 15:26:45,926 - H-DCD [INFO] - Seeds: [1111, 1112, 1113]
+2025-12-09 15:26:45,926 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:26:45,926 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 15:26:45,926 - H-DCD [INFO] - Running seed 1/3: 1111
+2025-12-09 15:26:45,926 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:26:45,927 - H-DCD [INFO] - Loading data...
+2025-12-09 15:26:46,098 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:26:46,099 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:26:46,099 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 15:26:46,099 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 15:26:46,099 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 15:26:46,113 - H-DCD [INFO] - Final audio shape: (1284, 375, 5), audio_input_dim: 5
+2025-12-09 15:26:46,113 - H-DCD [INFO] - Final vision shape: (1284, 500, 20), video_input_dim: 20
+2025-12-09 15:26:46,113 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 15:27:18,825 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:27:18,827 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 15:27:18,827 - H-DCD [INFO] - Mode: train
+2025-12-09 15:27:18,827 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 15:27:18,827 - H-DCD [INFO] - Seeds: [1111, 1112, 1113]
+2025-12-09 15:27:18,827 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:27:18,827 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 15:27:18,827 - H-DCD [INFO] - Running seed 1/3: 1111
+2025-12-09 15:27:18,827 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:27:18,827 - H-DCD [INFO] - Loading data...
+2025-12-09 15:27:18,991 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:27:18,992 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:27:18,992 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 15:27:18,992 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 15:27:18,992 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 15:27:19,005 - H-DCD [INFO] - Final audio shape: (1284, 375, 5), audio_input_dim: 5
+2025-12-09 15:27:19,005 - H-DCD [INFO] - Final vision shape: (1284, 500, 20), video_input_dim: 20
+2025-12-09 15:27:19,005 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 15:27:19,176 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:27:19,176 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:27:19,176 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 15:27:19,176 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 15:27:19,176 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 15:27:19,179 - H-DCD [INFO] - Final audio shape: (229, 375, 5), audio_input_dim: 5
+2025-12-09 15:27:19,179 - H-DCD [INFO] - Final vision shape: (229, 500, 20), video_input_dim: 20
+2025-12-09 15:27:19,179 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 15:27:19,339 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:27:19,339 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:27:19,339 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 15:27:19,339 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 15:27:19,339 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 15:27:19,346 - H-DCD [INFO] - Final audio shape: (686, 375, 5), audio_input_dim: 5
+2025-12-09 15:27:19,346 - H-DCD [INFO] - Final vision shape: (686, 500, 20), video_input_dim: 20
+2025-12-09 15:27:19,346 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 15:27:19,355 - H-DCD [INFO] - Creating model...
+2025-12-09 15:28:11,969 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:28:11,978 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 15:28:11,978 - H-DCD [INFO] - Mode: train
+2025-12-09 15:28:11,978 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 15:28:11,978 - H-DCD [INFO] - Seeds: [1111, 1112, 1113]
+2025-12-09 15:28:11,978 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:28:11,978 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 15:28:11,978 - H-DCD [INFO] - Running seed 1/3: 1111
+2025-12-09 15:28:11,978 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:28:11,978 - H-DCD [INFO] - Loading data...
+2025-12-09 15:28:12,141 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:28:12,141 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:28:12,141 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 15:28:12,141 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 15:28:12,141 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 15:28:12,155 - H-DCD [INFO] - Final audio shape: (1284, 375, 5), audio_input_dim: 5
+2025-12-09 15:28:12,155 - H-DCD [INFO] - Final vision shape: (1284, 500, 20), video_input_dim: 20
+2025-12-09 15:28:12,155 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 15:28:12,324 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:28:12,324 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:28:12,324 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 15:28:12,324 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 15:28:12,324 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 15:28:12,327 - H-DCD [INFO] - Final audio shape: (229, 375, 5), audio_input_dim: 5
+2025-12-09 15:28:12,327 - H-DCD [INFO] - Final vision shape: (229, 500, 20), video_input_dim: 20
+2025-12-09 15:28:12,327 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 15:28:12,485 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:28:12,485 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:28:12,485 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 15:28:12,485 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 15:28:12,485 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 15:28:12,492 - H-DCD [INFO] - Final audio shape: (686, 375, 5), audio_input_dim: 5
+2025-12-09 15:28:12,492 - H-DCD [INFO] - Final vision shape: (686, 500, 20), video_input_dim: 20
+2025-12-09 15:28:12,492 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 15:28:12,501 - H-DCD [INFO] - Creating model...
+2025-12-09 15:28:12,525 - H-DCD [INFO] - Total parameters: 5,499,682 (5.50M)
+2025-12-09 15:28:12,525 - H-DCD [INFO] - Trainable parameters: 5,499,682 (5.50M)
+2025-12-09 15:28:12,764 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 15:28:12,764 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:28:12,764 - H-DCD [INFO] - Starting training...
+2025-12-09 15:28:12,764 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 15:28:12,764 - H-DCD [INFO] - Patience: 10
+2025-12-09 15:28:12,764 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:29:07,047 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:29:07,047 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 15:29:07,047 - H-DCD [INFO] - Mode: train
+2025-12-09 15:29:07,047 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 15:29:07,047 - H-DCD [INFO] - Seeds: [1111, 1112, 1113]
+2025-12-09 15:29:07,047 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:29:07,047 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 15:29:07,047 - H-DCD [INFO] - Running seed 1/3: 1111
+2025-12-09 15:29:07,047 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:29:07,047 - H-DCD [INFO] - Loading data...
+2025-12-09 15:29:07,209 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:29:07,209 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:29:07,209 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 15:29:07,210 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 15:29:07,210 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 15:29:07,223 - H-DCD [INFO] - Final audio shape: (1284, 375, 5), audio_input_dim: 5
+2025-12-09 15:29:07,224 - H-DCD [INFO] - Final vision shape: (1284, 500, 20), video_input_dim: 20
+2025-12-09 15:29:07,224 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 15:29:07,394 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:29:07,394 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:29:07,394 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 15:29:07,394 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 15:29:07,394 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 15:29:07,397 - H-DCD [INFO] - Final audio shape: (229, 375, 5), audio_input_dim: 5
+2025-12-09 15:29:07,397 - H-DCD [INFO] - Final vision shape: (229, 500, 20), video_input_dim: 20
+2025-12-09 15:29:07,397 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 15:29:07,559 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:29:07,559 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:29:07,559 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 15:29:07,559 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 15:29:07,559 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 15:29:07,567 - H-DCD [INFO] - Final audio shape: (686, 375, 5), audio_input_dim: 5
+2025-12-09 15:29:07,567 - H-DCD [INFO] - Final vision shape: (686, 500, 20), video_input_dim: 20
+2025-12-09 15:29:07,567 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 15:29:07,576 - H-DCD [INFO] - Creating model...
+2025-12-09 15:29:07,600 - H-DCD [INFO] - Total parameters: 5,499,682 (5.50M)
+2025-12-09 15:29:07,601 - H-DCD [INFO] - Trainable parameters: 5,499,682 (5.50M)
+2025-12-09 15:29:07,837 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 15:29:07,837 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:29:07,837 - H-DCD [INFO] - Starting training...
+2025-12-09 15:29:07,837 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 15:29:07,837 - H-DCD [INFO] - Patience: 10
+2025-12-09 15:29:07,837 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:30:37,437 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:30:37,437 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 15:30:37,437 - H-DCD [INFO] - Mode: train
+2025-12-09 15:30:37,437 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 15:30:37,437 - H-DCD [INFO] - Seeds: [1111, 1112, 1113]
+2025-12-09 15:30:37,437 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:30:37,437 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 15:30:37,437 - H-DCD [INFO] - Running seed 1/3: 1111
+2025-12-09 15:30:37,437 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:30:37,437 - H-DCD [INFO] - Loading data...
+2025-12-09 15:30:37,601 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:30:37,601 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:30:37,601 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 15:30:37,601 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 15:30:37,601 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 15:30:37,614 - H-DCD [INFO] - Final audio shape: (1284, 375, 5), audio_input_dim: 5
+2025-12-09 15:30:37,614 - H-DCD [INFO] - Final vision shape: (1284, 500, 20), video_input_dim: 20
+2025-12-09 15:30:37,614 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 15:30:37,787 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:30:37,787 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:30:37,787 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 15:30:37,787 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 15:30:37,787 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 15:30:37,789 - H-DCD [INFO] - Final audio shape: (229, 375, 5), audio_input_dim: 5
+2025-12-09 15:30:37,789 - H-DCD [INFO] - Final vision shape: (229, 500, 20), video_input_dim: 20
+2025-12-09 15:30:37,789 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 15:30:37,952 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:30:37,952 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:30:37,952 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 15:30:37,952 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 15:30:37,952 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 15:30:37,960 - H-DCD [INFO] - Final audio shape: (686, 375, 5), audio_input_dim: 5
+2025-12-09 15:30:37,960 - H-DCD [INFO] - Final vision shape: (686, 500, 20), video_input_dim: 20
+2025-12-09 15:30:37,960 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 15:30:37,969 - H-DCD [INFO] - Creating model...
+2025-12-09 15:30:37,994 - H-DCD [INFO] - Total parameters: 5,499,682 (5.50M)
+2025-12-09 15:30:37,994 - H-DCD [INFO] - Trainable parameters: 5,499,682 (5.50M)
+2025-12-09 15:30:38,239 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 15:30:38,239 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:30:38,239 - H-DCD [INFO] - Starting training...
+2025-12-09 15:30:38,239 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 15:30:38,239 - H-DCD [INFO] - Patience: 10
+2025-12-09 15:30:38,239 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:32:05,419 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:32:05,419 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 15:32:05,419 - H-DCD [INFO] - Mode: train
+2025-12-09 15:32:05,419 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 15:32:05,419 - H-DCD [INFO] - Seeds: [1111, 1112, 1113]
+2025-12-09 15:32:05,419 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:32:05,419 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 15:32:05,419 - H-DCD [INFO] - Running seed 1/3: 1111
+2025-12-09 15:32:05,419 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:32:05,419 - H-DCD [INFO] - Loading data...
+2025-12-09 15:32:05,582 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:32:05,582 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:32:05,582 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 15:32:05,582 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 15:32:05,582 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 15:32:05,595 - H-DCD [INFO] - Final audio shape: (1284, 375, 5), audio_input_dim: 5
+2025-12-09 15:32:05,595 - H-DCD [INFO] - Final vision shape: (1284, 500, 20), video_input_dim: 20
+2025-12-09 15:32:05,595 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 15:32:05,764 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:32:05,764 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:32:05,764 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 15:32:05,764 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 15:32:05,764 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 15:32:05,767 - H-DCD [INFO] - Final audio shape: (229, 375, 5), audio_input_dim: 5
+2025-12-09 15:32:05,767 - H-DCD [INFO] - Final vision shape: (229, 500, 20), video_input_dim: 20
+2025-12-09 15:32:05,767 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 15:32:05,926 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:32:05,926 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:32:05,926 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 15:32:05,926 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 15:32:05,926 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 15:32:05,933 - H-DCD [INFO] - Final audio shape: (686, 375, 5), audio_input_dim: 5
+2025-12-09 15:32:05,933 - H-DCD [INFO] - Final vision shape: (686, 500, 20), video_input_dim: 20
+2025-12-09 15:32:05,933 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 15:32:05,940 - H-DCD [INFO] - Creating model...
+2025-12-09 15:32:05,965 - H-DCD [INFO] - Total parameters: 5,499,682 (5.50M)
+2025-12-09 15:32:05,965 - H-DCD [INFO] - Trainable parameters: 5,499,682 (5.50M)
+2025-12-09 15:32:06,207 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 15:32:06,207 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:32:06,207 - H-DCD [INFO] - Starting training...
+2025-12-09 15:32:06,207 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 15:32:06,207 - H-DCD [INFO] - Patience: 10
+2025-12-09 15:32:06,207 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:42:35,348 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:42:35,350 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 15:42:35,350 - H-DCD [INFO] - Mode: train
+2025-12-09 15:42:35,350 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 15:42:35,350 - H-DCD [INFO] - Seeds: [1111, 1112, 1113]
+2025-12-09 15:42:35,350 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:42:35,350 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 15:42:35,350 - H-DCD [INFO] - Running seed 1/3: 1111
+2025-12-09 15:42:35,350 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:42:35,350 - H-DCD [INFO] - Loading data...
+2025-12-09 15:42:35,615 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:42:35,616 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:42:35,616 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 15:42:35,617 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 15:42:35,617 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 15:42:35,644 - H-DCD [INFO] - Final audio shape: (1284, 375, 5), audio_input_dim: 5
+2025-12-09 15:42:35,644 - H-DCD [INFO] - Final vision shape: (1284, 500, 20), video_input_dim: 20
+2025-12-09 15:42:35,644 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 15:42:36,410 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:42:36,410 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:42:36,411 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 15:42:36,411 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 15:42:36,411 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 15:42:36,418 - H-DCD [INFO] - Final audio shape: (229, 375, 5), audio_input_dim: 5
+2025-12-09 15:42:36,418 - H-DCD [INFO] - Final vision shape: (229, 500, 20), video_input_dim: 20
+2025-12-09 15:42:36,418 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 15:42:36,707 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:42:36,707 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:42:36,707 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 15:42:36,707 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 15:42:36,707 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 15:42:36,719 - H-DCD [INFO] - Final audio shape: (686, 375, 5), audio_input_dim: 5
+2025-12-09 15:42:36,719 - H-DCD [INFO] - Final vision shape: (686, 500, 20), video_input_dim: 20
+2025-12-09 15:42:36,719 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 15:42:36,728 - H-DCD [INFO] - Creating model...
+2025-12-09 15:42:36,774 - H-DCD [INFO] - Total parameters: 5,499,682 (5.50M)
+2025-12-09 15:42:36,774 - H-DCD [INFO] - Trainable parameters: 5,499,682 (5.50M)
+2025-12-09 15:42:37,019 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 15:42:37,019 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:42:37,019 - H-DCD [INFO] - Starting training...
+2025-12-09 15:42:37,019 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 15:42:37,019 - H-DCD [INFO] - Patience: 10
+2025-12-09 15:42:37,019 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:42:52,454 - H-DCD [INFO] - Valid - Loss: 5.6992, MAE: 1.4342, Corr: 0.0108, Binary Acc: 0.5371, F1: 0.6319
+2025-12-09 15:42:52,492 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4342
+2025-12-09 15:42:52,492 - H-DCD [INFO] - Epoch 1 completed in 15.47s
+2025-12-09 15:42:52,492 - H-DCD [INFO] - Train Loss: 5.7554
+2025-12-09 15:42:52,492 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:42:57,370 - H-DCD [INFO] - Valid - Loss: 5.6438, MAE: 1.4134, Corr: 0.0058, Binary Acc: 0.5197, F1: 0.6687
+2025-12-09 15:42:57,415 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4134
+2025-12-09 15:42:57,415 - H-DCD [INFO] - Epoch 2 completed in 4.92s
+2025-12-09 15:42:57,416 - H-DCD [INFO] - Train Loss: 5.3695
+2025-12-09 15:42:57,416 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:43:02,225 - H-DCD [INFO] - Valid - Loss: 5.4500, MAE: 1.4192, Corr: 0.0074, Binary Acc: 0.5459, F1: 0.6688
+2025-12-09 15:43:02,234 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 15:43:02,234 - H-DCD [INFO] - Epoch 3 completed in 4.82s
+2025-12-09 15:43:02,234 - H-DCD [INFO] - Train Loss: 5.2586
+2025-12-09 15:43:02,234 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:43:07,076 - H-DCD [INFO] - Valid - Loss: 5.6105, MAE: 1.4347, Corr: 0.0101, Binary Acc: 0.5502, F1: 0.6485
+2025-12-09 15:43:07,085 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 15:43:07,085 - H-DCD [INFO] - Epoch 4 completed in 4.85s
+2025-12-09 15:43:07,085 - H-DCD [INFO] - Train Loss: 5.2990
+2025-12-09 15:43:07,085 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:43:11,889 - H-DCD [INFO] - Valid - Loss: 5.6790, MAE: 1.4426, Corr: 0.0110, Binary Acc: 0.5371, F1: 0.6045
+2025-12-09 15:43:11,897 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 15:43:11,897 - H-DCD [INFO] - Epoch 5 completed in 4.81s
+2025-12-09 15:43:11,897 - H-DCD [INFO] - Train Loss: 5.3011
+2025-12-09 15:43:11,897 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:43:16,780 - H-DCD [INFO] - Valid - Loss: 5.6178, MAE: 1.4294, Corr: 0.0120, Binary Acc: 0.5459, F1: 0.6438
+2025-12-09 15:43:16,780 - H-DCD [INFO] - No improvement. Patience: 4/10
+2025-12-09 15:43:16,781 - H-DCD [INFO] - Epoch 6 completed in 4.88s
+2025-12-09 15:43:16,781 - H-DCD [INFO] - Train Loss: 5.2443
+2025-12-09 15:43:16,781 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:43:21,631 - H-DCD [INFO] - Valid - Loss: 5.6567, MAE: 1.4353, Corr: 0.0045, Binary Acc: 0.5371, F1: 0.6845
+2025-12-09 15:43:21,633 - H-DCD [INFO] - No improvement. Patience: 5/10
+2025-12-09 15:43:21,633 - H-DCD [INFO] - Epoch 7 completed in 4.85s
+2025-12-09 15:43:21,633 - H-DCD [INFO] - Train Loss: 5.2647
+2025-12-09 15:43:21,633 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:43:26,476 - H-DCD [INFO] - Valid - Loss: 5.6801, MAE: 1.4222, Corr: 0.0141, Binary Acc: 0.5459, F1: 0.6510
+2025-12-09 15:43:26,476 - H-DCD [INFO] - No improvement. Patience: 6/10
+2025-12-09 15:43:26,476 - H-DCD [INFO] - Epoch 8 completed in 4.84s
+2025-12-09 15:43:26,476 - H-DCD [INFO] - Train Loss: 5.2457
+2025-12-09 15:43:26,476 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:43:31,407 - H-DCD [INFO] - Valid - Loss: 5.7747, MAE: 1.4195, Corr: 0.0249, Binary Acc: 0.5284, F1: 0.6667
+2025-12-09 15:43:31,407 - H-DCD [INFO] - No improvement. Patience: 7/10
+2025-12-09 15:43:31,407 - H-DCD [INFO] - Epoch 9 completed in 4.93s
+2025-12-09 15:43:31,408 - H-DCD [INFO] - Train Loss: 5.1620
+2025-12-09 15:43:31,408 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:43:36,251 - H-DCD [INFO] - Valid - Loss: 5.5615, MAE: 1.4090, Corr: 0.0477, Binary Acc: 0.5590, F1: 0.6794
+2025-12-09 15:43:36,286 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4090
+2025-12-09 15:43:36,286 - H-DCD [INFO] - Epoch 10 completed in 4.88s
+2025-12-09 15:43:36,286 - H-DCD [INFO] - Train Loss: 5.1214
+2025-12-09 15:43:36,286 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:43:41,115 - H-DCD [INFO] - Valid - Loss: 5.8925, MAE: 1.4339, Corr: 0.0349, Binary Acc: 0.5284, F1: 0.5714
+2025-12-09 15:43:41,116 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 15:43:41,116 - H-DCD [INFO] - Epoch 11 completed in 4.83s
+2025-12-09 15:43:41,116 - H-DCD [INFO] - Train Loss: 5.1135
+2025-12-09 15:43:41,116 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:43:46,067 - H-DCD [INFO] - Valid - Loss: 6.0556, MAE: 1.4143, Corr: 0.0633, Binary Acc: 0.5852, F1: 0.7040
+2025-12-09 15:43:46,069 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 15:43:46,069 - H-DCD [INFO] - Epoch 12 completed in 4.95s
+2025-12-09 15:43:46,069 - H-DCD [INFO] - Train Loss: 5.1359
+2025-12-09 15:43:46,069 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:43:50,935 - H-DCD [INFO] - Valid - Loss: 5.6262, MAE: 1.4124, Corr: 0.0890, Binary Acc: 0.5852, F1: 0.7022
+2025-12-09 15:43:50,937 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 15:43:50,937 - H-DCD [INFO] - Epoch 13 completed in 4.87s
+2025-12-09 15:43:50,937 - H-DCD [INFO] - Train Loss: 5.0730
+2025-12-09 15:43:50,937 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:43:55,784 - H-DCD [INFO] - Valid - Loss: 5.8735, MAE: 1.4590, Corr: 0.0572, Binary Acc: 0.5371, F1: 0.5923
+2025-12-09 15:43:55,785 - H-DCD [INFO] - No improvement. Patience: 4/10
+2025-12-09 15:43:55,786 - H-DCD [INFO] - Epoch 14 completed in 4.85s
+2025-12-09 15:43:55,786 - H-DCD [INFO] - Train Loss: 4.9605
+2025-12-09 15:43:55,786 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:44:00,645 - H-DCD [INFO] - Valid - Loss: 5.9363, MAE: 1.4260, Corr: 0.0845, Binary Acc: 0.5895, F1: 0.7044
+2025-12-09 15:44:00,647 - H-DCD [INFO] - No improvement. Patience: 5/10
+2025-12-09 15:44:00,647 - H-DCD [INFO] - Epoch 15 completed in 4.86s
+2025-12-09 15:44:00,647 - H-DCD [INFO] - Train Loss: 5.1327
+2025-12-09 15:44:00,647 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:44:05,545 - H-DCD [INFO] - Valid - Loss: 5.8712, MAE: 1.4404, Corr: 0.0867, Binary Acc: 0.5895, F1: 0.6987
+2025-12-09 15:44:05,547 - H-DCD [INFO] - No improvement. Patience: 6/10
+2025-12-09 15:44:05,547 - H-DCD [INFO] - Epoch 16 completed in 4.90s
+2025-12-09 15:44:05,547 - H-DCD [INFO] - Train Loss: 4.9891
+2025-12-09 15:44:05,547 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:44:10,450 - H-DCD [INFO] - Valid - Loss: 5.6521, MAE: 1.4451, Corr: 0.0951, Binary Acc: 0.5721, F1: 0.6859
+2025-12-09 15:44:10,452 - H-DCD [INFO] - No improvement. Patience: 7/10
+2025-12-09 15:44:10,452 - H-DCD [INFO] - Epoch 17 completed in 4.90s
+2025-12-09 15:44:10,452 - H-DCD [INFO] - Train Loss: 4.9497
+2025-12-09 15:44:10,452 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:44:15,285 - H-DCD [INFO] - Valid - Loss: 5.6070, MAE: 1.4283, Corr: 0.1000, Binary Acc: 0.5983, F1: 0.6993
+2025-12-09 15:44:15,294 - H-DCD [INFO] - No improvement. Patience: 8/10
+2025-12-09 15:44:15,294 - H-DCD [INFO] - Epoch 18 completed in 4.84s
+2025-12-09 15:44:15,294 - H-DCD [INFO] - Train Loss: 4.9231
+2025-12-09 15:44:15,294 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:44:20,110 - H-DCD [INFO] - Valid - Loss: 5.5738, MAE: 1.4248, Corr: 0.1118, Binary Acc: 0.5895, F1: 0.7025
+2025-12-09 15:44:20,112 - H-DCD [INFO] - No improvement. Patience: 9/10
+2025-12-09 15:44:20,112 - H-DCD [INFO] - Epoch 19 completed in 4.82s
+2025-12-09 15:44:20,112 - H-DCD [INFO] - Train Loss: 4.9219
+2025-12-09 15:44:20,112 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 15:44:24,956 - H-DCD [INFO] - Valid - Loss: 5.7606, MAE: 1.4473, Corr: 0.1049, Binary Acc: 0.5895, F1: 0.7063
+2025-12-09 15:44:24,958 - H-DCD [INFO] - No improvement. Patience: 10/10
+2025-12-09 15:44:24,958 - H-DCD [INFO] - Early stopping triggered at epoch 20
+2025-12-09 15:44:24,958 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:44:24,958 - H-DCD [INFO] - Training completed!
+2025-12-09 15:44:24,958 - H-DCD [INFO] - Best validation metric: 1.4090
+2025-12-09 15:44:24,958 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:44:24,958 - H-DCD [INFO] - 
+Testing with best model...
+2025-12-09 15:44:24,958 - H-DCD [INFO] - Loading best model from ./checkpoints/best_model.pth
+2025-12-09 15:44:26,107 - H-DCD [INFO] - Test - Loss: 5.8166, MAE: 1.4320, Corr: 0.1605, Binary Acc: 0.5262, F1: 0.5922
+2025-12-09 15:44:26,184 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 15:44:26,185 - H-DCD [INFO] - Running seed 2/3: 1112
+2025-12-09 15:44:26,185 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:44:26,185 - H-DCD [INFO] - Loading data...
+2025-12-09 15:44:26,358 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:44:26,358 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:44:26,358 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 15:44:26,358 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 15:44:26,358 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 15:44:26,372 - H-DCD [INFO] - Final audio shape: (1284, 375, 5), audio_input_dim: 5
+2025-12-09 15:44:26,372 - H-DCD [INFO] - Final vision shape: (1284, 500, 20), video_input_dim: 20
+2025-12-09 15:44:26,372 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 15:44:26,538 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:44:26,538 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:44:26,539 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 15:44:26,539 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 15:44:26,539 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 15:44:26,541 - H-DCD [INFO] - Final audio shape: (229, 375, 5), audio_input_dim: 5
+2025-12-09 15:44:26,541 - H-DCD [INFO] - Final vision shape: (229, 500, 20), video_input_dim: 20
+2025-12-09 15:44:26,541 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 15:44:26,711 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 15:44:26,711 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 15:44:26,711 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 15:44:26,711 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 15:44:26,711 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 15:44:26,718 - H-DCD [INFO] - Final audio shape: (686, 375, 5), audio_input_dim: 5
+2025-12-09 15:44:26,718 - H-DCD [INFO] - Final vision shape: (686, 500, 20), video_input_dim: 20
+2025-12-09 15:44:26,718 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 15:44:26,726 - H-DCD [INFO] - Creating model...
+2025-12-09 15:44:26,748 - H-DCD [INFO] - Total parameters: 5,499,682 (5.50M)
+2025-12-09 15:44:26,748 - H-DCD [INFO] - Trainable parameters: 5,499,682 (5.50M)
+2025-12-09 15:44:26,758 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 15:44:26,759 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:44:26,759 - H-DCD [INFO] - Starting training...
+2025-12-09 15:44:26,759 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 15:44:26,759 - H-DCD [INFO] - Patience: 10
+2025-12-09 15:44:26,759 - H-DCD [INFO] - ================================================================================
+2025-12-09 15:44:31,759 - H-DCD [INFO] - Valid - Loss: 5.7736, MAE: 1.4172, Corr: 0.0063, Binary Acc: 0.5284, F1: 0.6766
+2025-12-09 15:44:31,797 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4172
+2025-12-09 15:44:31,798 - H-DCD [INFO] - Epoch 1 completed in 5.04s
+2025-12-09 15:44:31,798 - H-DCD [INFO] - Train Loss: 5.7614
+2025-12-09 15:44:31,798 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:22:56,982 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:22:56,982 - H-DCD [INFO] - H-DCD - MOSI
+2025-12-09 17:22:56,983 - H-DCD [INFO] - Mode: train
+2025-12-09 17:22:56,983 - H-DCD [INFO] - Device: cuda:0
+2025-12-09 17:22:56,983 - H-DCD [INFO] - Seeds: [1111, 1112, 1113]
+2025-12-09 17:22:56,983 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:22:56,983 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 17:22:56,983 - H-DCD [INFO] - Running seed 1/3: 1111
+2025-12-09 17:22:56,983 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:22:56,983 - H-DCD [INFO] - Loading data...
+2025-12-09 17:26:16,335 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 17:26:16,344 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 17:26:16,346 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 17:26:16,346 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 17:26:16,346 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 17:26:16,416 - H-DCD [INFO] - Final audio shape: (1284, 375, 5), audio_input_dim: 5
+2025-12-09 17:26:16,416 - H-DCD [INFO] - Final vision shape: (1284, 500, 20), video_input_dim: 20
+2025-12-09 17:26:16,416 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 17:26:16,617 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 17:26:16,617 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 17:26:16,618 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 17:26:16,618 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 17:26:16,618 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 17:26:16,627 - H-DCD [INFO] - Final audio shape: (229, 375, 5), audio_input_dim: 5
+2025-12-09 17:26:16,627 - H-DCD [INFO] - Final vision shape: (229, 500, 20), video_input_dim: 20
+2025-12-09 17:26:16,627 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 17:26:16,801 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 17:26:16,801 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 17:26:16,801 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 17:26:16,802 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 17:26:16,802 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 17:26:16,830 - H-DCD [INFO] - Final audio shape: (686, 375, 5), audio_input_dim: 5
+2025-12-09 17:26:16,831 - H-DCD [INFO] - Final vision shape: (686, 500, 20), video_input_dim: 20
+2025-12-09 17:26:16,831 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 17:26:16,841 - H-DCD [INFO] - Creating model...
+2025-12-09 17:26:16,886 - H-DCD [INFO] - Total parameters: 5,499,682 (5.50M)
+2025-12-09 17:26:16,886 - H-DCD [INFO] - Trainable parameters: 5,499,682 (5.50M)
+2025-12-09 17:26:17,147 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 17:26:17,147 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:26:17,147 - H-DCD [INFO] - Starting training...
+2025-12-09 17:26:17,147 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 17:26:17,147 - H-DCD [INFO] - Patience: 10
+2025-12-09 17:26:17,147 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:26:32,782 - H-DCD [INFO] - Valid - Loss: 5.7016, MAE: 1.4391, Corr: 0.0165, Binary Acc: 0.5109, F1: 0.4667
+2025-12-09 17:26:32,813 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4391
+2025-12-09 17:26:32,814 - H-DCD [INFO] - Epoch 1 completed in 15.67s
+2025-12-09 17:26:32,814 - H-DCD [INFO] - Train Loss: 5.7577
+2025-12-09 17:26:32,814 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:26:37,706 - H-DCD [INFO] - Valid - Loss: 5.6493, MAE: 1.4138, Corr: 0.0058, Binary Acc: 0.5197, F1: 0.6687
+2025-12-09 17:26:37,752 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4138
+2025-12-09 17:26:37,752 - H-DCD [INFO] - Epoch 2 completed in 4.94s
+2025-12-09 17:26:37,752 - H-DCD [INFO] - Train Loss: 5.3658
+2025-12-09 17:26:37,752 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:26:42,563 - H-DCD [INFO] - Valid - Loss: 5.5070, MAE: 1.4321, Corr: 0.0119, Binary Acc: 0.5240, F1: 0.6121
+2025-12-09 17:26:42,563 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 17:26:42,563 - H-DCD [INFO] - Epoch 3 completed in 4.81s
+2025-12-09 17:26:42,563 - H-DCD [INFO] - Train Loss: 5.2608
+2025-12-09 17:26:42,563 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:26:47,406 - H-DCD [INFO] - Valid - Loss: 5.6119, MAE: 1.4347, Corr: 0.0117, Binary Acc: 0.5284, F1: 0.6197
+2025-12-09 17:26:47,406 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 17:26:47,407 - H-DCD [INFO] - Epoch 4 completed in 4.84s
+2025-12-09 17:26:47,407 - H-DCD [INFO] - Train Loss: 5.3018
+2025-12-09 17:26:47,407 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:26:52,221 - H-DCD [INFO] - Valid - Loss: 5.6736, MAE: 1.4379, Corr: 0.0091, Binary Acc: 0.5371, F1: 0.6131
+2025-12-09 17:26:52,221 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 17:26:52,221 - H-DCD [INFO] - Epoch 5 completed in 4.81s
+2025-12-09 17:26:52,221 - H-DCD [INFO] - Train Loss: 5.3059
+2025-12-09 17:26:52,221 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:26:57,107 - H-DCD [INFO] - Valid - Loss: 5.6275, MAE: 1.4425, Corr: 0.0132, Binary Acc: 0.5328, F1: 0.6081
+2025-12-09 17:26:57,107 - H-DCD [INFO] - No improvement. Patience: 4/10
+2025-12-09 17:26:57,107 - H-DCD [INFO] - Epoch 6 completed in 4.89s
+2025-12-09 17:26:57,108 - H-DCD [INFO] - Train Loss: 5.2446
+2025-12-09 17:26:57,108 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:27:01,986 - H-DCD [INFO] - Valid - Loss: 5.6666, MAE: 1.4329, Corr: 0.0047, Binary Acc: 0.5284, F1: 0.6727
+2025-12-09 17:27:01,986 - H-DCD [INFO] - No improvement. Patience: 5/10
+2025-12-09 17:27:01,986 - H-DCD [INFO] - Epoch 7 completed in 4.88s
+2025-12-09 17:27:01,986 - H-DCD [INFO] - Train Loss: 5.2654
+2025-12-09 17:27:01,986 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:27:06,842 - H-DCD [INFO] - Valid - Loss: 5.6761, MAE: 1.4232, Corr: 0.0140, Binary Acc: 0.5546, F1: 0.6531
+2025-12-09 17:27:06,851 - H-DCD [INFO] - No improvement. Patience: 6/10
+2025-12-09 17:27:06,851 - H-DCD [INFO] - Epoch 8 completed in 4.87s
+2025-12-09 17:27:06,851 - H-DCD [INFO] - Train Loss: 5.2422
+2025-12-09 17:27:06,851 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:27:11,703 - H-DCD [INFO] - Valid - Loss: 5.7523, MAE: 1.4175, Corr: 0.0211, Binary Acc: 0.5502, F1: 0.6771
+2025-12-09 17:27:11,712 - H-DCD [INFO] - No improvement. Patience: 7/10
+2025-12-09 17:27:11,712 - H-DCD [INFO] - Epoch 9 completed in 4.86s
+2025-12-09 17:27:11,712 - H-DCD [INFO] - Train Loss: 5.1576
+2025-12-09 17:27:11,712 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:27:16,570 - H-DCD [INFO] - Valid - Loss: 5.5483, MAE: 1.4097, Corr: 0.0398, Binary Acc: 0.5764, F1: 0.6901
+2025-12-09 17:27:16,612 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4097
+2025-12-09 17:27:16,612 - H-DCD [INFO] - Epoch 10 completed in 4.90s
+2025-12-09 17:27:16,612 - H-DCD [INFO] - Train Loss: 5.1301
+2025-12-09 17:27:16,612 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:27:21,471 - H-DCD [INFO] - Valid - Loss: 5.9606, MAE: 1.4546, Corr: 0.0233, Binary Acc: 0.5153, F1: 0.5356
+2025-12-09 17:27:21,472 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 17:27:21,472 - H-DCD [INFO] - Epoch 11 completed in 4.86s
+2025-12-09 17:27:21,472 - H-DCD [INFO] - Train Loss: 5.0785
+2025-12-09 17:27:21,472 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:27:26,298 - H-DCD [INFO] - Valid - Loss: 6.1055, MAE: 1.4232, Corr: 0.0665, Binary Acc: 0.5677, F1: 0.6954
+2025-12-09 17:27:26,298 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 17:27:26,298 - H-DCD [INFO] - Epoch 12 completed in 4.83s
+2025-12-09 17:27:26,298 - H-DCD [INFO] - Train Loss: 5.1243
+2025-12-09 17:27:26,298 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:27:31,164 - H-DCD [INFO] - Valid - Loss: 5.6145, MAE: 1.4169, Corr: 0.0778, Binary Acc: 0.5895, F1: 0.7081
+2025-12-09 17:27:31,165 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 17:27:31,165 - H-DCD [INFO] - Epoch 13 completed in 4.87s
+2025-12-09 17:27:31,165 - H-DCD [INFO] - Train Loss: 5.0700
+2025-12-09 17:27:31,165 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:27:36,032 - H-DCD [INFO] - Valid - Loss: 5.8137, MAE: 1.4328, Corr: 0.0731, Binary Acc: 0.5546, F1: 0.6304
+2025-12-09 17:27:36,041 - H-DCD [INFO] - No improvement. Patience: 4/10
+2025-12-09 17:27:36,041 - H-DCD [INFO] - Epoch 14 completed in 4.88s
+2025-12-09 17:27:36,041 - H-DCD [INFO] - Train Loss: 4.9762
+2025-12-09 17:27:36,041 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:27:40,881 - H-DCD [INFO] - Valid - Loss: 5.9390, MAE: 1.4178, Corr: 0.0973, Binary Acc: 0.5939, F1: 0.6847
+2025-12-09 17:27:40,883 - H-DCD [INFO] - No improvement. Patience: 5/10
+2025-12-09 17:27:40,883 - H-DCD [INFO] - Epoch 15 completed in 4.84s
+2025-12-09 17:27:40,883 - H-DCD [INFO] - Train Loss: 5.0592
+2025-12-09 17:27:40,883 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:27:45,788 - H-DCD [INFO] - Valid - Loss: 5.8224, MAE: 1.4166, Corr: 0.0897, Binary Acc: 0.5721, F1: 0.7030
+2025-12-09 17:27:45,790 - H-DCD [INFO] - No improvement. Patience: 6/10
+2025-12-09 17:27:45,790 - H-DCD [INFO] - Epoch 16 completed in 4.91s
+2025-12-09 17:27:45,790 - H-DCD [INFO] - Train Loss: 4.9774
+2025-12-09 17:27:45,790 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:27:50,649 - H-DCD [INFO] - Valid - Loss: 5.5871, MAE: 1.4083, Corr: 0.1175, Binary Acc: 0.6114, F1: 0.7003
+2025-12-09 17:27:50,682 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4083
+2025-12-09 17:27:50,682 - H-DCD [INFO] - Epoch 17 completed in 4.89s
+2025-12-09 17:27:50,682 - H-DCD [INFO] - Train Loss: 4.9637
+2025-12-09 17:27:50,682 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:27:55,501 - H-DCD [INFO] - Valid - Loss: 5.6143, MAE: 1.4141, Corr: 0.0922, Binary Acc: 0.5808, F1: 0.7037
+2025-12-09 17:27:55,502 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 17:27:55,502 - H-DCD [INFO] - Epoch 18 completed in 4.82s
+2025-12-09 17:27:55,502 - H-DCD [INFO] - Train Loss: 4.8828
+2025-12-09 17:27:55,502 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:28:00,366 - H-DCD [INFO] - Valid - Loss: 5.5908, MAE: 1.4319, Corr: 0.0982, Binary Acc: 0.5633, F1: 0.6970
+2025-12-09 17:28:00,366 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 17:28:00,366 - H-DCD [INFO] - Epoch 19 completed in 4.86s
+2025-12-09 17:28:00,366 - H-DCD [INFO] - Train Loss: 4.9207
+2025-12-09 17:28:00,366 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:28:05,235 - H-DCD [INFO] - Valid - Loss: 5.7035, MAE: 1.4242, Corr: 0.1047, Binary Acc: 0.5633, F1: 0.6933
+2025-12-09 17:28:05,235 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 17:28:05,236 - H-DCD [INFO] - Epoch 20 completed in 4.87s
+2025-12-09 17:28:05,236 - H-DCD [INFO] - Train Loss: 4.9142
+2025-12-09 17:28:05,236 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:28:10,153 - H-DCD [INFO] - Valid - Loss: 5.8541, MAE: 1.4185, Corr: 0.0980, Binary Acc: 0.6070, F1: 0.6980
+2025-12-09 17:28:10,162 - H-DCD [INFO] - No improvement. Patience: 4/10
+2025-12-09 17:28:10,162 - H-DCD [INFO] - Epoch 21 completed in 4.93s
+2025-12-09 17:28:10,162 - H-DCD [INFO] - Train Loss: 4.8329
+2025-12-09 17:28:10,162 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:28:15,065 - H-DCD [INFO] - Valid - Loss: 5.4842, MAE: 1.4154, Corr: 0.1100, Binary Acc: 0.5721, F1: 0.6975
+2025-12-09 17:28:15,074 - H-DCD [INFO] - No improvement. Patience: 5/10
+2025-12-09 17:28:15,074 - H-DCD [INFO] - Epoch 22 completed in 4.91s
+2025-12-09 17:28:15,074 - H-DCD [INFO] - Train Loss: 4.8246
+2025-12-09 17:28:15,074 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:28:19,934 - H-DCD [INFO] - Valid - Loss: 5.7038, MAE: 1.4619, Corr: 0.0782, Binary Acc: 0.5808, F1: 0.6620
+2025-12-09 17:28:19,943 - H-DCD [INFO] - No improvement. Patience: 6/10
+2025-12-09 17:28:19,943 - H-DCD [INFO] - Epoch 23 completed in 4.87s
+2025-12-09 17:28:19,943 - H-DCD [INFO] - Train Loss: 4.8631
+2025-12-09 17:28:19,943 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:28:24,789 - H-DCD [INFO] - Valid - Loss: 5.4716, MAE: 1.4240, Corr: 0.1097, Binary Acc: 0.5939, F1: 0.6990
+2025-12-09 17:28:24,789 - H-DCD [INFO] - No improvement. Patience: 7/10
+2025-12-09 17:28:24,789 - H-DCD [INFO] - Epoch 24 completed in 4.85s
+2025-12-09 17:28:24,789 - H-DCD [INFO] - Train Loss: 4.7651
+2025-12-09 17:28:24,789 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:28:29,684 - H-DCD [INFO] - Valid - Loss: 5.5245, MAE: 1.4228, Corr: 0.1195, Binary Acc: 0.5852, F1: 0.7003
+2025-12-09 17:28:29,693 - H-DCD [INFO] - No improvement. Patience: 8/10
+2025-12-09 17:28:29,693 - H-DCD [INFO] - Epoch 25 completed in 4.90s
+2025-12-09 17:28:29,693 - H-DCD [INFO] - Train Loss: 4.7622
+2025-12-09 17:28:29,693 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:28:34,499 - H-DCD [INFO] - Valid - Loss: 5.6717, MAE: 1.4262, Corr: 0.1058, Binary Acc: 0.5939, F1: 0.7010
+2025-12-09 17:28:34,508 - H-DCD [INFO] - No improvement. Patience: 9/10
+2025-12-09 17:28:34,508 - H-DCD [INFO] - Epoch 26 completed in 4.82s
+2025-12-09 17:28:34,508 - H-DCD [INFO] - Train Loss: 4.7271
+2025-12-09 17:28:34,508 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:28:39,364 - H-DCD [INFO] - Valid - Loss: 5.5314, MAE: 1.4221, Corr: 0.1235, Binary Acc: 0.5808, F1: 0.7000
+2025-12-09 17:28:39,373 - H-DCD [INFO] - No improvement. Patience: 10/10
+2025-12-09 17:28:39,373 - H-DCD [INFO] - Early stopping triggered at epoch 27
+2025-12-09 17:28:39,373 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:28:39,373 - H-DCD [INFO] - Training completed!
+2025-12-09 17:28:39,373 - H-DCD [INFO] - Best validation metric: 1.4083
+2025-12-09 17:28:39,373 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:28:39,373 - H-DCD [INFO] - 
+Testing with best model...
+2025-12-09 17:28:39,373 - H-DCD [INFO] - Loading best model from ./checkpoints/best_model.pth
+2025-12-09 17:28:40,520 - H-DCD [INFO] - Test - Loss: 5.6103, MAE: 1.3759, Corr: 0.2581, Binary Acc: 0.5671, F1: 0.5775
+2025-12-09 17:28:40,592 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 17:28:40,593 - H-DCD [INFO] - Running seed 2/3: 1112
+2025-12-09 17:28:40,593 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:28:40,593 - H-DCD [INFO] - Loading data...
+2025-12-09 17:28:41,087 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 17:28:41,088 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 17:28:41,089 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 17:28:41,089 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 17:28:41,089 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 17:28:41,146 - H-DCD [INFO] - Final audio shape: (1284, 375, 5), audio_input_dim: 5
+2025-12-09 17:28:41,146 - H-DCD [INFO] - Final vision shape: (1284, 500, 20), video_input_dim: 20
+2025-12-09 17:28:41,146 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 17:28:41,647 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 17:28:41,648 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 17:28:41,648 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 17:28:41,648 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 17:28:41,648 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 17:28:41,654 - H-DCD [INFO] - Final audio shape: (229, 375, 5), audio_input_dim: 5
+2025-12-09 17:28:41,654 - H-DCD [INFO] - Final vision shape: (229, 500, 20), video_input_dim: 20
+2025-12-09 17:28:41,654 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 17:28:41,983 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 17:28:41,983 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 17:28:41,983 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 17:28:41,983 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 17:28:41,983 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 17:28:42,003 - H-DCD [INFO] - Final audio shape: (686, 375, 5), audio_input_dim: 5
+2025-12-09 17:28:42,003 - H-DCD [INFO] - Final vision shape: (686, 500, 20), video_input_dim: 20
+2025-12-09 17:28:42,003 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 17:28:42,013 - H-DCD [INFO] - Creating model...
+2025-12-09 17:28:42,035 - H-DCD [INFO] - Total parameters: 5,499,682 (5.50M)
+2025-12-09 17:28:42,035 - H-DCD [INFO] - Trainable parameters: 5,499,682 (5.50M)
+2025-12-09 17:28:42,045 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 17:28:42,045 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:28:42,045 - H-DCD [INFO] - Starting training...
+2025-12-09 17:28:42,045 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 17:28:42,045 - H-DCD [INFO] - Patience: 10
+2025-12-09 17:28:42,045 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:28:46,975 - H-DCD [INFO] - Valid - Loss: 5.7853, MAE: 1.4169, Corr: 0.0069, Binary Acc: 0.5284, F1: 0.6766
+2025-12-09 17:28:47,009 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4169
+2025-12-09 17:28:47,009 - H-DCD [INFO] - Epoch 1 completed in 4.96s
+2025-12-09 17:28:47,009 - H-DCD [INFO] - Train Loss: 5.7598
+2025-12-09 17:28:47,009 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:28:52,018 - H-DCD [INFO] - Valid - Loss: 5.7662, MAE: 1.4150, Corr: 0.0005, Binary Acc: 0.5371, F1: 0.6971
+2025-12-09 17:28:52,057 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4150
+2025-12-09 17:28:52,057 - H-DCD [INFO] - Epoch 2 completed in 5.05s
+2025-12-09 17:28:52,057 - H-DCD [INFO] - Train Loss: 5.3979
+2025-12-09 17:28:52,057 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:28:56,965 - H-DCD [INFO] - Valid - Loss: 6.0489, MAE: 1.4266, Corr: 0.0123, Binary Acc: 0.5328, F1: 0.6397
+2025-12-09 17:28:56,966 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 17:28:56,966 - H-DCD [INFO] - Epoch 3 completed in 4.91s
+2025-12-09 17:28:56,966 - H-DCD [INFO] - Train Loss: 5.3413
+2025-12-09 17:28:56,966 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:29:01,849 - H-DCD [INFO] - Valid - Loss: 5.4466, MAE: 1.4175, Corr: 0.0082, Binary Acc: 0.5284, F1: 0.6727
+2025-12-09 17:29:01,850 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 17:29:01,850 - H-DCD [INFO] - Epoch 4 completed in 4.88s
+2025-12-09 17:29:01,850 - H-DCD [INFO] - Train Loss: 5.3603
+2025-12-09 17:29:01,850 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:29:06,737 - H-DCD [INFO] - Valid - Loss: 5.6677, MAE: 1.4229, Corr: 0.0072, Binary Acc: 0.5328, F1: 0.6748
+2025-12-09 17:29:06,737 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 17:29:06,737 - H-DCD [INFO] - Epoch 5 completed in 4.89s
+2025-12-09 17:29:06,737 - H-DCD [INFO] - Train Loss: 5.2761
+2025-12-09 17:29:06,737 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:29:11,590 - H-DCD [INFO] - Valid - Loss: 5.5092, MAE: 1.4223, Corr: 0.0119, Binary Acc: 0.5502, F1: 0.6751
+2025-12-09 17:29:11,599 - H-DCD [INFO] - No improvement. Patience: 4/10
+2025-12-09 17:29:11,599 - H-DCD [INFO] - Epoch 6 completed in 4.86s
+2025-12-09 17:29:11,599 - H-DCD [INFO] - Train Loss: 5.2293
+2025-12-09 17:29:11,599 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:29:16,441 - H-DCD [INFO] - Valid - Loss: 5.6311, MAE: 1.4206, Corr: 0.0124, Binary Acc: 0.5284, F1: 0.6727
+2025-12-09 17:29:16,450 - H-DCD [INFO] - No improvement. Patience: 5/10
+2025-12-09 17:29:16,450 - H-DCD [INFO] - Epoch 7 completed in 4.85s
+2025-12-09 17:29:16,450 - H-DCD [INFO] - Train Loss: 5.2543
+2025-12-09 17:29:16,450 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:29:21,274 - H-DCD [INFO] - Valid - Loss: 5.7407, MAE: 1.4191, Corr: 0.0214, Binary Acc: 0.5415, F1: 0.6729
+2025-12-09 17:29:21,283 - H-DCD [INFO] - No improvement. Patience: 6/10
+2025-12-09 17:29:21,283 - H-DCD [INFO] - Epoch 8 completed in 4.83s
+2025-12-09 17:29:21,283 - H-DCD [INFO] - Train Loss: 5.2266
+2025-12-09 17:29:21,283 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:29:26,150 - H-DCD [INFO] - Valid - Loss: 5.8883, MAE: 1.4159, Corr: 0.0381, Binary Acc: 0.5240, F1: 0.6646
+2025-12-09 17:29:26,150 - H-DCD [INFO] - No improvement. Patience: 7/10
+2025-12-09 17:29:26,150 - H-DCD [INFO] - Epoch 9 completed in 4.87s
+2025-12-09 17:29:26,150 - H-DCD [INFO] - Train Loss: 5.2023
+2025-12-09 17:29:26,150 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:29:31,016 - H-DCD [INFO] - Valid - Loss: 5.5746, MAE: 1.4026, Corr: 0.1071, Binary Acc: 0.5328, F1: 0.6787
+2025-12-09 17:29:31,050 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4026
+2025-12-09 17:29:31,050 - H-DCD [INFO] - Epoch 10 completed in 4.90s
+2025-12-09 17:29:31,050 - H-DCD [INFO] - Train Loss: 5.0540
+2025-12-09 17:29:31,050 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:29:35,873 - H-DCD [INFO] - Valid - Loss: 5.6770, MAE: 1.4137, Corr: 0.0937, Binary Acc: 0.5633, F1: 0.6875
+2025-12-09 17:29:35,874 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 17:29:35,874 - H-DCD [INFO] - Epoch 11 completed in 4.82s
+2025-12-09 17:29:35,874 - H-DCD [INFO] - Train Loss: 5.0747
+2025-12-09 17:29:35,874 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:29:40,797 - H-DCD [INFO] - Valid - Loss: 5.6056, MAE: 1.3973, Corr: 0.1639, Binary Acc: 0.5939, F1: 0.6890
+2025-12-09 17:29:40,838 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.3973
+2025-12-09 17:29:40,838 - H-DCD [INFO] - Epoch 12 completed in 4.96s
+2025-12-09 17:29:40,839 - H-DCD [INFO] - Train Loss: 5.0034
+2025-12-09 17:29:40,839 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:29:45,752 - H-DCD [INFO] - Valid - Loss: 5.7545, MAE: 1.4286, Corr: 0.1323, Binary Acc: 0.5328, F1: 0.6862
+2025-12-09 17:29:45,752 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 17:29:45,752 - H-DCD [INFO] - Epoch 13 completed in 4.91s
+2025-12-09 17:29:45,752 - H-DCD [INFO] - Train Loss: 5.0131
+2025-12-09 17:29:45,752 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:29:50,634 - H-DCD [INFO] - Valid - Loss: 5.5383, MAE: 1.4347, Corr: 0.1126, Binary Acc: 0.5721, F1: 0.6797
+2025-12-09 17:29:50,634 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 17:29:50,634 - H-DCD [INFO] - Epoch 14 completed in 4.88s
+2025-12-09 17:29:50,634 - H-DCD [INFO] - Train Loss: 4.9357
+2025-12-09 17:29:50,634 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:29:55,474 - H-DCD [INFO] - Valid - Loss: 5.7888, MAE: 1.4372, Corr: 0.1099, Binary Acc: 0.5633, F1: 0.6689
+2025-12-09 17:29:55,474 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 17:29:55,474 - H-DCD [INFO] - Epoch 15 completed in 4.84s
+2025-12-09 17:29:55,474 - H-DCD [INFO] - Train Loss: 4.9129
+2025-12-09 17:29:55,474 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:30:00,346 - H-DCD [INFO] - Valid - Loss: 5.6275, MAE: 1.3696, Corr: 0.2343, Binary Acc: 0.5852, F1: 0.6619
+2025-12-09 17:30:00,386 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.3696
+2025-12-09 17:30:00,387 - H-DCD [INFO] - Epoch 16 completed in 4.91s
+2025-12-09 17:30:00,387 - H-DCD [INFO] - Train Loss: 4.8640
+2025-12-09 17:30:00,387 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:30:05,249 - H-DCD [INFO] - Valid - Loss: 6.0095, MAE: 1.4007, Corr: 0.1919, Binary Acc: 0.5721, F1: 0.6899
+2025-12-09 17:30:05,250 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 17:30:05,250 - H-DCD [INFO] - Epoch 17 completed in 4.86s
+2025-12-09 17:30:05,250 - H-DCD [INFO] - Train Loss: 4.8212
+2025-12-09 17:30:05,250 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:30:10,125 - H-DCD [INFO] - Valid - Loss: 6.1245, MAE: 1.4549, Corr: 0.1101, Binary Acc: 0.5502, F1: 0.6730
+2025-12-09 17:30:10,125 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 17:30:10,125 - H-DCD [INFO] - Epoch 18 completed in 4.88s
+2025-12-09 17:30:10,125 - H-DCD [INFO] - Train Loss: 4.9546
+2025-12-09 17:30:10,125 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:30:14,996 - H-DCD [INFO] - Valid - Loss: 5.7140, MAE: 1.3765, Corr: 0.2239, Binary Acc: 0.5895, F1: 0.6846
+2025-12-09 17:30:14,997 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 17:30:14,997 - H-DCD [INFO] - Epoch 19 completed in 4.87s
+2025-12-09 17:30:14,997 - H-DCD [INFO] - Train Loss: 4.8210
+2025-12-09 17:30:14,997 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:30:19,835 - H-DCD [INFO] - Valid - Loss: 5.7867, MAE: 1.4519, Corr: 0.1817, Binary Acc: 0.5808, F1: 0.7108
+2025-12-09 17:30:19,837 - H-DCD [INFO] - No improvement. Patience: 4/10
+2025-12-09 17:30:19,837 - H-DCD [INFO] - Epoch 20 completed in 4.84s
+2025-12-09 17:30:19,837 - H-DCD [INFO] - Train Loss: 4.6489
+2025-12-09 17:30:19,837 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:30:24,633 - H-DCD [INFO] - Valid - Loss: 6.0771, MAE: 1.4494, Corr: 0.2367, Binary Acc: 0.5546, F1: 0.7035
+2025-12-09 17:30:24,635 - H-DCD [INFO] - No improvement. Patience: 5/10
+2025-12-09 17:30:24,635 - H-DCD [INFO] - Epoch 21 completed in 4.80s
+2025-12-09 17:30:24,635 - H-DCD [INFO] - Train Loss: 4.7126
+2025-12-09 17:30:24,635 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:30:29,429 - H-DCD [INFO] - Valid - Loss: 5.5883, MAE: 1.3671, Corr: 0.2241, Binary Acc: 0.5633, F1: 0.6183
+2025-12-09 17:30:29,469 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.3671
+2025-12-09 17:30:29,469 - H-DCD [INFO] - Epoch 22 completed in 4.83s
+2025-12-09 17:30:29,470 - H-DCD [INFO] - Train Loss: 4.6344
+2025-12-09 17:30:29,470 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:30:34,342 - H-DCD [INFO] - Valid - Loss: 5.5006, MAE: 1.3778, Corr: 0.2420, Binary Acc: 0.6070, F1: 0.6918
+2025-12-09 17:30:34,351 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 17:30:34,351 - H-DCD [INFO] - Epoch 23 completed in 4.88s
+2025-12-09 17:30:34,351 - H-DCD [INFO] - Train Loss: 4.6704
+2025-12-09 17:30:34,351 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:30:39,200 - H-DCD [INFO] - Valid - Loss: 5.3861, MAE: 1.3351, Corr: 0.3112, Binary Acc: 0.6332, F1: 0.6693
+2025-12-09 17:30:39,242 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.3351
+2025-12-09 17:30:39,242 - H-DCD [INFO] - Epoch 24 completed in 4.89s
+2025-12-09 17:30:39,242 - H-DCD [INFO] - Train Loss: 4.5279
+2025-12-09 17:30:39,242 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:30:44,126 - H-DCD [INFO] - Valid - Loss: 5.4615, MAE: 1.3569, Corr: 0.3020, Binary Acc: 0.6157, F1: 0.7086
+2025-12-09 17:30:44,135 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 17:30:44,135 - H-DCD [INFO] - Epoch 25 completed in 4.89s
+2025-12-09 17:30:44,135 - H-DCD [INFO] - Train Loss: 4.5458
+2025-12-09 17:30:44,135 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:30:48,969 - H-DCD [INFO] - Valid - Loss: 5.5259, MAE: 1.3601, Corr: 0.2595, Binary Acc: 0.6201, F1: 0.6766
+2025-12-09 17:30:48,978 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 17:30:48,978 - H-DCD [INFO] - Epoch 26 completed in 4.84s
+2025-12-09 17:30:48,978 - H-DCD [INFO] - Train Loss: 4.6326
+2025-12-09 17:30:48,978 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:30:53,808 - H-DCD [INFO] - Valid - Loss: 5.4145, MAE: 1.3858, Corr: 0.2531, Binary Acc: 0.5895, F1: 0.6948
+2025-12-09 17:30:53,816 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 17:30:53,816 - H-DCD [INFO] - Epoch 27 completed in 4.84s
+2025-12-09 17:30:53,816 - H-DCD [INFO] - Train Loss: 4.6209
+2025-12-09 17:30:53,816 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:30:58,698 - H-DCD [INFO] - Valid - Loss: 5.9546, MAE: 1.4163, Corr: 0.2740, Binary Acc: 0.5721, F1: 0.7066
+2025-12-09 17:30:58,707 - H-DCD [INFO] - No improvement. Patience: 4/10
+2025-12-09 17:30:58,707 - H-DCD [INFO] - Epoch 28 completed in 4.89s
+2025-12-09 17:30:58,707 - H-DCD [INFO] - Train Loss: 4.4715
+2025-12-09 17:30:58,707 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:31:03,602 - H-DCD [INFO] - Valid - Loss: 5.5635, MAE: 1.3518, Corr: 0.3070, Binary Acc: 0.6419, F1: 0.7303
+2025-12-09 17:31:03,610 - H-DCD [INFO] - No improvement. Patience: 5/10
+2025-12-09 17:31:03,610 - H-DCD [INFO] - Epoch 29 completed in 4.90s
+2025-12-09 17:31:03,610 - H-DCD [INFO] - Train Loss: 4.4941
+2025-12-09 17:31:03,611 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:31:08,514 - H-DCD [INFO] - Valid - Loss: 5.5021, MAE: 1.4178, Corr: 0.2702, Binary Acc: 0.5983, F1: 0.7032
+2025-12-09 17:31:08,514 - H-DCD [INFO] - No improvement. Patience: 6/10
+2025-12-09 17:31:08,514 - H-DCD [INFO] - Epoch 30 completed in 4.90s
+2025-12-09 17:31:08,514 - H-DCD [INFO] - Train Loss: 4.3416
+2025-12-09 17:31:08,514 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:31:13,396 - H-DCD [INFO] - Valid - Loss: 5.6370, MAE: 1.3450, Corr: 0.3062, Binary Acc: 0.6332, F1: 0.7021
+2025-12-09 17:31:13,405 - H-DCD [INFO] - No improvement. Patience: 7/10
+2025-12-09 17:31:13,405 - H-DCD [INFO] - Epoch 31 completed in 4.89s
+2025-12-09 17:31:13,405 - H-DCD [INFO] - Train Loss: 4.4041
+2025-12-09 17:31:13,405 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:31:18,245 - H-DCD [INFO] - Valid - Loss: 5.4411, MAE: 1.3596, Corr: 0.3079, Binary Acc: 0.6463, F1: 0.7291
+2025-12-09 17:31:18,254 - H-DCD [INFO] - No improvement. Patience: 8/10
+2025-12-09 17:31:18,254 - H-DCD [INFO] - Epoch 32 completed in 4.85s
+2025-12-09 17:31:18,254 - H-DCD [INFO] - Train Loss: 4.2451
+2025-12-09 17:31:18,254 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:31:23,117 - H-DCD [INFO] - Valid - Loss: 5.5224, MAE: 1.3285, Corr: 0.3223, Binary Acc: 0.6419, F1: 0.7133
+2025-12-09 17:31:23,161 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.3285
+2025-12-09 17:31:23,161 - H-DCD [INFO] - Epoch 33 completed in 4.91s
+2025-12-09 17:31:23,161 - H-DCD [INFO] - Train Loss: 4.2222
+2025-12-09 17:31:23,161 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:31:28,001 - H-DCD [INFO] - Valid - Loss: 5.4606, MAE: 1.3732, Corr: 0.2827, Binary Acc: 0.6201, F1: 0.6766
+2025-12-09 17:31:28,010 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 17:31:28,010 - H-DCD [INFO] - Epoch 34 completed in 4.85s
+2025-12-09 17:31:28,010 - H-DCD [INFO] - Train Loss: 4.2542
+2025-12-09 17:31:28,010 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:31:32,846 - H-DCD [INFO] - Valid - Loss: 5.6987, MAE: 1.4049, Corr: 0.2643, Binary Acc: 0.6114, F1: 0.6962
+2025-12-09 17:31:32,855 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 17:31:32,855 - H-DCD [INFO] - Epoch 35 completed in 4.84s
+2025-12-09 17:31:32,855 - H-DCD [INFO] - Train Loss: 4.1758
+2025-12-09 17:31:32,855 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:31:37,734 - H-DCD [INFO] - Valid - Loss: 5.4468, MAE: 1.3902, Corr: 0.2888, Binary Acc: 0.6288, F1: 0.7059
+2025-12-09 17:31:37,743 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 17:31:37,743 - H-DCD [INFO] - Epoch 36 completed in 4.89s
+2025-12-09 17:31:37,743 - H-DCD [INFO] - Train Loss: 4.1632
+2025-12-09 17:31:37,743 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:31:42,591 - H-DCD [INFO] - Valid - Loss: 5.3769, MAE: 1.3716, Corr: 0.3057, Binary Acc: 0.6288, F1: 0.7099
+2025-12-09 17:31:42,600 - H-DCD [INFO] - No improvement. Patience: 4/10
+2025-12-09 17:31:42,600 - H-DCD [INFO] - Epoch 37 completed in 4.86s
+2025-12-09 17:31:42,600 - H-DCD [INFO] - Train Loss: 4.0867
+2025-12-09 17:31:42,600 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:31:47,483 - H-DCD [INFO] - Valid - Loss: 5.8158, MAE: 1.4170, Corr: 0.2708, Binary Acc: 0.6114, F1: 0.6983
+2025-12-09 17:31:47,492 - H-DCD [INFO] - No improvement. Patience: 5/10
+2025-12-09 17:31:47,492 - H-DCD [INFO] - Epoch 38 completed in 4.89s
+2025-12-09 17:31:47,492 - H-DCD [INFO] - Train Loss: 4.0469
+2025-12-09 17:31:47,492 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:31:52,326 - H-DCD [INFO] - Valid - Loss: 5.4566, MAE: 1.3766, Corr: 0.3292, Binary Acc: 0.6288, F1: 0.7213
+2025-12-09 17:31:52,335 - H-DCD [INFO] - No improvement. Patience: 6/10
+2025-12-09 17:31:52,335 - H-DCD [INFO] - Epoch 39 completed in 4.84s
+2025-12-09 17:31:52,335 - H-DCD [INFO] - Train Loss: 4.0610
+2025-12-09 17:31:52,335 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:31:57,270 - H-DCD [INFO] - Valid - Loss: 5.5745, MAE: 1.3879, Corr: 0.2918, Binary Acc: 0.6288, F1: 0.7079
+2025-12-09 17:31:57,279 - H-DCD [INFO] - No improvement. Patience: 7/10
+2025-12-09 17:31:57,279 - H-DCD [INFO] - Epoch 40 completed in 4.94s
+2025-12-09 17:31:57,279 - H-DCD [INFO] - Train Loss: 4.0149
+2025-12-09 17:31:57,279 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:32:02,143 - H-DCD [INFO] - Valid - Loss: 5.7001, MAE: 1.3834, Corr: 0.2962, Binary Acc: 0.6507, F1: 0.7163
+2025-12-09 17:32:02,144 - H-DCD [INFO] - No improvement. Patience: 8/10
+2025-12-09 17:32:02,144 - H-DCD [INFO] - Epoch 41 completed in 4.87s
+2025-12-09 17:32:02,144 - H-DCD [INFO] - Train Loss: 3.9576
+2025-12-09 17:32:02,144 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:32:06,986 - H-DCD [INFO] - Valid - Loss: 5.6208, MAE: 1.4066, Corr: 0.2794, Binary Acc: 0.6376, F1: 0.7067
+2025-12-09 17:32:06,988 - H-DCD [INFO] - No improvement. Patience: 9/10
+2025-12-09 17:32:06,988 - H-DCD [INFO] - Epoch 42 completed in 4.84s
+2025-12-09 17:32:06,988 - H-DCD [INFO] - Train Loss: 3.9629
+2025-12-09 17:32:06,988 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:32:11,851 - H-DCD [INFO] - Valid - Loss: 5.6339, MAE: 1.3919, Corr: 0.2974, Binary Acc: 0.6288, F1: 0.7079
+2025-12-09 17:32:11,860 - H-DCD [INFO] - No improvement. Patience: 10/10
+2025-12-09 17:32:11,860 - H-DCD [INFO] - Early stopping triggered at epoch 43
+2025-12-09 17:32:11,860 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:32:11,860 - H-DCD [INFO] - Training completed!
+2025-12-09 17:32:11,860 - H-DCD [INFO] - Best validation metric: 1.3285
+2025-12-09 17:32:11,860 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:32:11,860 - H-DCD [INFO] - 
+Testing with best model...
+2025-12-09 17:32:11,860 - H-DCD [INFO] - Loading best model from ./checkpoints/best_model.pth
+2025-12-09 17:32:12,982 - H-DCD [INFO] - Test - Loss: 5.9666, MAE: 1.5025, Corr: 0.1214, Binary Acc: 0.5292, F1: 0.4977
+2025-12-09 17:32:13,051 - H-DCD [INFO] - 
+================================================================================
+2025-12-09 17:32:13,052 - H-DCD [INFO] - Running seed 3/3: 1113
+2025-12-09 17:32:13,052 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:32:13,052 - H-DCD [INFO] - Loading data...
+2025-12-09 17:32:15,140 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 17:32:15,140 - H-DCD [INFO] - Mode train keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 17:32:15,141 - H-DCD [INFO] - Loaded text_bert shape: (1284, 3, 50)
+2025-12-09 17:32:15,141 - H-DCD [INFO] - Transposing text from (1284, 3, 50) to (N, L, D)
+2025-12-09 17:32:15,141 - H-DCD [INFO] - Final text shape: (1284, 50, 3), text_input_dim: 3
+2025-12-09 17:32:15,174 - H-DCD [INFO] - Final audio shape: (1284, 375, 5), audio_input_dim: 5
+2025-12-09 17:32:15,174 - H-DCD [INFO] - Final vision shape: (1284, 500, 20), video_input_dim: 20
+2025-12-09 17:32:15,174 - H-DCD [INFO] - train samples: (1284,)
+2025-12-09 17:32:15,568 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 17:32:15,568 - H-DCD [INFO] - Mode valid keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 17:32:15,568 - H-DCD [INFO] - Loaded text_bert shape: (229, 3, 50)
+2025-12-09 17:32:15,568 - H-DCD [INFO] - Transposing text from (229, 3, 50) to (N, L, D)
+2025-12-09 17:32:15,568 - H-DCD [INFO] - Final text shape: (229, 50, 3), text_input_dim: 3
+2025-12-09 17:32:15,572 - H-DCD [INFO] - Final audio shape: (229, 375, 5), audio_input_dim: 5
+2025-12-09 17:32:15,572 - H-DCD [INFO] - Final vision shape: (229, 500, 20), video_input_dim: 20
+2025-12-09 17:32:15,572 - H-DCD [INFO] - valid samples: (229,)
+2025-12-09 17:32:15,883 - H-DCD [INFO] - Dataset keys: dict_keys(['train', 'valid', 'test'])
+2025-12-09 17:32:15,884 - H-DCD [INFO] - Mode test keys: dict_keys(['raw_text', 'audio', 'vision', 'id', 'text', 'text_bert', 'audio_lengths', 'vision_lengths', 'annotations', 'classification_labels', 'regression_labels'])
+2025-12-09 17:32:15,884 - H-DCD [INFO] - Loaded text_bert shape: (686, 3, 50)
+2025-12-09 17:32:15,884 - H-DCD [INFO] - Transposing text from (686, 3, 50) to (N, L, D)
+2025-12-09 17:32:15,884 - H-DCD [INFO] - Final text shape: (686, 50, 3), text_input_dim: 3
+2025-12-09 17:32:15,894 - H-DCD [INFO] - Final audio shape: (686, 375, 5), audio_input_dim: 5
+2025-12-09 17:32:15,894 - H-DCD [INFO] - Final vision shape: (686, 500, 20), video_input_dim: 20
+2025-12-09 17:32:15,894 - H-DCD [INFO] - test samples: (686,)
+2025-12-09 17:32:15,902 - H-DCD [INFO] - Creating model...
+2025-12-09 17:32:15,924 - H-DCD [INFO] - Total parameters: 5,499,682 (5.50M)
+2025-12-09 17:32:15,924 - H-DCD [INFO] - Trainable parameters: 5,499,682 (5.50M)
+2025-12-09 17:32:15,934 - H-DCD [INFO] - 
+Starting training...
+2025-12-09 17:32:15,934 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:32:15,934 - H-DCD [INFO] - Starting training...
+2025-12-09 17:32:15,934 - H-DCD [INFO] - Total epochs: 100
+2025-12-09 17:32:15,934 - H-DCD [INFO] - Patience: 10
+2025-12-09 17:32:15,934 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:32:20,727 - H-DCD [INFO] - Valid - Loss: 5.9160, MAE: 1.4132, Corr: 0.0043, Binary Acc: 0.5371, F1: 0.6989
+2025-12-09 17:32:20,759 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4132
+2025-12-09 17:32:20,760 - H-DCD [INFO] - Epoch 1 completed in 4.83s
+2025-12-09 17:32:20,760 - H-DCD [INFO] - Train Loss: 5.7309
+2025-12-09 17:32:20,760 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:32:25,583 - H-DCD [INFO] - Valid - Loss: 5.4804, MAE: 1.4134, Corr: 0.0122, Binary Acc: 0.5371, F1: 0.6728
+2025-12-09 17:32:25,592 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 17:32:25,592 - H-DCD [INFO] - Epoch 2 completed in 4.83s
+2025-12-09 17:32:25,592 - H-DCD [INFO] - Train Loss: 5.3519
+2025-12-09 17:32:25,592 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:32:30,452 - H-DCD [INFO] - Valid - Loss: 5.4916, MAE: 1.4140, Corr: 0.0118, Binary Acc: 0.5240, F1: 0.6707
+2025-12-09 17:32:30,460 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 17:32:30,460 - H-DCD [INFO] - Epoch 3 completed in 4.87s
+2025-12-09 17:32:30,461 - H-DCD [INFO] - Train Loss: 5.3047
+2025-12-09 17:32:30,461 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:32:35,326 - H-DCD [INFO] - Valid - Loss: 5.4825, MAE: 1.4201, Corr: 0.0115, Binary Acc: 0.5459, F1: 0.6709
+2025-12-09 17:32:35,334 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 17:32:35,335 - H-DCD [INFO] - Epoch 4 completed in 4.87s
+2025-12-09 17:32:35,335 - H-DCD [INFO] - Train Loss: 5.2625
+2025-12-09 17:32:35,335 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:32:40,216 - H-DCD [INFO] - Valid - Loss: 5.6825, MAE: 1.4242, Corr: 0.0189, Binary Acc: 0.5415, F1: 0.6488
+2025-12-09 17:32:40,225 - H-DCD [INFO] - No improvement. Patience: 4/10
+2025-12-09 17:32:40,225 - H-DCD [INFO] - Epoch 5 completed in 4.89s
+2025-12-09 17:32:40,225 - H-DCD [INFO] - Train Loss: 5.2733
+2025-12-09 17:32:40,225 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:32:45,106 - H-DCD [INFO] - Valid - Loss: 5.4325, MAE: 1.4207, Corr: 0.0328, Binary Acc: 0.5459, F1: 0.6438
+2025-12-09 17:32:45,115 - H-DCD [INFO] - No improvement. Patience: 5/10
+2025-12-09 17:32:45,115 - H-DCD [INFO] - Epoch 6 completed in 4.89s
+2025-12-09 17:32:45,115 - H-DCD [INFO] - Train Loss: 5.2066
+2025-12-09 17:32:45,115 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:32:49,990 - H-DCD [INFO] - Valid - Loss: 5.5179, MAE: 1.4126, Corr: 0.0452, Binary Acc: 0.5633, F1: 0.6795
+2025-12-09 17:32:50,034 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4126
+2025-12-09 17:32:50,034 - H-DCD [INFO] - Epoch 7 completed in 4.92s
+2025-12-09 17:32:50,034 - H-DCD [INFO] - Train Loss: 5.1491
+2025-12-09 17:32:50,035 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:32:54,850 - H-DCD [INFO] - Valid - Loss: 5.8658, MAE: 1.4102, Corr: 0.0798, Binary Acc: 0.5459, F1: 0.6829
+2025-12-09 17:32:54,894 - H-DCD [INFO] - ✓ Best model saved! Metric: 1.4102
+2025-12-09 17:32:54,894 - H-DCD [INFO] - Epoch 8 completed in 4.86s
+2025-12-09 17:32:54,894 - H-DCD [INFO] - Train Loss: 5.1175
+2025-12-09 17:32:54,894 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:32:59,770 - H-DCD [INFO] - Valid - Loss: 6.1018, MAE: 1.5185, Corr: 0.0892, Binary Acc: 0.5459, F1: 0.7011
+2025-12-09 17:32:59,779 - H-DCD [INFO] - No improvement. Patience: 1/10
+2025-12-09 17:32:59,779 - H-DCD [INFO] - Epoch 9 completed in 4.89s
+2025-12-09 17:32:59,779 - H-DCD [INFO] - Train Loss: 5.0721
+2025-12-09 17:32:59,779 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:33:04,657 - H-DCD [INFO] - Valid - Loss: 5.5748, MAE: 1.4211, Corr: 0.0633, Binary Acc: 0.5764, F1: 0.6667
+2025-12-09 17:33:04,665 - H-DCD [INFO] - No improvement. Patience: 2/10
+2025-12-09 17:33:04,666 - H-DCD [INFO] - Epoch 10 completed in 4.89s
+2025-12-09 17:33:04,666 - H-DCD [INFO] - Train Loss: 5.2127
+2025-12-09 17:33:04,666 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:33:09,485 - H-DCD [INFO] - Valid - Loss: 5.8156, MAE: 1.4480, Corr: 0.0359, Binary Acc: 0.5371, F1: 0.6728
+2025-12-09 17:33:09,494 - H-DCD [INFO] - No improvement. Patience: 3/10
+2025-12-09 17:33:09,494 - H-DCD [INFO] - Epoch 11 completed in 4.83s
+2025-12-09 17:33:09,494 - H-DCD [INFO] - Train Loss: 5.0814
+2025-12-09 17:33:09,494 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:33:14,315 - H-DCD [INFO] - Valid - Loss: 5.8126, MAE: 1.4743, Corr: 0.0915, Binary Acc: 0.5459, F1: 0.6886
+2025-12-09 17:33:14,324 - H-DCD [INFO] - No improvement. Patience: 4/10
+2025-12-09 17:33:14,324 - H-DCD [INFO] - Epoch 12 completed in 4.83s
+2025-12-09 17:33:14,324 - H-DCD [INFO] - Train Loss: 5.0071
+2025-12-09 17:33:14,324 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:33:19,130 - H-DCD [INFO] - Valid - Loss: 5.8944, MAE: 1.4278, Corr: 0.1098, Binary Acc: 0.5721, F1: 0.6755
+2025-12-09 17:33:19,138 - H-DCD [INFO] - No improvement. Patience: 5/10
+2025-12-09 17:33:19,138 - H-DCD [INFO] - Epoch 13 completed in 4.81s
+2025-12-09 17:33:19,138 - H-DCD [INFO] - Train Loss: 4.9110
+2025-12-09 17:33:19,138 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:33:23,983 - H-DCD [INFO] - Valid - Loss: 5.8939, MAE: 1.4442, Corr: 0.1104, Binary Acc: 0.5764, F1: 0.6799
+2025-12-09 17:33:23,992 - H-DCD [INFO] - No improvement. Patience: 6/10
+2025-12-09 17:33:23,992 - H-DCD [INFO] - Epoch 14 completed in 4.85s
+2025-12-09 17:33:23,992 - H-DCD [INFO] - Train Loss: 4.9237
+2025-12-09 17:33:23,992 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:33:28,760 - H-DCD [INFO] - Valid - Loss: 5.5020, MAE: 1.4207, Corr: 0.1087, Binary Acc: 0.5546, F1: 0.6434
+2025-12-09 17:33:28,769 - H-DCD [INFO] - No improvement. Patience: 7/10
+2025-12-09 17:33:28,769 - H-DCD [INFO] - Epoch 15 completed in 4.78s
+2025-12-09 17:33:28,769 - H-DCD [INFO] - Train Loss: 4.8587
+2025-12-09 17:33:28,769 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:33:33,643 - H-DCD [INFO] - Valid - Loss: 6.2623, MAE: 1.4524, Corr: 0.1463, Binary Acc: 0.5415, F1: 0.6847
+2025-12-09 17:33:33,652 - H-DCD [INFO] - No improvement. Patience: 8/10
+2025-12-09 17:33:33,652 - H-DCD [INFO] - Epoch 16 completed in 4.88s
+2025-12-09 17:33:33,652 - H-DCD [INFO] - Train Loss: 4.8061
+2025-12-09 17:33:33,652 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:33:38,482 - H-DCD [INFO] - Valid - Loss: 5.6484, MAE: 1.4597, Corr: 0.1339, Binary Acc: 0.5546, F1: 0.6772
+2025-12-09 17:33:38,484 - H-DCD [INFO] - No improvement. Patience: 9/10
+2025-12-09 17:33:38,484 - H-DCD [INFO] - Epoch 17 completed in 4.83s
+2025-12-09 17:33:38,484 - H-DCD [INFO] - Train Loss: 4.7767
+2025-12-09 17:33:38,484 - H-DCD [INFO] - --------------------------------------------------------------------------------
+2025-12-09 17:33:43,347 - H-DCD [INFO] - Valid - Loss: 5.6085, MAE: 1.4505, Corr: 0.1320, Binary Acc: 0.5459, F1: 0.6389
+2025-12-09 17:33:43,355 - H-DCD [INFO] - No improvement. Patience: 10/10
+2025-12-09 17:33:43,355 - H-DCD [INFO] - Early stopping triggered at epoch 18
+2025-12-09 17:33:43,355 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:33:43,356 - H-DCD [INFO] - Training completed!
+2025-12-09 17:33:43,356 - H-DCD [INFO] - Best validation metric: 1.4102
+2025-12-09 17:33:43,356 - H-DCD [INFO] - ================================================================================
+2025-12-09 17:33:43,356 - H-DCD [INFO] - 
+Testing with best model...
+2025-12-09 17:33:43,356 - H-DCD [INFO] - Loading best model from ./checkpoints/best_model.pth
+2025-12-09 17:33:44,503 - H-DCD [INFO] - Test - Loss: 5.9206, MAE: 1.4640, Corr: 0.1682, Binary Acc: 0.4942, F1: 0.5657

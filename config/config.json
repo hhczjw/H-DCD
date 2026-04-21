@@ -1,0 +1,92 @@
+{
+  "dataset_root_dir": "/home/zjw/桌面/H-DCD/dataset",
+  
+  "common": {
+    "d_model": 128,
+    "batch_size": 32,
+    "learning_rate": 0.0001,
+    "num_epochs": 100,
+    "patience": 10,
+    "grad_clip": 1.0,
+    "weight_decay": 0.0001,
+    "num_workers": 4,
+    "device": "cuda",
+    "need_data_aligned": true,
+    "need_normalized": false,
+    "use_bert": true,
+    
+    "feature_T": "",
+    "feature_A": "",
+    "feature_V": "",
+    
+    "need_truncated": false,
+    
+    "text_input_dim": 768,
+    "audio_input_dim": 74,
+    "video_input_dim": 35,
+    
+    "decouple_num_layers": 2,
+    "decouple_kernel_size": 3,
+    
+    "hmnf_d_state": 64,
+    "hmnf_d_conv": 4,
+    "hmnf_expand": 2,
+    "hmnf_num_layers": 2,
+    "hmnf_num_heads": 4,
+    
+    "hmpn_d_state": 64,
+    "hmpn_d_conv": 4,
+    "hmpn_expand": 2,
+    "hmpn_num_heads": 4,
+    
+    "lambda_dec": 0.5,
+    "lambda_hierarchical": 1.0,
+    "lambda_distill": 0.5,
+    
+    "lambda_adv": 0.1,
+    "gamma_mar": 0.1,
+    "gamma_ort": 0.01,
+    
+    "w_uni": 1.0,
+    "w_bi": 1.0,
+    "w_mul": 1.0,
+    
+    "alpha_base": 0.2,
+    "beta": 0.5,
+    "tau": 2.0
+  },
+  
+  "datasets": {
+    "mosi": {
+      "featurePath": "/media/zjw/951FB31A9E1EB7E0/dateSet/MSA-DataSets/CMU-MOSI/Processed/unaligned_50.pkl",
+      "num_classes": 1,
+      "task_type": "regression",
+      "seq_lens": [50, 100, 75],
+      "feature_dims": [768, 74, 35]
+    },
+    
+    "mosei": {
+      "featurePath": "/media/zjw/951FB31A9E1EB7E0/dateSet/MSA-DataSets/CMU-MOSEI/Processed/unaligned_50-001.pkl",
+      "num_classes": 1,
+      "task_type": "regression",
+      "seq_lens": [50, 100, 75],
+      "feature_dims": [768, 74, 35]
+    },
+    
+    "iemocap": {
+      "featurePath": "IEMOCAP/iemocap_data.pkl",
+      "num_classes": 4,
+      "task_type": "classification",
+      "seq_lens": [50, 100, 75],
+      "feature_dims": [768, 74, 35]
+    },
+    
+    "meld": {
+      "featurePath": "MELD/meld_data.pkl",
+      "num_classes": 7,
+      "task_type": "classification",
+      "seq_lens": [50, 100, 75],
+      "feature_dims": [768, 74, 35]
+    }
+  }
+}
