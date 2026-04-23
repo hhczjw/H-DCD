@@ -108,6 +108,77 @@ def return_args():
     parser.add_argument('--loss_weight_margin', type=float, default=0.5,
                         help='情感间隔损失权重')
 
+    # =================================================================================
+    # 8. [创新1] SS-CD 状态空间因果去偏参数 (State-Space Causal Debiasing)
+    # =================================================================================
+    parser.add_argument('--use_causal_debias', action='store_true', default=True,
+                        help='启用 SS-CD 因果去偏模块 (默认开启)')
+    parser.add_argument('--no_causal_debias', dest='use_causal_debias', action='store_false',
+                        help='禁用 SS-CD 因果去偏模块')
+    parser.add_argument('--debias_num_layers', type=int, default=2,
+                        help='SS-CD 双路径的 Mamba2 层数')
+    parser.add_argument('--debias_confounder_size', type=int, default=50,
+                        help='混杂因子字典大小（KMeans聚类数）')
+    parser.add_argument('--debias_d_state', type=int, default=64,
+                        help='SS-CD Mamba2 的状态维度 (d_state)')
+    parser.add_argument('--debias_headdim', type=int, default=32,
+                        help='SS-CD Mamba2 的头维度 (headdim)')
+    parser.add_argument('--debias_text', action='store_true', default=True,
+                        help='对文本模态去偏 (默认开启)')
+    parser.add_argument('--no_debias_text', dest='debias_text', action='store_false',
+                        help='禁用文本模态去偏')
+    parser.add_argument('--debias_audio', action='store_true', default=True,
+                        help='对音频模态去偏 (默认开启)')
+    parser.add_argument('--no_debias_audio', dest='debias_audio', action='store_false',
+                        help='禁用音频模态去偏')
+    parser.add_argument('--debias_video', action='store_true', default=True,
+                        help='对视频模态去偏 (默认开启)')
+    parser.add_argument('--no_debias_video', dest='debias_video', action='store_false',
+                        help='禁用视频模态去偏')
+    parser.add_argument('--confounder_npy_dir', type=str, default=None,
+                        help='KMeans聚类中心.npy文件目录路径（为空则随机初始化）')
+
+    # =================================================================================
+    # 9. [创新2] SCI 选择性反事实推断参数 (Selective Counterfactual Inference)
+    # =================================================================================
+    parser.add_argument('--use_counterfactual', action='store_true', default=True,
+                        help='启用 SCI 反事实推断模块 (默认开启)')
+    parser.add_argument('--no_counterfactual', dest='use_counterfactual', action='store_false',
+                        help='禁用 SCI 反事实推断模块')
+    parser.add_argument('--counterfactual_type', type=str, default='shuffle',
+                        choices=['random', 'shuffle', 'reversed', 'uniform'],
+                        help='反事实干预策略类型')
+    parser.add_argument('--counterfactual_num_layers', type=int, default=2,
+                        help='SCI Mamba2 层数')
+    parser.add_argument('--counterfactual_d_state', type=int, default=64,
+                        help='SCI Mamba2 的状态维度 (d_state)')
+    parser.add_argument('--counterfactual_headdim', type=int, default=32,
+                        help='SCI Mamba2 的头维度 (headdim)')
+    parser.add_argument('--lambda_counterfactual', type=float, default=0.5,
+                        help='反事实效应损失权重 (η)')
+
+    # =================================================================================
+    # 10. [创新3] 多模态互信息约束参数 (Mutual Information Constraint)
+    # =================================================================================
+    parser.add_argument('--use_mutual_info', action='store_true', default=True,
+                        help='启用互信息约束 MMILB+CPC (默认开启)')
+    parser.add_argument('--no_mutual_info', dest='use_mutual_info', action='store_false',
+                        help='禁用互信息约束')
+    parser.add_argument('--add_va_mi', action='store_true', default=True,
+                        help='添加 visual-audio 互信息估计 (默认开启)')
+    parser.add_argument('--no_va_mi', dest='add_va_mi', action='store_false',
+                        help='禁用 visual-audio 互信息估计')
+    parser.add_argument('--cpc_layers', type=int, default=1,
+                        help='CPC预测网络层数')
+    parser.add_argument('--alpha_nce', type=float, default=0.1,
+                        help='CPC NCE损失权重 (α)')
+    parser.add_argument('--beta_lld', type=float, default=0.1,
+                        help='MMILB lld损失权重 (β)')
+    parser.add_argument('--mi_warmup_epochs', type=int, default=5,
+                        help='互信息预训练(阶段0)轮数: 仅训练MMILB最大化lld')
+    parser.add_argument('--mi_memory_size', type=int, default=10,
+                        help='MMILB memory缓存大小（保存最近N个batch的正负样本）')
+
     args = parser.parse_args()
     return args
 

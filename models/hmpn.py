@@ -27,24 +27,9 @@ except ImportError:
 
 
 # ============================================================================
-# RMSNorm
+# 使用公共 RMSNorm
 # ============================================================================
-class RMSNorm(nn.Module):
-    def __init__(self, d_model: int, eps: float = 1e-5):
-        super().__init__()
-        self.eps = eps
-        self.weight = nn.Parameter(torch.ones(d_model))
-
-    def forward(self, x):
-        # 使用 view 确保连续的内存布局
-        orig_shape = x.shape
-        x_flat = x.view(-1, orig_shape[-1])  # [B*L, d_model]
-        
-        rms = torch.sqrt(torch.mean(x_flat**2, dim=-1, keepdim=True) + self.eps)
-        x_normed = x_flat / rms
-        x_normed = self.weight * x_normed
-        
-        return x_normed.view(orig_shape)  # [B, L, d_model]
+from common import RMSNorm
 
 
 # ============================================================================

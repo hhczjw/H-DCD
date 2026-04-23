@@ -1,10 +1,16 @@
 """
 Trainer for H-DCD model
+
+集成 AtCAF 创新点的训练逻辑：
+1. 两阶段训练：阶段0(MMILB预训练) → 阶段1(主模型训练)
+2. Memory机制：维护正/负样本缓存用于MMILB熵估计
+3. 反事实效应损失计算
 """
 import os
 import time
 import logging
 import numpy as np
+from collections import deque
 import torch
 import torch.nn as nn
 from torch.optim import Adam, AdamW
@@ -30,18 +36,24 @@ class H_DCD_Trainer:
         self.criterion = H_DCD_Loss(args)
         
         # Optimizer
+        # 兼容 learning_rate / lr 两种参数名
+        _lr = args.get('learning_rate', args.get('lr', 1e-4))
+        _wd = args.get('weight_decay', 0.0)
+        _num_epochs = args.get('num_epochs', args.get('n_epochs', 100))
+        self._num_epochs = _num_epochs
+        
         optimizer_type = args.get('optimizer', 'adamw')
         if optimizer_type == 'adam':
             self.optimizer = Adam(
                 model.parameters(),
-                lr=args.learning_rate,
-                weight_decay=args.weight_decay
+                lr=_lr,
+                weight_decay=_wd
             )
         else:  # adamw
             self.optimizer = AdamW(
                 model.parameters(),
-                lr=args.learning_rate,
-                weight_decay=args.weight_decay
+                lr=_lr,
+                weight_decay=_wd
             )
         
         # Learning rate scheduler
@@ -49,8 +61,8 @@ class H_DCD_Trainer:
         if scheduler_type == 'cosine':
             self.scheduler = CosineAnnealingLR(
                 self.optimizer,
-                T_max=args.num_epochs,
-                eta_min=args.learning_rate * 0.01
+                T_max=_num_epochs,
+                eta_min=_lr * 0.01
             )
         else:  # reduce on plateau
             self.scheduler = ReduceLROnPlateau(
@@ -62,12 +74,13 @@ class H_DCD_Trainer:
             )
         
         # Warmup (optional)
-        if args.get('warmup_epochs', 0) > 0:
+        _warmup_epochs = args.get('warmup_epochs', 0)
+        if _warmup_epochs > 0:
             self.warmup_scheduler = WarmupScheduler(
                 self.optimizer,
-                warmup_epochs=args.warmup_epochs,
-                base_lr=args.learning_rate * 0.1,
-                target_lr=args.learning_rate
+                warmup_epochs=_warmup_epochs,
+                base_lr=_lr * 0.1,
+                target_lr=_lr
             )
         else:
             self.warmup_scheduler = None
@@ -80,12 +93,88 @@ class H_DCD_Trainer:
         
         # Gradient clipping
         self.grad_clip = args.get('grad_clip', 1.0)
+        
+        # ================================================================
+        # === AtCAF 创新点: Memory 机制和两阶段训练 ===
+        # ================================================================
+        # MMILB Memory: 缓存正/负样本用于熵估计
+        self.mi_memory_size = args.get('mi_memory_size', 10)
+        self.mi_warmup_epochs = args.get('mi_warmup_epochs', 5)
+        self.use_mutual_info = args.get('use_mutual_info', True)
+        self._init_memory()
+    
+    def _init_memory(self):
+        """
+        初始化MMILB的Memory缓存
+        
+        Memory结构: {'tv': {'pos': deque, 'neg': deque}, 
+                     'ta': {'pos': deque, 'neg': deque},
+                     'va': {'pos': deque, 'neg': deque}}
+        使用deque实现固定大小的FIFO缓存
+        """
+        self.mem = {
+            'tv': {'pos': deque(maxlen=self.mi_memory_size), 
+                   'neg': deque(maxlen=self.mi_memory_size)},
+            'ta': {'pos': deque(maxlen=self.mi_memory_size), 
+                   'neg': deque(maxlen=self.mi_memory_size)},
+            'va': {'pos': deque(maxlen=self.mi_memory_size), 
+                   'neg': deque(maxlen=self.mi_memory_size)},
+        }
+    
+    def _get_mem_for_model(self):
+        """
+        将deque格式的memory转换为model可用的list格式
+        
+        Returns:
+            mem_dict: 包含list格式的memory字典
+        """
+        mem_dict = {}
+        for key in ['tv', 'ta', 'va']:
+            pos_list = list(self.mem[key]['pos'])
+            neg_list = list(self.mem[key]['neg'])
+            if len(pos_list) > 0 and len(neg_list) > 0:
+                mem_dict[key] = {'pos': pos_list, 'neg': neg_list}
+            else:
+                mem_dict[key] = None
+        return mem_dict
+    
+    def _update_memory(self, pn_dic):
+        """
+        更新MMILB的Memory缓存
+        
+        Args:
+            pn_dic: 模型输出的正负样本字典 
+                    {'tv': {'pos': tensor, 'neg': tensor}, ...}
+        """
+        if pn_dic is None:
+            return
+        for key in ['tv', 'ta', 'va']:
+            if key in pn_dic and pn_dic[key] is not None:
+                pos = pn_dic[key].get('pos', None)
+                neg = pn_dic[key].get('neg', None)
+                if pos is not None and pos.numel() > 0:
+                    self.mem[key]['pos'].append(pos.detach())
+                if neg is not None and neg.numel() > 0:
+                    self.mem[key]['neg'].append(neg.detach())
     
     def train_epoch(self, dataloader, epoch):
-        """Train for one epoch"""
+        """
+        训练一个epoch
+        
+        两阶段训练逻辑 (来自AtCAF):
+        - 阶段0 (epoch <= mi_warmup_epochs): 仅训练MMILB，最大化互信息下界lld
+        - 阶段1 (epoch > mi_warmup_epochs): 训练完整模型，包含所有损失
+        """
         self.model.train()
         total_loss = 0.0
         loss_items = {}
+        
+        # 判断当前是否为MMILB预训练阶段
+        is_mi_warmup = (self.use_mutual_info and 
+                        epoch <= self.mi_warmup_epochs)
+        
+        if is_mi_warmup:
+            logger.info(f"[阶段0] MMILB预训练 (epoch {epoch}/{self.mi_warmup_epochs})")
         
         pbar = tqdm(dataloader, desc=f'Epoch {epoch} [Train]')
         for batch in pbar:
@@ -95,11 +184,38 @@ class H_DCD_Trainer:
             video = batch['video'].to(self.device)
             labels = batch['label'].to(self.device)
             
-            # Forward
-            outputs = self.model(text, audio, video, return_all=True)
+            # 获取memory用于MMILB熵估计
+            mem = self._get_mem_for_model() if self.use_mutual_info else None
             
-            # Compute loss
-            loss, loss_dict = self.criterion(outputs, labels)
+            # Forward (传入labels和mem用于互信息计算)
+            outputs = self.model(
+                text, audio, video, 
+                return_all=True,
+                labels=labels,
+                mem=mem,
+            )
+            
+            if is_mi_warmup:
+                # ============================================================
+                # 阶段0: 仅优化MMILB，最大化lld (互信息下界)
+                # 损失 = -lld (最大化lld等价于最小化-lld)
+                # ============================================================
+                mi_out = outputs.get('mi_outputs', {})
+                if mi_out and 'lld' in mi_out and isinstance(mi_out['lld'], torch.Tensor):
+                    loss = -mi_out['lld']  # 最大化lld
+                else:
+                    loss = torch.tensor(0.0, device=self.device, requires_grad=True)
+                loss_dict = {'L_lld_warmup': loss.item()}
+            else:
+                # ============================================================
+                # 阶段1: 完整训练，计算所有损失
+                # ============================================================
+                loss, loss_dict = self.criterion(outputs, labels)
+            
+            # 更新MMILB Memory
+            mi_out = outputs.get('mi_outputs', {})
+            if mi_out and 'pn_dic' in mi_out:
+                self._update_memory(mi_out['pn_dic'])
             
             # Backward
             self.optimizer.zero_grad()
@@ -208,15 +324,18 @@ class H_DCD_Trainer:
         """Full training loop"""
         logger.info("=" * 80)
         logger.info("Starting training...")
-        logger.info(f"Total epochs: {self.args.num_epochs}")
+        logger.info(f"Total epochs: {self._num_epochs}")
         logger.info(f"Patience: {self.patience}")
         logger.info("=" * 80)
         
-        for epoch in range(1, self.args.num_epochs + 1):
+        _warmup_epochs = self.args.get('warmup_epochs', 0)
+        _model_save_dir = self.args.get('model_save_dir', './checkpoints')
+        
+        for epoch in range(1, self._num_epochs + 1):
             epoch_start_time = time.time()
             
             # Warmup
-            if self.warmup_scheduler and epoch <= self.args.get('warmup_epochs', 0):
+            if self.warmup_scheduler and epoch <= _warmup_epochs:
                 self.warmup_scheduler.step()
                 logger.info(f"Warmup LR: {self.warmup_scheduler.get_lr():.6f}")
             
@@ -249,7 +368,7 @@ class H_DCD_Trainer:
                 self.patience_counter = 0
                 
                 # Save best model
-                self.save_model(os.path.join(self.args.model_save_dir, 'best_model.pth'))
+                self.save_model(os.path.join(_model_save_dir, 'best_model.pth'))
                 logger.info(f"✓ Best model saved! Metric: {current_metric:.4f}")
             else:
                 self.patience_counter += 1
@@ -274,7 +393,8 @@ class H_DCD_Trainer:
     def test(self, test_loader):
         """Test the model"""
         # Load best model
-        best_model_path = os.path.join(self.args.model_save_dir, 'best_model.pth')
+        _model_save_dir = self.args.get('model_save_dir', './checkpoints')
+        best_model_path = os.path.join(_model_save_dir, 'best_model.pth')
         if os.path.exists(best_model_path):
             logger.info(f"Loading best model from {best_model_path}")
             self.model.load_state_dict(torch.load(best_model_path))

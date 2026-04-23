@@ -112,9 +112,31 @@ class MMILB(nn.Module):
             y_proj = self.entropy_prj(y)
             
             # 根据标签分离正负样本
+            # 兼容多分类场景: 将标签二分为"积极"和"非积极"
+            # - 回归任务: >0 为正, <0 为负 (原始AtCAF逻辑)
+            # - 分类任务: 使用前半类vs后半类，或偶数类vs奇数类
+            #   这里采用通用策略: 使用中位数划分
             labels_flat = labels.view(-1)
-            pos_y = y_proj[labels_flat > 0]
-            neg_y = y_proj[labels_flat < 0]
+            
+            # 自动检测标签类型并划分正/负
+            unique_labels = torch.unique(labels_flat)
+            if unique_labels.min() < 0:
+                # 回归或含负标签: 原始 >0 / <0 划分
+                pos_mask = labels_flat > 0
+                neg_mask = labels_flat < 0
+            elif len(unique_labels) <= 2:
+                # 二分类: 使用 ==1 / ==0
+                pos_mask = labels_flat == 1
+                neg_mask = labels_flat == 0
+            else:
+                # 多分类(如IEMOCAP 4类, MELD 7类):
+                # 使用中位数划分 —— 标签 >= median 为正, < median 为负
+                median_label = torch.median(labels_flat.float())
+                pos_mask = labels_flat.float() >= median_label
+                neg_mask = labels_flat.float() < median_label
+            
+            pos_y = y_proj[pos_mask] if pos_mask.sum() > 0 else y_proj[:0]
+            neg_y = y_proj[neg_mask] if neg_mask.sum() > 0 else y_proj[:0]
             
             sample_dict['pos'] = pos_y
             sample_dict['neg'] = neg_y
@@ -210,8 +232,8 @@ class CPC(nn.Module):
         x_pred = self.net(y)  # [B, x_size]
         
         # 归一化到单位球面
-        x_pred = x_pred / x_pred.norm(dim=1, keepdim=True).clamp(min=1e-8)
-        x = x / x.norm(dim=1, keepdim=True).clamp(min=1e-8)
+        x_pred = F.normalize(x_pred, p=2, dim=1, eps=1e-8)
+        x = F.normalize(x, p=2, dim=1, eps=1e-8)
         
         # 正样本对: 对角线上的相似度
         pos = torch.sum(x * x_pred, dim=-1)  # [B]

@@ -10,17 +10,9 @@ except ImportError:
     Mamba2 = None
 
 # ============================================================================
-# RMSNorm (参考 DepMamba/Mamba 官方实现)
+# 使用公共 RMSNorm
 # ============================================================================
-class RMSNorm(nn.Module):
-    def __init__(self, d_model: int, eps: float = 1e-5):
-        super().__init__()
-        self.eps = eps
-        self.weight = nn.Parameter(torch.ones(d_model))
-
-    def forward(self, x):
-        output = x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
-        return output * self.weight
+from common import RMSNorm
 
 class HMNFBlock(nn.Module):
     """

@@ -191,6 +191,7 @@ def _run(args, num_workers=4, mode='train'):
     # Create model
     logger.info("Creating model...")
     model = H_DCD(
+        # 原有参数
         d_model=args.d_model,
         num_classes=args.num_classes,
         text_input_dim=args.text_input_dim,
@@ -204,6 +205,28 @@ def _run(args, num_workers=4, mode='train'):
         hmpn_d_conv=args.hmpn_d_conv,
         hmpn_expand=args.hmpn_expand,
         hmpn_num_heads=args.hmpn_num_heads,
+        dropout=args.get('dropout', 0.1),
+        # === [创新1] SS-CD 因果去偏参数 (Mamba2化) ===
+        use_causal_debias=args.get('use_causal_debias', True),
+        debias_num_layers=args.get('debias_num_layers', 2),
+        debias_confounder_size=args.get('debias_confounder_size', 50),
+        debias_d_state=args.get('debias_d_state', 64),
+        debias_headdim=args.get('debias_headdim', 32),
+        debias_text=args.get('debias_text', True),
+        debias_audio=args.get('debias_audio', True),
+        debias_video=args.get('debias_video', True),
+        confounder_npy_dir=args.get('confounder_npy_dir', None),
+        dataset_name=args.get('dataset_name', 'mosi'),
+        # === [创新2] SCI 反事实推断参数 (Mamba2化) ===
+        use_counterfactual=args.get('use_counterfactual', True),
+        counterfactual_type=args.get('counterfactual_type', 'shuffle'),
+        counterfactual_num_layers=args.get('counterfactual_num_layers', 2),
+        counterfactual_d_state=args.get('counterfactual_d_state', 64),
+        counterfactual_headdim=args.get('counterfactual_headdim', 32),
+        # === [创新3] 互信息约束参数 ===
+        use_mutual_info=args.get('use_mutual_info', True),
+        add_va_mi=args.get('add_va_mi', True),
+        cpc_layers=args.get('cpc_layers', 1),
     )
     
     # Count parameters

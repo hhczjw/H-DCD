@@ -124,7 +124,12 @@ class CoupledHMNF(nn.Module):
             out_a, out_v, out_l: Processed outputs (B, L, D)
         """
         # 确保序列长度一致
-        assert x_a.shape[1] == x_v.shape[1] == x_l.shape[1], "Sequence lengths must be equal for coupling."
+        if not (x_a.shape[1] == x_v.shape[1] == x_l.shape[1]):
+            raise RuntimeError(
+                f"CoupledHMNF要求三个模态序列长度一致，"
+                f"但收到 L_a={x_a.shape[1]}, L_v={x_v.shape[1]}, L_l={x_l.shape[1]}。"
+                f"请在输入前进行序列对齐。"
+            )
         
         current_a, current_v, current_l = x_a, x_v, x_l
         

@@ -109,5 +109,32 @@ def get_default_config():
         'num_workers': 4,
         'device': 'cuda',
         'seed': 1111,
+        
+        # === AtCAF 创新点默认参数 ===
+        # [创新1] SS-CD 因果去偏 (Mamba2化)
+        'use_causal_debias': True,
+        'debias_num_layers': 2,
+        'debias_confounder_size': 50,
+        'debias_d_state': 64,
+        'debias_headdim': 32,
+        'debias_text': True,
+        'debias_audio': True,
+        'debias_video': True,
+        'confounder_npy_dir': None,
+        # [创新2] SCI 反事实推断 (Mamba2化)
+        'use_counterfactual': True,
+        'counterfactual_type': 'shuffle',
+        'counterfactual_num_layers': 2,
+        'counterfactual_d_state': 64,
+        'counterfactual_headdim': 32,
+        'lambda_counterfactual': 0.5,
+        # [创新3] 互信息约束
+        'use_mutual_info': True,
+        'add_va_mi': True,
+        'cpc_layers': 1,
+        'alpha_nce': 0.1,
+        'beta_lld': 0.1,
+        'mi_warmup_epochs': 5,
+        'mi_memory_size': 10,
     }
     return edict(config)

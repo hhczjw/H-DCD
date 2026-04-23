@@ -12,18 +12,21 @@ from tqdm import tqdm
 from run import H_DCD_run
 from losses import H_DCD_Loss as HDCDLoss
 
-# Train on IEMOCAP (emotion classification)
-H_DCD_run(
-    dataset_name='mosi',
-    seeds=[1111, 1112, 1113],
-    model_save_dir="./checkpoints",
-    res_save_dir="./results",
-    log_dir="./logs",
-    mode='train',
-    gpu_ids=[0],
-    num_workers=4,
-    verbose_level=1
-)
+
+def run_default_training():
+    """使用默认配置运行训练（从顶层代码移入函数保护）"""
+    # Train on MOSI (sentiment analysis)
+    H_DCD_run(
+        dataset_name='mosi',
+        seeds=[1111, 1112, 1113],
+        model_save_dir="./checkpoints",
+        res_save_dir="./results",
+        log_dir="./logs",
+        mode='train',
+        gpu_ids=[0],
+        num_workers=4,
+        verbose_level=1
+    )
 
 # Uncomment below to train on other datasets:
 
@@ -72,6 +75,7 @@ def parse_args():
     parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--lr', type=float, default=1e-4)
     parser.add_argument('--weight_decay', type=float, default=1e-5)
+    parser.add_argument('--num_classes', type=int, default=4, help='分类类别数')
     
     # 其他
     parser.add_argument('--device', type=str, default='cuda' if torch.cuda.is_available() else 'cpu')
@@ -79,6 +83,8 @@ def parse_args():
     parser.add_argument('--num_workers', type=int, default=4)
     parser.add_argument('--save_dir', type=str, default='./checkpoints/hdcd')
     parser.add_argument('--log_dir', type=str, default='./logs/hdcd')
+    parser.add_argument('--config', type=str, default='./config/config.json', help='配置文件路径')
+    parser.add_argument('--data_dir', type=str, default='./datasets', help='数据集目录')
     
     return parser.parse_args()
 
@@ -230,7 +236,6 @@ def main():
     model_config = config.get('MODEL', {})
     model_config.update({
         'num_classes': args.num_classes,
-        'use_simple_mamba': args.use_simple_mamba
     })
     
     model = build_hdcd_model(model_config)
@@ -296,4 +301,10 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+    if len(sys.argv) > 1:
+        # 有命令行参数时使用 main() 解析参数
+        main()
+    else:
+        # 无参数时使用默认配置训练
+        run_default_training()

@@ -51,6 +51,15 @@ class H_DCD_Loss(nn.Module):
         self.lambda_distill = args.get('lambda_distill', 0.5)      # L_distill 权重
         
         # ================================================================
+        # === AtCAF 创新点损失权重 ===
+        # ================================================================
+        # [创新2] 反事实效应损失权重 (η in AtCAF)
+        self.lambda_counterfactual = args.get('lambda_counterfactual', 0.5)
+        # [创新3] 互信息约束损失权重
+        self.alpha_nce = args.get('alpha_nce', 0.1)    # CPC NCE损失权重 (α in AtCAF)
+        self.beta_lld = args.get('beta_lld', 0.1)      # MMILB lld损失权重 (β in AtCAF)
+        
+        # ================================================================
         # L_dec 子损失权重 (Decouple Loss Sub-weights)
         # ================================================================
         self.lambda_adv = args.get('lambda_adv', 0.1)              # 对抗损失权重
@@ -197,136 +206,47 @@ class H_DCD_Loss(nn.Module):
         loss_dict['L_task'] = loss_task.item()
         
         # ================================================================
-        # 总损失: L_TOTAL
+        # === [创新2] L_counterfactual (反事实效应损失) ===
+        # 反事实预测与真实标签之间的损失，鼓励模型学习因果效应
+        # ================================================================
+        loss_cf = torch.tensor(0.0, device=device)
+        if 'counterfactual_preds' in outputs and outputs['counterfactual_preds'] is not None:
+            loss_cf = self.task_criterion(outputs['counterfactual_preds'], labels)
+            loss_dict['L_counterfactual'] = loss_cf.item()
+        
+        # ================================================================
+        # === [创新3] L_mi (互信息约束损失) ===
+        # 包含 NCE (CPC) 和 lld (MMILB) 两部分
+        # 总损失中: + alpha_nce * nce - beta_lld * lld
+        # ================================================================
+        loss_nce = torch.tensor(0.0, device=device)
+        loss_lld = torch.tensor(0.0, device=device)
+        if 'mi_outputs' in outputs and outputs['mi_outputs']:
+            mi = outputs['mi_outputs']
+            if 'nce' in mi and isinstance(mi['nce'], torch.Tensor):
+                loss_nce = mi['nce']
+                loss_dict['L_nce'] = loss_nce.item()
+            if 'lld' in mi and isinstance(mi['lld'], torch.Tensor):
+                loss_lld = mi['lld']
+                loss_dict['L_lld'] = loss_lld.item()
+        
+        # ================================================================
+        # 总损失: L_TOTAL (原始 + AtCAF创新点)
         # Grand Objective Function
+        # L = L_task + λ_dec·L_dec + λ_hier·L_hier + λ_distill·L_distill
+        #   + η·L_cf + α·L_nce - β·L_lld
         # ================================================================
         total_loss = (
             loss_task +
             self.lambda_dec * loss_dec +
             self.lambda_hierarchical * loss_hierarchical +
-            self.lambda_distill * loss_distill
+            self.lambda_distill * loss_distill +
+            self.lambda_counterfactual * loss_cf +
+            self.alpha_nce * loss_nce -
+            self.beta_lld * loss_lld
         )
         
         loss_dict['L_TOTAL'] = total_loss.item()
-        
-        return total_loss, loss_dict
-        """
-        Args:
-            outputs: dict from H_DCD forward
-                - logits_uni: dict {'text': [B, C], 'audio': [B, C], 'video': [B, C]}
-                - logits_bi: dict {'ta': [B, C], 'tv': [B, C], 'av': [B, C]}
-                - logits_multi: [B, C]
-                - features_contrast: dict {'hmnf': [B, d], 'hmpn': [B, d]}
-                - decouple_items: dict with reconstruction and discriminator outputs
-                - adv_logits: [B, 3] discriminator logits
-            labels: [B] for classification or [B, 1] for regression
-        
-        Returns:
-            total_loss: scalar
-            loss_dict: dict of individual losses for logging
-        """
-        device = labels.device
-        
-        # Prepare labels
-        if self.task_type == 'classification':
-            if labels.dim() > 1:
-                labels = labels.squeeze(-1)
-            labels = labels.long()
-        else:  # regression
-            if labels.dim() == 1:
-                labels = labels.unsqueeze(-1)
-            labels = labels.float()
-        
-        loss_dict = {}
-        
-        # ================================================================
-        # 1. Hierarchical Classification Loss
-        # ================================================================
-        
-        # 1.1 Uni-modal losses
-        loss_uni_text = self.task_criterion(outputs['logits_uni']['text'], labels)
-        loss_uni_audio = self.task_criterion(outputs['logits_uni']['audio'], labels)
-        loss_uni_video = self.task_criterion(outputs['logits_uni']['video'], labels)
-        loss_uni = (loss_uni_text + loss_uni_audio + loss_uni_video) / 3.0
-        loss_dict['loss_uni'] = loss_uni.item()
-        
-        # 1.2 Bi-modal losses
-        loss_bi_ta = self.task_criterion(outputs['logits_bi']['ta'], labels)
-        loss_bi_tv = self.task_criterion(outputs['logits_bi']['tv'], labels)
-        loss_bi_av = self.task_criterion(outputs['logits_bi']['av'], labels)
-        loss_bi = (loss_bi_ta + loss_bi_tv + loss_bi_av) / 3.0
-        loss_dict['loss_bi'] = loss_bi.item()
-        
-        # 1.3 Multi-modal loss
-        loss_multi = self.task_criterion(outputs['logits_multi'], labels)
-        loss_dict['loss_multi'] = loss_multi.item()
-        
-        # ================================================================
-        # 2. Decouple Loss
-        # ================================================================
-        
-        # 2.1 Reconstruction loss
-        decouple_items = outputs['decouple_items']
-        loss_recon = 0.0
-        for modality in ['text', 'audio', 'video']:
-            # MSE between original and reconstructed
-            s_feat = decouple_items[f's_{modality}']  # [B, L, d]
-            c_feat = decouple_items[f'c_{modality}']  # [B, L, d]
-            recon_feat = decouple_items[f'recon_{modality}']  # [B, L, d]
-            original = s_feat + c_feat  # original = specific + common
-            loss_recon += F.mse_loss(recon_feat, original)
-        loss_recon /= 3.0
-        loss_dict['loss_recon'] = loss_recon.item()
-        
-        # 2.2 Adversarial loss (discriminator should NOT distinguish modality types)
-        # We want the discriminator to be confused (uniform distribution)
-        if 'adv_logits' in outputs and outputs['adv_logits'] is not None:
-            adv_logits = outputs['adv_logits']  # [B, 3]
-            # Target: uniform distribution [1/3, 1/3, 1/3]
-            batch_size = adv_logits.size(0)
-            uniform_target = torch.full((batch_size, 3), 1.0/3.0, device=device)
-            loss_adv = F.kl_div(
-                F.log_softmax(adv_logits, dim=-1),
-                uniform_target,
-                reduction='batchmean'
-            )
-            loss_dict['loss_adv'] = loss_adv.item()
-        else:
-            loss_adv = torch.tensor(0.0, device=device)
-            loss_dict['loss_adv'] = 0.0
-        
-        # ================================================================
-        # 3. Contrastive Distillation Loss
-        # ================================================================
-        
-        # Cosine similarity loss between HMNF and HMPN features
-        feat_hmnf = outputs['features_contrast']['hmnf']  # [B, d]
-        feat_hmpn = outputs['features_contrast']['hmpn']  # [B, d]
-        
-        # Normalize features
-        feat_hmnf_norm = F.normalize(feat_hmnf, p=2, dim=-1)
-        feat_hmpn_norm = F.normalize(feat_hmpn, p=2, dim=-1)
-        
-        # Cosine similarity
-        cos_sim = (feat_hmnf_norm * feat_hmpn_norm).sum(dim=-1)  # [B]
-        # We want high similarity, so minimize (1 - cos_sim)
-        loss_contrast = (1.0 - cos_sim).mean()
-        loss_dict['loss_contrast'] = loss_contrast.item()
-        
-        # ================================================================
-        # Total Loss
-        # ================================================================
-        
-        total_loss = (
-            self.lambda_uni * loss_uni +
-            self.lambda_bi * loss_bi +
-            self.lambda_multi * loss_multi +
-            self.lambda_recon * loss_recon +
-            self.lambda_adv * loss_adv +
-            self.lambda_contrast * loss_contrast
-        )
-        
-        loss_dict['total_loss'] = total_loss.item()
         
         return total_loss, loss_dict
     
@@ -392,19 +312,30 @@ class H_DCD_Loss(nn.Module):
         L_rec = 𝔼[||X_m - D_rec(Concat(X_com, X_prt))||²]
         
         重构损失: 保证解耦过程信息无损
-        计算原始特征与重构特征之间的MSE
+        计算原始投影特征与重构特征之间的MSE
         """
         loss_rec = 0.0
         count = 0
         
+        # 模态名到原始特征键的映射
+        original_key_map = {
+            'text': 'original_text',
+            'audio': 'original_audio',
+            'video': 'original_video',
+        }
+        
         for modality in ['text', 'audio', 'video']:
-            # 获取解耦的特征
-            s_feat = decouple_items[f's_{modality}']      # [B, L, d] specific
-            c_feat = decouple_items[f'c_{modality}']      # [B, L, d] common
             recon_feat = decouple_items[f'recon_{modality}']  # [B, L, d] reconstructed
             
-            # 原始特征 = specific + common
-            original = s_feat + c_feat
+            # 使用真正的原始投影特征作为重构目标（如果可用）
+            orig_key = original_key_map[modality]
+            if orig_key in decouple_items and decouple_items[orig_key] is not None:
+                original = decouple_items[orig_key]  # [B, L, d] 解耦前的投影特征
+            else:
+                # 降级方案: 使用 specific + common 作为近似目标
+                s_feat = decouple_items[f's_{modality}']  # [B, L, d]
+                c_feat = decouple_items[f'c_{modality}']  # [B, L, d]
+                original = s_feat + c_feat
             
             # MSE loss
             loss_rec += F.mse_loss(recon_feat, original)
@@ -480,7 +411,7 @@ class H_DCD_Loss(nn.Module):
             all_labels = self._discretize_regression_labels(labels_flat.repeat(3))
         
         batch_size = all_features.size(0)
-        loss_triplet = 0.0
+        loss_triplet = torch.tensor(0.0, device=device)
         num_triplets = 0
         
         # 构建三元组 (anchor, positive, negative)
@@ -520,15 +451,15 @@ class H_DCD_Loss(nn.Module):
             else:
                 alpha_dynamic = self.alpha_base
             
-            # Triplet loss with dynamic margin
+            # Triplet loss with dynamic margin（保持计算图连接）
             loss = torch.relu(alpha_dynamic - cos_pos + cos_neg)
-            loss_triplet += loss.item()  # 转换为标量
+            loss_triplet = loss_triplet + loss
             num_triplets += 1
         
         # 平均
         if num_triplets > 0:
             loss_triplet = loss_triplet / num_triplets
-            return torch.tensor(loss_triplet, device=device)
+            return loss_triplet
         else:
             return torch.tensor(0.0, device=device)
     
