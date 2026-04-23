@@ -242,11 +242,12 @@ class ConditionalMamba2Block(nn.Module):
         实现对混杂因子的逐步边缘化。
 
     三阶段条件注入:
-        1. 字典聚合: 将字典 [K,D] 通过注意力池化压缩为全局条件向量
-           α = softmax(x_mean · (W_k · Dict)^T / √D)  → [B, K]
-           c_global = α · Dict  → [B, D]
-        2. 条件调制: 使用条件向量调制输入序列
-           x' = x ⊙ sigmoid(W_scale · c_global) + W_shift · c_global
+        1. 位置感知字典查询: 每个位置独立查询字典 [K,D]
+           x_query = W_q · x  → [B, L, D]
+           α = softmax(x_query · (W_k · Dict)^T / √D)  → [B, L, K]
+           c_pos = α · Dict  → [B, L, D]
+        2. 位置级条件调制: 每个位置获得独立的 FiLM 参数
+           x' = x ⊙ sigmoid(W_scale · c_pos) + W_shift · c_pos
         3. 选择性扫描: 调制后的序列经 Mamba2 处理
            output = Mamba2(x') + x  (残差连接)
 
@@ -287,17 +288,18 @@ class ConditionalMamba2Block(nn.Module):
         self.scaling = d_model ** -0.5  # 缩放因子用于注意力池化
 
         # ====================================================================
-        # 阶段1: 字典聚合层 (Dictionary Aggregation)
-        # 将字典 [K, D] 压缩为全局条件向量 [B, D]
-        # 使用输入序列的均值作为 Query，字典作为 Key/Value
+        # [P1-4] 阶段1: 位置感知字典查询 (Position-Aware Dictionary Query)
+        # 改进: 每个位置独立查询字典, 获得位置级条件向量 [B, L, D]
+        # 替代原来的全局均值池化 → 广播, 使去偏操作具有位置感知能力
         # ====================================================================
-        self.dict_key_proj = nn.Linear(d_model, d_model)  # 字典投影
+        self.dict_key_proj = nn.Linear(d_model, d_model)   # 字典 Key 投影
+        self.query_proj = nn.Linear(d_model, d_model)      # 位置 Query 投影
 
         # ====================================================================
         # 阶段2: 条件调制层 (Conditional Modulation)
         # 使用 FiLM (Feature-wise Linear Modulation) 机制:
         # x' = x ⊙ scale + shift
-        # 其中 scale = sigmoid(W_scale · c_global), shift = W_shift · c_global
+        # [P1-4] scale/shift 现在是位置级的 [B, L, D], 不再广播
         # ====================================================================
         self.modulation_scale = nn.Linear(d_model, d_model)
         self.modulation_shift = nn.Linear(d_model, d_model)
@@ -334,44 +336,42 @@ class ConditionalMamba2Block(nn.Module):
         B, L, D = x.shape
 
         # ====================================================================
-        # 阶段1: 字典聚合 — 将字典压缩为全局条件向量
+        # [P1-4] 阶段1: 位置感知字典查询
+        # 每个位置独立查询字典, 获得位置级条件向量 [B, L, D]
+        # 替代原来的均值池化 + 全局广播
         # ====================================================================
-        # 计算输入序列的全局表示 (均值池化)
-        x_mean = x.mean(dim=1)  # [B, D]
-
-        # 投影字典为 Key
-        # confounder_dict: [K, D] → dict_keys: [K, D]
+        # 投影字典为 Key: [K, D]
         dict_keys = self.dict_key_proj(confounder_dict)  # [K, D]
 
-        # 注意力池化: x_mean 作为 Query, dict_keys 作为 Key
-        # attn_logits: [B, K] = [B, D] × [D, K]
+        # 每个位置独立作为 Query: [B, L, D]
+        x_query = self.query_proj(x)  # [B, L, D]
+
+        # 位置级注意力: [B, L, D] × [D, K] → [B, L, K]
         attn_logits = torch.matmul(
-            x_mean, dict_keys.t()
-        ) * self.scaling  # [B, K]
+            x_query, dict_keys.t()
+        ) * self.scaling  # [B, L, K]
 
-        # softmax 得到聚合权重
-        attn_weights = F.softmax(attn_logits, dim=-1)  # [B, K]
+        # softmax 得到每个位置的聚合权重
+        attn_weights = F.softmax(attn_logits, dim=-1)  # [B, L, K]
 
-        # 加权求和得到全局条件向量
-        # c_global: [B, D] = [B, K] × [K, D]
-        c_global = torch.matmul(
+        # 加权求和: 每个位置获得独立的条件向量
+        # c_pos: [B, L, K] × [K, D] → [B, L, D]
+        c_pos = torch.matmul(
             attn_weights, confounder_dict
-        )  # [B, D]
+        )  # [B, L, D]
 
         # ====================================================================
-        # 阶段2: 条件调制 — 使用 FiLM 机制调制输入序列
+        # [P1-4] 阶段2: 位置感知条件调制
+        # scale/shift 现在是 [B, L, D], 每个位置有不同的去偏强度
         # ====================================================================
-        # scale: sigmoid 保证缩放因子 ∈ (0, 1)，避免特征爆炸
         scale = torch.sigmoid(
-            self.modulation_scale(c_global)
-        )  # [B, D]
+            self.modulation_scale(c_pos)
+        )  # [B, L, D]
 
-        # shift: 无限制的偏移量
-        shift = self.modulation_shift(c_global)  # [B, D]
+        shift = self.modulation_shift(c_pos)  # [B, L, D]
 
-        # 广播到序列维度后调制
-        # scale, shift: [B, D] → [B, 1, D] 广播到 [B, L, D]
-        x_modulated = x * scale.unsqueeze(1) + shift.unsqueeze(1)  # [B, L, D]
+        # 位置级 FiLM 调制 (无需广播, 维度已匹配)
+        x_modulated = x * scale + shift  # [B, L, D]
 
         # ====================================================================
         # 阶段3: Mamba2 选择性扫描 + 残差连接

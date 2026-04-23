@@ -259,6 +259,12 @@ class H_DCD(nn.Module):
                 nn.Linear(d_model, d_model // 2), nn.ReLU(),
                 nn.Dropout(dropout), nn.Linear(d_model // 2, num_classes),
             )
+            # [P1-3] Factual 通道融合 MLP: 将 factual_ta + factual_tv 池化拼接后压缩为 d_model
+            # 参考 AtCAF 中 cross_ta/cross_tv 直接参与 fusion_mlp 的设计
+            self.factual_fusion_mlp = nn.Sequential(
+                nn.Linear(2 * d_model, d_model), nn.Tanh(),
+                nn.Dropout(dropout), nn.Linear(d_model, d_model),
+            )
 
         # ====================================================================
         # [创新3] 互信息约束 (MMILB + CPC)
@@ -306,8 +312,11 @@ class H_DCD(nn.Module):
         )
 
         # 全模态分类头
+        # [P1-3] 当 SCI 启用时, fusion_gate 接收 HMNF+HMPN+Factual 三路输入 (3*d_model)
+        #         否则仅接收 HMNF+HMPN (2*d_model)
+        fusion_in_dim = d_model * 3 if use_counterfactual else d_model * 2
         self.fusion_gate = nn.Sequential(
-            nn.Linear(d_model * 2, d_model), nn.Tanh(),
+            nn.Linear(fusion_in_dim, d_model), nn.Tanh(),
         )
         self.head_multi = nn.Sequential(
             nn.Linear(d_model, d_model // 2), nn.ReLU(),
@@ -372,6 +381,9 @@ class H_DCD(nn.Module):
 
         # ====================================================================
         # 步骤3: 双流并行处理
+        # [P1-1] 流A: HMNF 处理 Common 特征 (模态共享信息)
+        #         流B: HMPN 处理 Specific 特征 (模态特有信息)
+        # 信息源多样性使蒸馏更有意义: 教师/学生看到不同信息
         # 先对齐序列长度，再送入 HMNF (异构融合) 和 HMPN (同构感知)
         # ====================================================================
         min_len = min(c_text.size(1), c_audio.size(1), c_video.size(1))
@@ -384,11 +396,17 @@ class H_DCD(nn.Module):
                 x.transpose(1, 2), length
             ).transpose(1, 2)
 
+        # Common 特征对齐 (用于 HMNF + SCI)
         c_text_aligned = align_seq(c_text, min_len)
         c_audio_aligned = align_seq(c_audio, min_len)
         c_video_aligned = align_seq(c_video, min_len)
 
-        # --- 流A: HMNF (异构多模态 Mamba2 融合) ---
+        # [P1-1] Specific 特征对齐 (用于 HMPN)
+        s_text_aligned = align_seq(s_text, min_len)
+        s_audio_aligned = align_seq(s_audio, min_len)
+        s_video_aligned = align_seq(s_video, min_len)
+
+        # --- 流A: HMNF (异构多模态 Mamba2 融合) → 处理 Common 特征 ---
         hmnf_out_a, hmnf_out_v, hmnf_out_l = self.hmnf(
             c_audio_aligned, c_video_aligned, c_text_aligned,
         )
@@ -399,42 +417,50 @@ class H_DCD(nn.Module):
             torch.cat([hmnf_pool_a, hmnf_pool_v, hmnf_pool_l], dim=-1)
         )  # [B, d_model]
 
-        # --- 流B: HMPN (同构 Mamba2 感知网络) ---
+        # --- 流B: HMPN (同构 Mamba2 感知网络) → 处理 Specific 特征 ---
         hmpn_final = self.hmpn(
-            c_text_aligned, c_audio_aligned, c_video_aligned
+            s_text_aligned, s_audio_aligned, s_video_aligned
         )  # [B, d_model]
 
         # ====================================================================
         # [创新2] 步骤3.5: SCI 反事实推断
-        # 训练时: 双通道 Mamba2 生成 factual + counterfactual 融合特征
-        # 因果效应 = factual_fusion - counterfactual_fusion
+        # [P1-3] Factual 通道始终激活 (训练+推理), 输出融入主融合路径
+        # CF 通道仅训练时激活, 因果效应在损失层面体现
+        # 参考 AtCAF: cross_ta/cross_tv 直接参与 fusion_mlp
         # ====================================================================
         counterfactual_preds = None
-        counterfactual_fusion = None
+        factual_fused_feat = None
 
-        if self.use_counterfactual and self.training:
-            # text←audio: 反事实 Mamba2 跨模态扫描
-            # 返回 (factual_out, counterfactual_out)
+        if self.use_counterfactual:
+            # 推理时 cf_type=None (仅运行 Factual 通道), 训练时使用配置的策略
+            cf_type = self.counterfactual_type if self.training else None
+
+            # text←audio: Mamba2 跨模态扫描
             factual_ta, cf_ta = self.cf_attn_ta(
                 c_text_aligned, c_audio_aligned,
-                counterfactual_type=self.counterfactual_type,
-            )  # 各 [B, min_len, d_model]
+                counterfactual_type=cf_type,
+            )  # factual: [B, min_len, d_model], cf: 同或None
 
-            # text←video: 反事实 Mamba2 跨模态扫描
+            # text←video: Mamba2 跨模态扫描
             factual_tv, cf_tv = self.cf_attn_tv(
                 c_text_aligned, c_video_aligned,
-                counterfactual_type=self.counterfactual_type,
-            )  # 各 [B, min_len, d_model]
+                counterfactual_type=cf_type,
+            )  # factual: [B, min_len, d_model], cf: 同或None
 
-            # 反事实通道: 池化 + 拼接 + MLP 融合
-            if cf_ta is not None and cf_tv is not None:
+            # [P1-3] Factual 通道: 池化 + 拼接 + MLP → 融入主路径
+            factual_ta_pooled = torch.mean(factual_ta, dim=1)  # [B, d_model]
+            factual_tv_pooled = torch.mean(factual_tv, dim=1)  # [B, d_model]
+            factual_fused_feat = self.factual_fusion_mlp(
+                torch.cat([factual_ta_pooled, factual_tv_pooled], dim=-1)
+            )  # [B, d_model]
+
+            # CF 通道: 仅训练时 → 反事实预测 (用于损失)
+            if self.training and cf_ta is not None and cf_tv is not None:
                 cf_ta_pooled = torch.mean(cf_ta, dim=1)  # [B, d_model]
                 cf_tv_pooled = torch.mean(cf_tv, dim=1)  # [B, d_model]
                 counterfactual_fusion = self.cf_fusion_mlp(
                     torch.cat([cf_ta_pooled, cf_tv_pooled], dim=-1)
                 )  # [B, d_model]
-
-                # 反事实预测 (用于计算反事实损失)
                 counterfactual_preds = self.cf_head(counterfactual_fusion)
 
         # ====================================================================
@@ -454,17 +480,17 @@ class H_DCD(nn.Module):
         pred_bi_tv = self.head_bi_tv(hmnf_pool_l + hmnf_pool_v)  # [B, num_classes]
         pred_bi_av = self.head_bi_av(hmnf_pool_a + hmnf_pool_v)  # [B, num_classes]
 
-        # 4.3 全模态分类 (融合 HMNF 和 HMPN 双流)
-        concat_feat = torch.cat([hmnf_fused_feat, hmpn_final], dim=-1)  # [B, 2*d_model]
+        # 4.3 全模态分类
+        # [P1-3] 三路融合: HMNF(Common融合) + HMPN(Specific融合) + Factual(跨模态增强)
+        if factual_fused_feat is not None:
+            concat_feat = torch.cat([hmnf_fused_feat, hmpn_final, factual_fused_feat], dim=-1)  # [B, 3*d_model]
+        else:
+            concat_feat = torch.cat([hmnf_fused_feat, hmpn_final], dim=-1)  # [B, 2*d_model]
         fused_final = self.fusion_gate(concat_feat)  # [B, d_model]
 
-        # [创新2] 因果效应: 真实融合 - 反事实融合
-        if self.use_counterfactual and self.training and counterfactual_fusion is not None:
-            fused_final_causal = fused_final - counterfactual_fusion
-        else:
-            fused_final_causal = fused_final
-
-        pred_multi = self.head_multi(fused_final_causal)  # [B, num_classes]
+        # [创新2] 主预测使用原始融合特征 (训练/推理一致)
+        # 因果效应在 losses.py 中通过 pred_multi - counterfactual_preds 体现
+        pred_multi = self.head_multi(fused_final)  # [B, num_classes]
 
         # ====================================================================
         # [创新3] 步骤4.5: 互信息约束计算 (训练时)
@@ -514,7 +540,7 @@ class H_DCD(nn.Module):
                 'adv_logits': decouple_outputs.get('disc_logits', None),
                 # === 创新点输出 ===
                 'counterfactual_preds': counterfactual_preds,
-                'counterfactual_fusion': counterfactual_fusion,
+                'logits_multi_for_causal': pred_multi,  # 主预测, 用于损失层面计算因果效应
                 'mi_outputs': mi_outputs,
             })
 

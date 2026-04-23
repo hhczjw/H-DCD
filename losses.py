@@ -95,6 +95,27 @@ class H_DCD_Loss(nn.Module):
             self.task_criterion = nn.CrossEntropyLoss()
         else:  # regression
             self.task_criterion = nn.L1Loss()  # MAE for regression
+
+        # ================================================================
+        # [P0-2] 不确定性加权多任务损失 (Kendall et al., 2018)
+        # 每个损失项学习一个 log(σ²) 参数, 总损失为:
+        #     Σ_i [ exp(-log_σ²_i) * L_i + 0.5 * log_σ²_i ]
+        # 等价于自适应权重 1/(2σ²_i), 数值大的 L_i 会自动降低权重,
+        # 解决 6+ 项损失量级差异大、手工调参困难的问题.
+        # ================================================================
+        self.use_uncertainty_weighting = args.get('use_uncertainty_weighting', True)
+        if self.use_uncertainty_weighting:
+            # 管理的损失项: L_task, L_dec, L_hier, L_distill, L_cf, L_nce, L_lld(注意符号)
+            # 初始 log_sigma²=0 → σ²=1 → 权重=1, 与等权起点一致
+            self.log_vars = nn.ParameterDict({
+                'task':    nn.Parameter(torch.zeros(1)),
+                'dec':     nn.Parameter(torch.zeros(1)),
+                'hier':    nn.Parameter(torch.zeros(1)),
+                'distill': nn.Parameter(torch.zeros(1)),
+                'cf':      nn.Parameter(torch.zeros(1)),
+                'nce':     nn.Parameter(torch.zeros(1)),
+                'lld':     nn.Parameter(torch.zeros(1)),
+            })
     
     def _init_va_distances(self, args):
         """
@@ -206,12 +227,15 @@ class H_DCD_Loss(nn.Module):
         loss_dict['L_task'] = loss_task.item()
         
         # ================================================================
-        # === [创新2] L_counterfactual (反事实效应损失) ===
-        # 反事实预测与真实标签之间的损失，鼓励模型学习因果效应
+        # === [创新2] L_counterfactual (因果效应损失) ===
+        # 对齐 AtCAF 原始设计: 在预测值层面计算因果效应
+        # L_cf = criterion(pred_multi - counterfactual_preds, labels)
+        # 含义: 真实预测 - 反事实预测 = 因果效应, 因果效应应能正确预测标签
         # ================================================================
         loss_cf = torch.tensor(0.0, device=device)
         if 'counterfactual_preds' in outputs and outputs['counterfactual_preds'] is not None:
-            loss_cf = self.task_criterion(outputs['counterfactual_preds'], labels)
+            causal_effect_preds = outputs['logits_multi_for_causal'] - outputs['counterfactual_preds']
+            loss_cf = self.task_criterion(causal_effect_preds, labels)
             loss_dict['L_counterfactual'] = loss_cf.item()
         
         # ================================================================
@@ -231,20 +255,45 @@ class H_DCD_Loss(nn.Module):
                 loss_dict['L_lld'] = loss_lld.item()
         
         # ================================================================
-        # 总损失: L_TOTAL (原始 + AtCAF创新点)
-        # Grand Objective Function
+        # 总损失: L_TOTAL
+        # [P0-2] 不确定性加权 (Kendall et al., 2018) 或手工权重, 二选一
+        # Grand Objective Function (手工权重版本):
         # L = L_task + λ_dec·L_dec + λ_hier·L_hier + λ_distill·L_distill
         #   + η·L_cf + α·L_nce - β·L_lld
+        # 不确定性加权版本:
+        # L = Σ_i [ exp(-log_σ²_i) * L_i + 0.5 * log_σ²_i ]  (L_lld 取负号)
         # ================================================================
-        total_loss = (
-            loss_task +
-            self.lambda_dec * loss_dec +
-            self.lambda_hierarchical * loss_hierarchical +
-            self.lambda_distill * loss_distill +
-            self.lambda_counterfactual * loss_cf +
-            self.alpha_nce * loss_nce -
-            self.beta_lld * loss_lld
-        )
+        if self.use_uncertainty_weighting:
+            def _uw(name, loss_val):
+                """不确定性加权单项: exp(-log_var) * L + 0.5 * log_var"""
+                log_var = self.log_vars[name]
+                precision = torch.exp(-log_var)
+                return (precision * loss_val + 0.5 * log_var).squeeze()
+
+            # lld 是要最大化的下界, 作为损失时取负号
+            total_loss = (
+                _uw('task', loss_task) +
+                _uw('dec', loss_dec) +
+                _uw('hier', loss_hierarchical) +
+                _uw('distill', loss_distill) +
+                _uw('cf', loss_cf) +
+                _uw('nce', loss_nce) +
+                _uw('lld', -loss_lld)
+            )
+            # 记录当前学到的权重 (exp(-log_var)) 用于监控
+            with torch.no_grad():
+                for k in self.log_vars:
+                    loss_dict[f'w_{k}'] = torch.exp(-self.log_vars[k]).item()
+        else:
+            total_loss = (
+                loss_task +
+                self.lambda_dec * loss_dec +
+                self.lambda_hierarchical * loss_hierarchical +
+                self.lambda_distill * loss_distill +
+                self.lambda_counterfactual * loss_cf +
+                self.alpha_nce * loss_nce -
+                self.beta_lld * loss_lld
+            )
         
         loss_dict['L_TOTAL'] = total_loss.item()
         

@@ -336,6 +336,14 @@ class CounterfactualCrossAttentionLayer(nn.Module):
         )
         self.norm2 = nn.LayerNorm(d_model)
 
+        # [P1-2] Counterfactual 通道的轻量投影 (尺度对齐)
+        # Factual 通道经过 Res+LN+FFN+Res+LN, CF 通道仅有原始 Mamba2 输出.
+        # 两者值域/方差不同, 需要将 CF 投影到同一表示空间, 使因果效应减法有意义.
+        self.cf_proj = nn.Sequential(
+            nn.Linear(d_model, d_model),
+            nn.LayerNorm(d_model),
+        )
+
     def forward(
         self,
         x_query: torch.Tensor,
@@ -377,10 +385,13 @@ class CounterfactualCrossAttentionLayer(nn.Module):
         factual_output = self.norm2(residual + ffn_out)  # [B, L_q, D]
 
         # ====================================================================
-        # 步骤3: Counterfactual 通道 (仅传递原始输出，不加 FFN)
-        # 反事实通道保持轻量: 仅需提供与 factual 的对比基线
+        # 步骤3: Counterfactual 通道
+        # [P1-2] 添加轻量投影层, 将 CF 原始输出映射到与 Factual 相同的表示空间
         # ====================================================================
-        counterfactual_output = cf_raw_out  # [B, L_q, D] 或 None
+        if cf_raw_out is not None:
+            counterfactual_output = self.cf_proj(cf_raw_out)  # [B, L_q, D]
+        else:
+            counterfactual_output = None
 
         return factual_output, counterfactual_output
 
