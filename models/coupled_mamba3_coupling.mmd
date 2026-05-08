@@ -1,0 +1,51 @@
+graph LR
+    subgraph PREV[Previous States  at time t-1]
+        HA[h_audio  B,d_state]
+        HV[h_visual  B,d_state]
+        HL[h_lexical  B,d_state]
+    end
+
+    HCONCAT[Concat<br/>B, 3*d_state]
+    HA --> HCONCAT
+    HV --> HCONCAT
+    HL --> HCONCAT
+
+    WNET[weight_net<br/>Linear -> Tanh -> Linear<br/>Softmax over src axis]
+    HCONCAT --> WNET
+    WNET --> W[attn_weights<br/>B, 3, 3]
+
+    subgraph PROJ[coupling_projections  6 Linear no bias]
+        AV[audio_to_visual]
+        AL[audio_to_lexical]
+        VA[visual_to_audio]
+        VL[visual_to_lexical]
+        LA[lexical_to_audio]
+        LV[lexical_to_visual]
+    end
+
+    HA --> AV
+    HA --> AL
+    HV --> VA
+    HV --> VL
+    HL --> LA
+    HL --> LV
+
+    subgraph CTX[coupling_context  per target modality]
+        CA[ctx_audio = w_av * VA + w_al * LA]
+        CV[ctx_visual = w_va * AV + w_vl * LV]
+        CL[ctx_lexical = w_la * AL + w_lv * VL]
+    end
+
+    W --> CA
+    W --> CV
+    W --> CL
+    VA --> CA
+    LA --> CA
+    AV --> CV
+    LV --> CV
+    AL --> CL
+    VL --> CL
+
+    CA --> INJ_A[Inject into Cell audio]
+    CV --> INJ_V[Inject into Cell visual]
+    CL --> INJ_L[Inject into Cell lexical]

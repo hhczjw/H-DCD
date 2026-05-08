@@ -1,0 +1,72 @@
+graph TB
+    XT[x_t<br/>B, d_model]
+    HPREV[h_prev<br/>B, d_state]
+    COUP[coupled_influence<br/>B, d_state  optional]
+
+    subgraph PROJ[Data-dependent Projection]
+        INPROJ[in_proj<br/>Linear d_model to 2*d_state+3]
+        SPLIT[split]
+        BT[B_t<br/>B, d_state]
+        CT[C_t<br/>B, d_state]
+        DDDT[dd_dt<br/>B, 1]
+        DDA[dd_A<br/>B, 1]
+        TRAPP[trap_proj<br/>B, 1]
+
+        INPROJ --> SPLIT
+        SPLIT --> BT
+        SPLIT --> CT
+        SPLIT --> DDDT
+        SPLIT --> DDA
+        SPLIT --> TRAPP
+    end
+
+    subgraph DISC[Mamba-3 Discretization]
+        A[A = -softplus dd_A clamp floor]
+        DT[DT = softplus dd_dt + dt_bias]
+        TRAP[trap = sigmoid trap_proj]
+        ABAR[A_bar = exp A*DT<br/>in 0,1]
+        BDT[B_DT = B_t * DT]
+        BBAR[B_bar = 1-A_bar * B_DT * trap<br/>+ B_DT * 1-trap]
+
+        DDA --> A
+        DDDT --> DT
+        TRAPP --> TRAP
+        A --> ABAR
+        DT --> ABAR
+        BT --> BDT
+        DT --> BDT
+        ABAR --> BBAR
+        BDT --> BBAR
+        TRAP --> BBAR
+    end
+
+    subgraph UPDATE[State Update with Coupling Injection]
+        XDRIVE[x_drive = mean x_t over dim]
+        HT[h_t = A_bar * h_prev + B_bar * x_drive]
+        HT_COUP[h_t += coupled_influence]
+
+        XT --> XDRIVE
+        XDRIVE --> HT
+        ABAR --> HT
+        BBAR --> HT
+        HPREV --> HT
+        HT --> HT_COUP
+        COUP --> HT_COUP
+    end
+
+    subgraph OUT[Output]
+        CH[C_t element-wise h_t]
+        OUTPROJ[out_proj<br/>Linear d_state to d_model]
+        SKIP[+ D * x_t  skip residual]
+        YT[y_t<br/>B, d_model]
+
+        CT --> CH
+        HT_COUP --> CH
+        CH --> OUTPROJ
+        OUTPROJ --> SKIP
+        XT --> SKIP
+        SKIP --> YT
+    end
+
+    XT --> INPROJ
+    HT_COUP --> HNEW[h_t output<br/>B, d_state]

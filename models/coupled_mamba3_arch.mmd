@@ -1,0 +1,58 @@
+graph TB
+    subgraph INPUT[Multi-modal Input]
+        XA[x_audio<br/>B,L,d_model]
+        XV[x_visual<br/>B,L,d_model]
+        XL[x_lexical<br/>B,L,d_model]
+    end
+
+    DISPATCH{use_parallel ?<br/>and MAMBA3_AVAILABLE ?}
+
+    XA --> DISPATCH
+    XV --> DISPATCH
+    XL --> DISPATCH
+
+    subgraph LOOP[forward_loop  -  Explicit Cross-modal Coupling]
+        L_STATE[Init h_states<br/>audio,visual,lexical]
+        L_TSTEP[Per-timestep loop  t = 0..L-1]
+        L_SNAP[Snapshot h_prev<br/>3 modalities]
+        L_WNET[weight_net<br/>Linear-Tanh-Linear<br/>Softmax over src]
+        L_CP[coupling_projections<br/>6 Linear layers<br/>src_to_tgt]
+        L_CTX[coupling_context<br/>Sum w_ij * P h_prev j]
+        L_CELL[CoupledMambaCell3<br/>3 instances]
+        L_STACK[Stack over time]
+
+        L_STATE --> L_TSTEP --> L_SNAP --> L_WNET
+        L_SNAP --> L_CP
+        L_WNET --> L_CTX
+        L_CP --> L_CTX
+        L_CTX --> L_CELL
+        L_SNAP --> L_CELL
+        L_CELL --> L_STACK
+    end
+
+    subgraph PAR[forward_parallel  -  Mamba-3 Kernel Fusion]
+        P_CAT[Concat feature dim<br/>B,L,3*d_model]
+        P_M3[Mamba3 Block<br/>in_proj - SSD + RoPE<br/>out_proj]
+        P_SPLIT[parallel_proj<br/>3 independent Linear<br/>3*d_model to d_model]
+
+        P_CAT --> P_M3 --> P_SPLIT
+    end
+
+    DISPATCH -- parallel --> PAR
+    DISPATCH -- loop / fallback --> LOOP
+
+    subgraph FUSE[Residual + LayerNorm  -  per modality]
+        LN_A[LN_audio]
+        LN_V[LN_visual]
+        LN_L[LN_lexical]
+    end
+
+    L_STACK --> FUSE
+    P_SPLIT --> FUSE
+    XA -. residual .-> LN_A
+    XV -. residual .-> LN_V
+    XL -. residual .-> LN_L
+
+    LN_A --> OA[out_audio]
+    LN_V --> OV[out_visual]
+    LN_L --> OL[out_lexical]
