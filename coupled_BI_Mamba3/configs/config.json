@@ -1,0 +1,100 @@
+{
+    "dataset_root_dir": "/media/zjw/951FB31A9E1EB7E0/dateSet/MSA-DataSets",
+    "common": {
+        "use_bert": true,
+        "need_data_aligned": false,
+        "need_normalized": false,
+        "early_stop": 8,
+        "num_workers": 4,
+        "pin_memory": true,
+        "save_checkpoints": true,
+        "checkpoints_dir": "checkpoints",
+        "logs_dir": "logs",
+        "results_dir": "results"
+    },
+    "model": {
+        "name": "CoupledBIMamba3",
+        "d_model": 128,
+        "num_layers": 2,
+        "d_state": 64,
+        "expand": 2,
+        "headdim": 32,
+        "ngroups": 1,
+        "rope_fraction": 0.5,
+        "is_mimo": false,
+        "mimo_rank": 4,
+        "chunk_size": 64,
+        "is_outproj_norm": false,
+        "dropout": 0.1,
+        "pool_type": "mean"
+    },
+    "datasets": {
+        "MOSI": {
+            "task_type": "regression",
+            "num_classes": 1,
+            "featurePath": "CMU-MOSI/Processed/unaligned_50.pkl",
+            "feature_dims": [768, 5, 20],
+            "seq_lens": [50, 50, 50],
+            "train_samples": 1284,
+            "batch_size": 32,
+            "learning_rate": 1e-4,
+            "weight_decay": 1e-4,
+            "epochs": 50,
+            "KeyEval": "Loss"
+        },
+        "MOSEI": {
+            "task_type": "regression",
+            "num_classes": 1,
+            "featurePath": "CMU-MOSEI/Processed/unaligned_50.pkl",
+            "feature_dims": [768, 74, 35],
+            "seq_lens": [50, 500, 375],
+            "train_samples": 16326,
+            "batch_size": 32,
+            "learning_rate": 1e-4,
+            "weight_decay": 1e-4,
+            "epochs": 30,
+            "KeyEval": "Loss"
+        },
+        "SIMS": {
+            "task_type": "regression",
+            "num_classes": 1,
+            "multi_task": true,
+            "task_weights": {"M": 1.0, "T": 0.4, "A": 0.4, "V": 0.4},
+            "featurePath": "SIMS/Processed/unaligned_39.pkl",
+            "feature_dims": [768, 33, 709],
+            "seq_lens": [39, 400, 55],
+            "train_samples": 1368,
+            "batch_size": 32,
+            "learning_rate": 1e-4,
+            "weight_decay": 1e-4,
+            "epochs": 50,
+            "KeyEval": "Loss"
+        },
+        "IEMOCAP": {
+            "task_type": "classification",
+            "num_classes": 4,
+            "class_names": ["happy", "sad", "neutral", "angry"],
+            "featurePath": "IEMOCAP/Processed/iemocap_unaligned.pkl",
+            "feature_dims": [768, 100, 342],
+            "seq_lens": [50, 1500, 500],
+            "batch_size": 16,
+            "learning_rate": 1e-4,
+            "weight_decay": 1e-4,
+            "epochs": 50,
+            "KeyEval": "F1"
+        },
+        "MELD": {
+            "task_type": "classification",
+            "num_classes": 7,
+            "class_names": ["neutral", "surprise", "fear", "sadness", "joy", "disgust", "anger"],
+            "featurePath": "MELD/Processed/meld_unaligned.pkl",
+            "feature_dims": [768, 300, 342],
+            "seq_lens": [50, 1500, 500],
+            "batch_size": 32,
+            "learning_rate": 1e-4,
+            "weight_decay": 1e-4,
+            "epochs": 30,
+            "KeyEval": "F1"
+        }
+    }
+}

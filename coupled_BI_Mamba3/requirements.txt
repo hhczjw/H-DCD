@@ -1,0 +1,11 @@
+# Core — 严格跟随 Mamba-3 官方
+torch>=2.9.0
+triton>=3.5.0
+tilelang==0.1.8
+apache-tvm-ffi<0.2
+quack-kernels>=0.3.4
+mamba-ssm==2.3.1
+
+# Data / eval
+numpy>=1.24
+scikit-learn>=1.1
