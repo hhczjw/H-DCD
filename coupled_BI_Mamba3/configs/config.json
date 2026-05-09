@@ -2,8 +2,11 @@
     "dataset_root_dir": "/media/zjw/951FB31A9E1EB7E0/dateSet/MSA-DataSets",
     "common": {
         "use_bert": true,
+        "bert_pretrained": "bert-base-uncased",
+        "bert_finetune": true,
+        "bert_learning_rate": 1e-5,
         "need_data_aligned": false,
-        "need_normalized": false,
+        "need_normalized": true,
         "early_stop": 8,
         "num_workers": 4,
         "pin_memory": true,

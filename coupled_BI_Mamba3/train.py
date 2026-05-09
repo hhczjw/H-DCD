@@ -43,8 +43,8 @@ def main():
 
     # 2) 模型
     text_dim, audio_dim, video_dim = args.feature_dims
-    if args.use_bert:
-        text_dim = 1   # 占位: trainer._forward_pred 把 BERT (B,3,L) 转成 (B,L,1)
+    # use_bert=True 时, text 输入是 (B, 3, L), 由 MSAClassifier 内置 BertTextEncoder 处理,
+    # text_feat_dim 固定为 768, 这里的 text_dim 会被 use_bert 分支忽略.
     model = MSAClassifier(
         text_input_dim=text_dim,
         audio_input_dim=audio_dim,
@@ -55,6 +55,9 @@ def main():
         task_type=args.task_type,
         pool_type=args.pool_type,
         dropout=args.dropout,
+        use_bert=args.use_bert,
+        bert_pretrained=getattr(args, "bert_pretrained", "bert-base-uncased"),
+        bert_finetune=getattr(args, "bert_finetune", True),
         d_state=args.d_state,
         expand=args.expand,
         headdim=args.headdim,

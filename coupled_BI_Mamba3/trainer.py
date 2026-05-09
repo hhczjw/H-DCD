@@ -33,10 +33,34 @@ class Trainer:
         else:
             self.criterion = build_loss(self.task_type)
 
-        self.optimizer = torch.optim.AdamW(
-            self.model.parameters(),
-            lr=float(args.learning_rate),
-            weight_decay=float(args.weight_decay),
+        # ------------------------------------------------------------------
+        # 优化器: BERT 用小 lr (~1e-5), 其他模块用大 lr (~1e-3 ~ 1e-4)
+        # ------------------------------------------------------------------
+        bert_lr = float(getattr(args, "bert_learning_rate", 1e-5))
+        main_lr = float(args.learning_rate)
+        wd = float(args.weight_decay)
+        bert_params, other_params = [], []
+        for n, p in self.model.named_parameters():
+            if not p.requires_grad:
+                continue
+            if "text_encoder" in n:
+                bert_params.append(p)
+            else:
+                other_params.append(p)
+        param_groups = []
+        if bert_params:
+            param_groups.append({"params": bert_params, "lr": bert_lr, "weight_decay": wd})
+        param_groups.append({"params": other_params, "lr": main_lr, "weight_decay": wd})
+        self.optimizer = torch.optim.AdamW(param_groups)
+        self.logger.info(
+            f"Optimizer: AdamW | bert_lr={bert_lr} ({len(bert_params)} params) | "
+            f"main_lr={main_lr} ({len(other_params)} params) | wd={wd}"
+        )
+
+        # cosine 调度 (按 epoch 衰减)
+        total_epochs = int(getattr(args, "epochs", 30))
+        self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            self.optimizer, T_max=total_epochs, eta_min=1e-7
         )
 
     # ------------------------------------------------------------------
@@ -52,14 +76,11 @@ class Trainer:
         return out
 
     def _forward_pred(self, batch: Dict[str, Any]) -> torch.Tensor:
-        # text 可能是 (B, 3, L)  BERT 三通道, 这里取 input_ids 通道 0 替换为零向量;
-        # 简单起见, 若为 BERT 三通道, 用 channel-0 + 嵌入 (None) -> 这里假设上游已嵌入.
-        text = batch["text"]
-        if text.ndim == 3 and text.size(1) == 3:
-            # (B, 3, L) -> 取 input_ids, 后续模型应自行做 embedding;
-            # 这里给个保底: 转成 float 当作 one-hot-like (仅占位, 实际工程应在模型内嵌 BERT).
-            text = text[:, 0].unsqueeze(-1).float()  # (B, L, 1)
-        return self.model(text=text, audio=batch["audio"], video=batch["vision"])
+        # text 形如:
+        #   - use_bert=True : (B, 3, L)  input_ids / mask / segment, 由模型内 BertTextEncoder 处理
+        #   - use_bert=False: (B, L, D)  词向量
+        # 无需在这里做任何降维 / 占位处理.
+        return self.model(text=batch["text"], audio=batch["audio"], video=batch["vision"])
 
     # ------------------------------------------------------------------
     def train_one_epoch(self, loader: DataLoader, epoch: int) -> float:
@@ -87,7 +108,9 @@ class Trainer:
             total_loss += float(loss.item()) * bs
             n += bs
         avg = total_loss / max(n, 1)
-        self.logger.info(f"[Train] Epoch {epoch} | loss={avg:.4f}")
+        self.scheduler.step()
+        lrs = [g["lr"] for g in self.optimizer.param_groups]
+        self.logger.info(f"[Train] Epoch {epoch} | loss={avg:.4f} | lr={lrs}")
         return avg
 
     @torch.no_grad()
