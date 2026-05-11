@@ -4,6 +4,8 @@
 """
 from __future__ import annotations
 
+import _path_setup  # noqa: F401  注入内置 mamba_ssm 路径 (子进程也会通过 train.py 自行注入)
+
 import argparse
 import subprocess
 import sys

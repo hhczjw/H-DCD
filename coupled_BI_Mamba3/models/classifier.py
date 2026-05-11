@@ -8,16 +8,21 @@ MSAClassifier: 多模态情感识别任务头 / 整体模型封装
 
 模型流水线:
     T / A / V
-      ↓ BERT(T) + 线性投影
+      ↓ BERT(T) + 2层MLP投影
       ↓ 序列对齐 (adaptive_avg_pool1d)
       ↓ [ISMEncoder × ism_depth]  ← 单模态序列建模 (GLCE + BSSM), 各模态独立
       ↓ [CoupledMamba3Fork × num_layers]  ← 跨模态双向状态空间融合
-      ↓ 池化 → 拼接 → 分类头
+      ↓ Attention 池化 → 拼接 → 分类头
+
+改进:
+    - 投影层: 单线性层 → 2层 MLP + LayerNorm (减少信息损失)
+    - 池化: mean pooling → Attention Pooling (学习序列重要性加权)
+    - 新增 get_modal_embeddings() 方法 (供 InfoNCE 对比损失使用)
 """
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Tuple
 
 import torch
 import torch.nn as nn
@@ -28,6 +33,51 @@ from .coupled_mamba3_fork import CoupledMamba3Fork
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from layers.ism import ISMEncoder
+
+
+# -------------------------------------------------------------
+# 2层 MLP 投影
+# -------------------------------------------------------------
+class MLPProjection(nn.Module):
+    """2层 MLP + LayerNorm 投影, 减少从高维到低维的信息损失"""
+
+    def __init__(self, in_dim: int, out_dim: int, dropout: float = 0.1):
+        super().__init__()
+        mid_dim = (in_dim + out_dim) // 2
+        self.net = nn.Sequential(
+            nn.Linear(in_dim, mid_dim),
+            nn.LayerNorm(mid_dim),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(mid_dim, out_dim),
+            nn.LayerNorm(out_dim),
+            nn.GELU(),
+            nn.Dropout(dropout),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.net(x)
+
+
+# -------------------------------------------------------------
+# Attention Pooling
+# -------------------------------------------------------------
+class AttentionPooling(nn.Module):
+    """学习序列维度的注意力权重进行加权池化"""
+
+    def __init__(self, d_model: int):
+        super().__init__()
+        self.attn = nn.Sequential(
+            nn.Linear(d_model, d_model // 2),
+            nn.Tanh(),
+            nn.Linear(d_model // 2, 1, bias=False),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """x: (B, L, D) -> (B, D)"""
+        scores = self.attn(x)                      # (B, L, 1)
+        weights = torch.softmax(scores, dim=1)     # (B, L, 1)
+        return (x * weights).sum(dim=1)            # (B, D)
 
 
 # -------------------------------------------------------------
@@ -84,18 +134,13 @@ class BertTextEncoder(nn.Module):
 # -------------------------------------------------------------
 class MSAClassifier(nn.Module):
     """
-    端到端多模态情感识别模型:
+    端到端多模态情感识别模型 (改进版):
 
         T / A / V
-          → BERT(T) + 线性投影 → d_model
+          → BERT(T) + 2层MLP投影 → d_model
           → [ISMEncoder]  单模态序列建模 (GLCE + BSSM), 各模态独立权重
           → [CoupledMamba3Fork × num_layers]  跨模态双向 SSM 融合
-          → 池化 → 拼接 → 分类头
-
-    新增参数:
-        ism_depth  (int): ISMEncoder 堆叠层数, 0 = 关闭 ISM (等价于原始模型)
-        ism_seq_len (int): ISM 期望的序列长度, 应与对齐后的 Lt 一致
-        ism_d_state (int): ISM 内部 Mamba SSM 的状态维度
+          → Attention 池化 → 拼接 → 分类头
     """
 
     def __init__(
@@ -103,19 +148,29 @@ class MSAClassifier(nn.Module):
         text_input_dim: int,
         audio_input_dim: int,
         video_input_dim: int,
-        d_model: int = 128,
-        num_layers: int = 2,
+        d_model: int = 256,
+        num_layers: int = 3,
         num_classes: int = 1,
         task_type: str = "regression",
-        pool_type: str = "mean",
-        dropout: float = 0.1,
+        pool_type: str = "attention",
+        dropout: float = 0.15,
         use_bert: bool = True,
         bert_pretrained: str = "bert-base-uncased",
         bert_finetune: bool = True,
         # --- ISM 参数 ---
-        ism_depth: int = 1,          # 0 = 不加 ISM
-        ism_seq_len: int = 50,       # 对齐后序列长度
-        ism_d_state: int = 16,       # ISM 内 Mamba SSM 状态维
+        ism_depth: int = 2,
+        ism_seq_len: int = 50,
+        ism_d_state: int = 32,
+        ism_mixer_type: str = "bimamba",     # "bimamba" (Mamba-2) | "bimamba3" (Mamba-3)
+        ism_bimamba3_headdim: int = 64,
+        ism_bimamba3_ngroups: int = 1,
+        ism_bimamba3_rope_fraction: float = 0.5,
+        ism_bimamba3_chunk_size: int = 64,
+        ism_bimamba3_is_mimo: bool = False,
+        ism_bimamba3_mimo_rank: int = 4,
+        ism_bimamba3_is_outproj_norm: bool = False,
+        ism_bimamba3_fusion: str = "add_divide2",
+        ism_bimamba3_share_mimo: bool = True,
         # --- CoupledMamba3Fork 透传 ---
         d_state: int = 64,
         expand: int = 2,
@@ -126,16 +181,20 @@ class MSAClassifier(nn.Module):
         mimo_rank: int = 4,
         chunk_size: int = 64,
         is_outproj_norm: bool = False,
+        # --- 辅助分类头 (回归任务专用, 用于直接优化 Acc7) ---
+        aux_num_classes: int = 0,   # 0 = 不启用; MOSI 推荐 7
         device=None,
         dtype=None,
     ):
         super().__init__()
+        self.aux_num_classes = int(aux_num_classes)
         factory_kwargs = {"device": device, "dtype": dtype}
         self.task_type = task_type
         self.pool_type = pool_type
         self.num_classes = num_classes
         self.use_bert = use_bert
         self.ism_depth = ism_depth
+        self.d_model = d_model
 
         # 0) 文本编码器 (可选 BERT)
         if use_bert:
@@ -145,27 +204,30 @@ class MSAClassifier(nn.Module):
             self.text_encoder = None
             text_feat_dim = text_input_dim
 
-        # 1) 输入投影
-        self.proj_text  = nn.Linear(text_feat_dim, d_model, **factory_kwargs)
-        self.proj_audio = nn.Linear(audio_input_dim, d_model, **factory_kwargs)
-        self.proj_video = nn.Linear(video_input_dim, d_model, **factory_kwargs)
-        self.dropout = nn.Dropout(dropout)
+        # 1) 输入投影 — 改为 2层 MLP + LayerNorm
+        self.proj_text  = MLPProjection(text_feat_dim, d_model, dropout=dropout)
+        self.proj_audio = MLPProjection(audio_input_dim, d_model, dropout=dropout)
+        self.proj_video = MLPProjection(video_input_dim, d_model, dropout=dropout)
 
-        # 2) ISM — 单模态序列建模, 放在跨模态融合之前
-        #    三个模态各自独立一套 ISMEncoder (参数不共享)
+        # 2) ISM — 单模态序列建模
         if ism_depth > 0:
-            self.ism_text  = ISMEncoder(
+            ism_kwargs = dict(
                 d_model=d_model, seq_len=ism_seq_len, depth=ism_depth,
                 d_state=ism_d_state, d_conv=4, expand=2, dropout=dropout,
+                mixer_type=ism_mixer_type,
+                bimamba3_headdim=ism_bimamba3_headdim,
+                bimamba3_ngroups=ism_bimamba3_ngroups,
+                bimamba3_rope_fraction=ism_bimamba3_rope_fraction,
+                bimamba3_chunk_size=ism_bimamba3_chunk_size,
+                bimamba3_is_mimo=ism_bimamba3_is_mimo,
+                bimamba3_mimo_rank=ism_bimamba3_mimo_rank,
+                bimamba3_is_outproj_norm=ism_bimamba3_is_outproj_norm,
+                bimamba3_fusion=ism_bimamba3_fusion,
+                bimamba3_share_mimo=ism_bimamba3_share_mimo,
             )
-            self.ism_audio = ISMEncoder(
-                d_model=d_model, seq_len=ism_seq_len, depth=ism_depth,
-                d_state=ism_d_state, d_conv=4, expand=2, dropout=dropout,
-            )
-            self.ism_video = ISMEncoder(
-                d_model=d_model, seq_len=ism_seq_len, depth=ism_depth,
-                d_state=ism_d_state, d_conv=4, expand=2, dropout=dropout,
-            )
+            self.ism_text  = ISMEncoder(**ism_kwargs)
+            self.ism_audio = ISMEncoder(**ism_kwargs)
+            self.ism_video = ISMEncoder(**ism_kwargs)
         else:
             self.ism_text = self.ism_audio = self.ism_video = None
 
@@ -181,7 +243,15 @@ class MSAClassifier(nn.Module):
             for _ in range(num_layers)
         ])
 
-        # 4) 分类头
+        # 4) 池化
+        if pool_type == "attention":
+            self.pool_text  = AttentionPooling(d_model)
+            self.pool_audio = AttentionPooling(d_model)
+            self.pool_video = AttentionPooling(d_model)
+        else:
+            self.pool_text = self.pool_audio = self.pool_video = None
+
+        # 5) 分类头
         fused_dim = 3 * d_model
         self.fusion_norm = nn.LayerNorm(fused_dim)
         self.head = nn.Sequential(
@@ -191,57 +261,94 @@ class MSAClassifier(nn.Module):
             nn.Linear(d_model, num_classes, **factory_kwargs),
         )
 
+        # 5.b) 辅助分类头 (仅回归任务启用): 用于直接优化 Acc7
+        # 共享 backbone, 单独的轻量 head 输出 7 类 logits
+        if self.aux_num_classes > 0 and task_type == "regression":
+            self.aux_head = nn.Sequential(
+                nn.Linear(fused_dim, d_model, **factory_kwargs),
+                nn.GELU(),
+                nn.Dropout(dropout),
+                nn.Linear(d_model, self.aux_num_classes, **factory_kwargs),
+            )
+        else:
+            self.aux_head = None
+
     # ------------------------------------------------------------------
-    def _pool(self, x: torch.Tensor) -> torch.Tensor:
+    def _pool(self, x: torch.Tensor, pool_module=None) -> torch.Tensor:
         """x: (B, L, D) -> (B, D)"""
-        if self.pool_type == "mean":
+        if self.pool_type == "attention" and pool_module is not None:
+            return pool_module(x)
+        elif self.pool_type == "mean":
             return x.mean(dim=1)
         elif self.pool_type == "last":
             return x[:, -1]
         elif self.pool_type == "cls":
             return x[:, 0]
         else:
-            raise ValueError(f"Unknown pool_type: {self.pool_type}")
+            return x.mean(dim=1)
 
     # ------------------------------------------------------------------
-    def forward(
-        self,
-        text: torch.Tensor,          # (B, 3, L_t) if use_bert else (B, L_t, Dt)
-        audio: torch.Tensor,         # (B, L_a, Da)
-        video: torch.Tensor,         # (B, L_v, Dv)
-        cu_seqlens: Optional[torch.Tensor] = None,
-    ):
-        # ── 0) 文本嵌入 ──────────────────────────────────────────────
+    def _encode(self, text, audio, video, cu_seqlens=None):
+        """编码到融合后的三模态序列表征 (共享流水线)"""
+        # 0) 文本嵌入
         if self.use_bert and self.text_encoder is not None:
-            text = self.text_encoder(text)          # (B, L, 768)
+            text = self.text_encoder(text)
 
-        # ── 1) 投影到 d_model ────────────────────────────────────────
-        xt = self.dropout(F.gelu(self.proj_text(text)))     # (B, Lt, D)
-        xa = self.dropout(F.gelu(self.proj_audio(audio)))   # (B, La, D)
-        xv = self.dropout(F.gelu(self.proj_video(video)))   # (B, Lv, D)
+        # 1) 投影到 d_model (2层 MLP)
+        xt = self.proj_text(text)
+        xa = self.proj_audio(audio)
+        xv = self.proj_video(video)
 
-        # ── 2) 序列对齐 (以 text 长度为基准) ────────────────────────
+        # 2) 序列对齐
         Lt = xt.size(1)
         if xa.size(1) != Lt:
             xa = F.adaptive_avg_pool1d(xa.transpose(1, 2), Lt).transpose(1, 2)
         if xv.size(1) != Lt:
             xv = F.adaptive_avg_pool1d(xv.transpose(1, 2), Lt).transpose(1, 2)
 
-        # ── 3) ISM — 单模态序列建模 (跨模态融合之前) ────────────────
+        # 3) ISM
         if self.ism_depth > 0:
-            xt = self.ism_text(xt)    # (B, Lt, D)
-            xa = self.ism_audio(xa)   # (B, Lt, D)
-            xv = self.ism_video(xv)   # (B, Lt, D)
+            xt = self.ism_text(xt)
+            xa = self.ism_audio(xa)
+            xv = self.ism_video(xv)
 
-        # ── 4) CoupledMamba3Fork — 跨模态融合 ───────────────────────
+        # 4) CoupledMamba3Fork
         out_a, out_v, out_l = xa, xv, xt
         for layer in self.layers:
             out_a, out_v, out_l = layer(out_a, out_v, out_l, cu_seqlens=cu_seqlens)
 
-        # ── 5) 池化 + 拼接 + 分类头 ─────────────────────────────────
-        pa = self._pool(out_a)
-        pv = self._pool(out_v)
-        pl = self._pool(out_l)
-        fused  = self.fusion_norm(torch.cat([pa, pv, pl], dim=-1))
-        logits = self.head(fused)     # (B, num_classes)
+        return out_l, out_a, out_v
+
+    # ------------------------------------------------------------------
+    def forward(
+        self,
+        text: torch.Tensor,
+        audio: torch.Tensor,
+        video: torch.Tensor,
+        cu_seqlens: Optional[torch.Tensor] = None,
+    ):
+        out_l, out_a, out_v = self._encode(text, audio, video, cu_seqlens)
+
+        # 池化 + 拼接 + 分类头
+        pl = self._pool(out_l, self.pool_text if self.pool_type == "attention" else None)
+        pa = self._pool(out_a, self.pool_audio if self.pool_type == "attention" else None)
+        pv = self._pool(out_v, self.pool_video if self.pool_type == "attention" else None)
+        fused  = self.fusion_norm(torch.cat([pl, pa, pv], dim=-1))
+        logits = self.head(fused)
         return logits
+
+    # ------------------------------------------------------------------
+    def get_modal_embeddings(
+        self,
+        text: torch.Tensor,
+        audio: torch.Tensor,
+        video: torch.Tensor,
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """
+        返回三模态的池化表征 (B, D), 供 InfoNCE 对比损失使用.
+        """
+        out_l, out_a, out_v = self._encode(text, audio, video)
+        pl = self._pool(out_l, self.pool_text if self.pool_type == "attention" else None)
+        pa = self._pool(out_a, self.pool_audio if self.pool_type == "attention" else None)
+        pv = self._pool(out_v, self.pool_video if self.pool_type == "attention" else None)
+        return pl, pa, pv

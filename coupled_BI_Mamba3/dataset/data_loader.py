@@ -11,6 +11,12 @@
     H-DCD/dataset/data_loader.py (作者原版)
     并扩展为更标准的 MMSA 风格接口。
 
+改进:
+    - 添加训练阶段的 audio/vision 数据增强 (特征级别)
+      * 随机时间 mask: 随机遮蔽连续时间步 → 0
+      * 随机特征 dropout: 按概率随机置零部分特征维度
+      * 高斯噪声: 添加微小噪声提升鲁棒性
+
 约定:
     输入 .pkl 数据布局:
         {
@@ -54,6 +60,8 @@ import os
 import pickle
 from typing import Any, Dict, List, Optional
 
+import random
+
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset
@@ -83,6 +91,11 @@ class MMDataset(Dataset):
         self.use_bert = bool(getattr(args, "use_bert", True))
         self.need_truncated = bool(getattr(args, "need_data_aligned", False)) is False  # 非对齐时才截断/补齐
         self.need_normalize = bool(getattr(args, "need_normalized", False))
+
+        # ---- 数据增强配置 (仅训练集) ----
+        self.augment_audio = bool(getattr(args, "augment_audio", False)) and mode == "train"
+        self.augment_vision = bool(getattr(args, "augment_vision", False)) and mode == "train"
+        self.augment_prob = float(getattr(args, "augment_prob", 0.3))
 
         # ---- 1) 加载 pickle ----
         data_path = args.featurePath
@@ -245,11 +258,50 @@ class MMDataset(Dataset):
     def __len__(self) -> int:
         return self.n_samples
 
+    def _augment_feature(self, feat: np.ndarray) -> np.ndarray:
+        """
+        对单个样本的特征 (L, D) 做数据增强:
+            1. 随机时间 mask: 连续 mask 一段时间步
+            2. 随机特征 dropout: 某些特征维度置零
+            3. 高斯噪声: 添加微小扰动
+        """
+        L, D = feat.shape
+        p = self.augment_prob
+
+        # 1) 时间 mask: 随机遮蔽连续 10-20% 的时间步
+        if random.random() < p:
+            mask_len = max(1, int(L * random.uniform(0.1, 0.2)))
+            start = random.randint(0, max(0, L - mask_len))
+            feat[start:start + mask_len, :] = 0.0
+
+        # 2) 特征维度 dropout: 随机 10-20% 的维度置零
+        if random.random() < p:
+            n_drop = max(1, int(D * random.uniform(0.1, 0.2)))
+            drop_dims = random.sample(range(D), n_drop)
+            feat[:, drop_dims] = 0.0
+
+        # 3) 高斯噪声
+        if random.random() < p:
+            noise_std = feat.std() * 0.05  # 5% 标准差的噪声
+            noise = np.random.randn(*feat.shape).astype(feat.dtype) * noise_std
+            feat = feat + noise
+
+        return feat
+
     def __getitem__(self, idx: int) -> Dict[str, Any]:
+        audio_feat = self.audio[idx].copy()
+        vision_feat = self.vision[idx].copy()
+
+        # --- 数据增强 (仅训练集) ---
+        if self.augment_audio:
+            audio_feat = self._augment_feature(audio_feat)
+        if self.augment_vision:
+            vision_feat = self._augment_feature(vision_feat)
+
         sample = {
             "text": torch.from_numpy(self.text[idx]),
-            "audio": torch.from_numpy(self.audio[idx]),
-            "vision": torch.from_numpy(self.vision[idx]),
+            "audio": torch.from_numpy(audio_feat),
+            "vision": torch.from_numpy(vision_feat),
             "id": self.ids[idx],
             "index": torch.tensor(idx, dtype=torch.long),
         }

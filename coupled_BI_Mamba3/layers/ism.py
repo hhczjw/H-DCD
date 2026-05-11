@@ -1,249 +1,373 @@
 """
-ISM — Intra-modal Sequence Modeling Block
-==========================================
-参考 MSAmba/models/mamba_block.py::Block_GLCE 移植，去除对 timm / bimamba_inner_fn 的依赖，
-完全用标准 PyTorch + mamba_ssm.Mamba(SISO) 实现，可无缝嵌入现有流水线。
+ISM — Intra-modal Sequence Modeling Block (对齐 MSAmba/Vision Mamba)
+====================================================================
+严格对齐 MSAmba/models/mamba_block.py::Block_GLCE 的语义:
 
-结构（完全对应论文图）:
+[VIM ALIGNED] 本版本直接使用已植入 bimamba_type 支持的内置 mamba_ssm
+(见 H-DCD/coupled_BI_Mamba3/mamba/mamba_ssm), 通过
+    Mamba(d_model, bimamba_type="v2")
+启用 Vision Mamba (Vim) 的双向 SSM, 与 MSAmba/Vim 官方语义完全一致.
 
-    输入 x  (B, L, D)
-      ↓
-    [LN]                            -- pre-norm
-      ↓
-    [GLCE]
-        x_global = Linear(L→L) 作用在时间维 (转置操作)   -- 全局分支 (MLP on time)
-        x_local  = Conv1d(kernel=3, padding=1)            -- 局部分支
-        x = x_global + x_local + shortcut                -- ⊕ 三路加和
-      ↓
-    [LN]                            -- GLCE 后的第二个 LN
-      ↓
-    [BSSM]  双向选择性扫描
-        z  = in_proj(x) / 2         -- 门控分支
-        xf = Mamba_fwd(x_half)      -- 正向 SSM
-        xb = flip(Mamba_bwd(flip(x_half))) -- 反向 SSM
-        y  = (xf ⊗ z) ⊕ (xb ⊗ z)  -- 门控融合
-        out = out_proj(y)           -- MLP 输出投影
-      ↓
-    ⊕ 残差 (+ 原始输入 x)
-      ↓
-    输出  (B, L, D)
+保留:
+    1. RMSNorm + fused_add_norm (Triton 融合残差+归一化)
+    2. GLCE 在 fused_add_norm 分支内执行
+    3. 双流残差: (hidden_states, residual) 跨层传递
+    4. GPT-2 风格权重初始化 (_init_weights)
+    5. CLS token + 可学习位置编码
+
+参考论文:
+    - Vision Mamba (Vim): Efficient Visual Representation Learning with
+      Bidirectional State Space Model (ICML 2024)
 """
 
 from __future__ import annotations
 
+import math
+from functools import partial
+from typing import Optional
+
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+from torch import Tensor
 
-# 优先与 MSAmba 保持一致：使用 mamba_simple.Mamba。
-# 若项目内 mamba_simple 因环境/补丁问题在导入阶段抛出非 ImportError（如 NameError），
-# 则自动回退到 mamba2_simple；再失败则回退到纯 PyTorch BiGRU。
-_MAMBA_AVAILABLE = False
-_MAMBA_BACKEND = "none"
-MambaSSM = None
+# ---- Mamba 导入 (标准 mamba_ssm, 含 bimamba_type="v2" 支持) ----
+from mamba_ssm.modules.mamba_simple import Mamba
+
+# ---- Mamba-3 BiMamba3 导入 (可选, 不可用时优雅降级) ----
+try:
+    from mamba_ssm.modules.bimamba3 import BiMamba3
+    BIMAMBA3_AVAILABLE = True
+except ImportError:
+    BiMamba3 = None
+    BIMAMBA3_AVAILABLE = False
 
 try:
-    from mamba_ssm.modules.mamba_simple import Mamba as MambaSSM
-    _MAMBA_AVAILABLE = True
-    _MAMBA_BACKEND = "mamba_simple"
-except Exception:
+    from mamba_ssm.ops.triton.layernorm import RMSNorm, layer_norm_fn, rms_norm_fn
+except ImportError:
     try:
-        from mamba_ssm.modules.mamba2_simple import Mamba2Simple as MambaSSM
-        _MAMBA_AVAILABLE = True
-        _MAMBA_BACKEND = "mamba2_simple"
-    except Exception:
-        MambaSSM = None
-        _MAMBA_AVAILABLE = False
-        _MAMBA_BACKEND = "bigru"
+        from mamba_ssm.ops.triton.layer_norm import RMSNorm, layer_norm_fn, rms_norm_fn
+    except ImportError:
+        RMSNorm, layer_norm_fn, rms_norm_fn = None, None, None
+
+try:
+    from timm.models.layers import trunc_normal_
+except ImportError:
+    from torch.nn.init import trunc_normal_
+
+try:
+    from timm.models.layers import DropPath
+except ImportError:
+    DropPath = None
 
 
 # ---------------------------------------------------------------------------
-# GLCE — Global-Local Context Extractor
+# BiMamba: 薄包装, 直接调用原生 Mamba(bimamba_type="v2")
 # ---------------------------------------------------------------------------
-class GLCE(nn.Module):
-    """
-    全局-局部上下文提取器 (纯 PyTorch, 无额外依赖).
-
-    输入:  x  (B, L, D)   已经过 pre-norm
-    输出:  x' (B, L, D)   三路融合后再经第二个 LN
-    """
-
-    def __init__(self, d_model: int, seq_len: int):
-        super().__init__()
-        # 全局分支: 在时间步维度做全局线性混合 (等价于 MLP on time axis)
-        self.global_extractor = nn.Linear(seq_len, seq_len)
-        # 局部分支: 在特征序列上做 kernel=3 的因果/对称卷积 (same padding)
-        self.local_extractor = nn.Conv1d(
-            in_channels=seq_len, out_channels=seq_len,
-            kernel_size=3, stride=1, padding=1
-        )
-        self.norm2 = nn.LayerNorm(d_model)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """x: (B, L, D)"""
-        # 全局分支: (B,L,D) -> (B,D,L) -> Linear(L) -> (B,D,L) -> (B,L,D)
-        x_t = x.permute(0, 2, 1)                      # (B, D, L)
-        x_global = self.global_extractor(x_t)          # (B, D, L)
-        x_global = x_global.permute(0, 2, 1)           # (B, L, D)
-
-        # 局部分支: Conv1d 操作在 (B, L, D) 上，把 L 当 in_channels
-        x_local = self.local_extractor(x)              # (B, L, D)
-
-        # 三路加和 + 第二层 LN
-        out = self.norm2(x_global + x_local + x)
-        return out
-
-
-# ---------------------------------------------------------------------------
-# UniModalBSSM — 单模态双向 SSM (Bi-directional Selective Scanning)
-# ---------------------------------------------------------------------------
-class UniModalBSSM(nn.Module):
-    """
-    双向选择性扫描模块.
-
-    实现方式: 复用 MambaSSM (SISO kernel) 做正向扫描，
-              flip 序列后再扫一次，得到反向扫描结果。
-    两路结果分别用门控向量 z 相乘后相加，最后接 out_proj。
-
-    若 mamba_ssm 不可用，fallback 为双向 GRU (纯 PyTorch)。
-    """
-
+# [VIM ALIGNED] mamba_ssm 已植入 Vim 双向 SSM 支持 (BiMambaInnerFn + v1/v2 分支).
+# 这里保留 BiMamba 类名以避免破坏旧的导入, 但内部仅实例化一个
+# Mamba(bimamba_type="v2"), 其 forward 内部:
+#     out_f = mamba_inner_fn_no_out_proj(xz, 正向参数, A, ...)
+#     out_b = mamba_inner_fn_no_out_proj(xz.flip([-1]), 反向参数, A_b, ...)
+#     out = out_f + out_b.flip([-1]); out = out_proj(out)
+# 性能优于双 Mamba 实例 (共享 in_proj/out_proj, 一次 CUDA kernel 完成双扫描).
+class BiMamba(nn.Module):
+    """Bidirectional Mamba via native `bimamba_type="v2"` (Vim 论文一致语义)."""
     def __init__(self, d_model: int, d_state: int = 16, d_conv: int = 4,
-                 expand: int = 2):
+                 expand: int = 2, layer_idx: int = 0,
+                 if_divide_out: bool = True, init_layer_scale=None, **kwargs):
         super().__init__()
-        self.d_model = d_model
+        self.mamba = Mamba(
+            d_model=d_model,
+            d_state=d_state,
+            d_conv=d_conv,
+            expand=expand,
+            layer_idx=layer_idx,
+            bimamba_type="v2",                # [VIM 关键: 启用双向]
+            if_divide_out=if_divide_out,
+            init_layer_scale=init_layer_scale,
+        )
 
-        self.use_mamba = False
-        if _MAMBA_AVAILABLE and MambaSSM is not None:
-            try:
-                # 正向/反向各一套参数（与 ISM 双向扫描逻辑一致）
-                self.mamba_fwd = MambaSSM(
-                    d_model=d_model, d_state=d_state, d_conv=d_conv, expand=expand
-                )
-                self.mamba_bwd = MambaSSM(
-                    d_model=d_model, d_state=d_state, d_conv=d_conv, expand=expand
-                )
-                self.use_mamba = True
-            except Exception:
-                self.use_mamba = False
-
-        # Fallback: 双向 GRU（当 mamba_simple/mamba2_simple 不可用或运行失败时启用）
-        self.bigru = None
-        self.gru_proj = None
-        if not self.use_mamba:
-            self.bigru = nn.GRU(
-                d_model, d_model, num_layers=1,
-                batch_first=True, bidirectional=True
-            )
-            self.gru_proj = nn.Linear(d_model * 2, d_model)
-
-        # 门控向量投影 (共享 z)
-        self.gate_proj = nn.Linear(d_model, d_model)
-        # 输出投影
-        self.out_proj = nn.Linear(d_model, d_model)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """x: (B, L, D)"""
-        z = torch.sigmoid(self.gate_proj(x))           # (B, L, D) 门控
-
-        if self.use_mamba:
-            # 正向扫描
-            y_fwd = self.mamba_fwd(x)                  # (B, L, D)
-            # 反向扫描: flip -> Mamba -> flip back
-            x_flip = x.flip(dims=[1])
-            y_bwd = self.mamba_bwd(x_flip).flip(dims=[1])  # (B, L, D)
-        else:
-            out_gru, _ = self.bigru(x)                 # (B, L, 2D)
-            out_gru = self.gru_proj(out_gru)           # (B, L, D)
-            y_fwd = y_bwd = out_gru * 0.5              # 均分模拟双向
-
-        # 门控融合: (y_fwd ⊗ z) ⊕ (y_bwd ⊗ z)
-        y = y_fwd * z + y_bwd * z                      # (B, L, D)
-        return self.out_proj(y)                        # (B, L, D)
+    def forward(self, x: Tensor, inference_params=None, **kwargs) -> Tensor:
+        """x: (B, L, D) -> (B, L, D)"""
+        return self.mamba(x, inference_params=inference_params)
 
 
 # ---------------------------------------------------------------------------
-# ISMBlock — 完整 ISM 模块
+# BiMamba3Wrapper: 屏蔽 Mamba-3 与 Mamba-2 不一致的构造参数 (d_conv/expand)
 # ---------------------------------------------------------------------------
-class ISMBlock(nn.Module):
-    """
-    单个 ISM block:  LN → GLCE → BSSM → residual
-
-    可堆叠多层 (ism_depth 控制), 每个模态独立一套权重。
-
-    Args:
-        d_model:  特征维度 D
-        seq_len:  序列长度 L (GLCE 用到, 需与输入一致)
-        d_state:  Mamba SSM 状态维度
-        d_conv:   Mamba conv 卷积核大小
-        expand:   Mamba 扩展比
-        dropout:  Dropout 概率
-    """
-
+# Mamba-3 没有 conv1d (d_conv 不适用), 且 d_state 默认为 128 (远大于 Mamba-2 的 16).
+# 这里把 ISMEncoder 旧接口 (d_state, d_conv, expand, layer_idx) 适配到 BiMamba3.
+class BiMamba3Wrapper(nn.Module):
+    """Bidirectional Mamba-3 适配 ISMEncoder 旧的 mixer_cls(dim) 接口."""
     def __init__(
-        self,
-        d_model: int,
-        seq_len: int = 50,
-        d_state: int = 16,
-        d_conv: int = 4,
-        expand: int = 2,
-        dropout: float = 0.1,
+        self, d_model: int,
+        # ↓ 兼容 ISMEncoder 旧接口 (会被 partial 注入), 但仅 d_state 会用到
+        d_state: int = 128, d_conv: int = 4, expand: int = 2, layer_idx: int = 0,
+        # ↓ Mamba-3 专属
+        headdim: int = 64, ngroups: int = 1, rope_fraction: float = 0.5,
+        chunk_size: int = 64, is_mimo: bool = False, mimo_rank: int = 4,
+        is_outproj_norm: bool = False,
+        # ↓ BiMamba3 双向相关
+        bimamba_type: str = "v2", fusion: str = "add_divide2",
+        share_mimo: bool = True,
+        **kwargs,
     ):
         super().__init__()
-        self.norm1 = nn.LayerNorm(d_model)
-        self.glce = GLCE(d_model, seq_len)
-        self.bssm = UniModalBSSM(d_model, d_state=d_state, d_conv=d_conv, expand=expand)
-        self.drop = nn.Dropout(dropout)
+        assert BIMAMBA3_AVAILABLE, "BiMamba3 不可用, 请检查 mamba_ssm.modules.bimamba3 是否存在"
+        # d_conv / expand 在 Mamba-3 中无意义, 这里直接忽略
+        self.bimamba3 = BiMamba3(
+            d_model=d_model,
+            d_state=d_state,
+            headdim=headdim,
+            ngroups=ngroups,
+            rope_fraction=rope_fraction,
+            chunk_size=chunk_size,
+            is_mimo=is_mimo,
+            mimo_rank=mimo_rank,
+            is_outproj_norm=is_outproj_norm,
+            bimamba_type=bimamba_type,
+            fusion=fusion,
+            share_mimo=share_mimo,
+            layer_idx=layer_idx,
+        )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        x: (B, L, D)
-        返回: (B, L, D)
-        """
-        # Pre-norm
-        h = self.norm1(x)
-        # GLCE: 全局-局部上下文
-        h = self.glce(h)
-        # BSSM: 双向 SSM 扫描
-        h = self.bssm(h)
-        h = self.drop(h)
-        # 残差
-        return x + h
+    def forward(self, x: Tensor, inference_params=None, **kwargs) -> Tensor:
+        """x: (B, L, D) -> (B, L, D)"""
+        return self.bimamba3(x, inference_params=inference_params)
 
 
 # ---------------------------------------------------------------------------
-# ISMEncoder — 对单路模态堆叠 ism_depth 层 ISMBlock
+# Block_GLCE: 对齐 MSAmba 原版 (mixer 使用原生 Mamba(bimamba_type="v2"))
+# ---------------------------------------------------------------------------
+class Block_GLCE(nn.Module):
+    """
+    对齐 MSAmba/models/mamba_block.py::Block_GLCE.
+
+    结构: Add → RMSNorm(fused) → GLCE → LN2(fused) → BiMamba
+    接口: forward(hidden_states, residual) -> (hidden_states, residual)
+    """
+    def __init__(
+        self, dim, mixer_cls, norm_cls=nn.LayerNorm,
+        fused_add_norm=True, residual_in_fp32=True,
+        drop_path=0., use_mlp=False, seq_len=51,
+    ):
+        super().__init__()
+        self.residual_in_fp32 = residual_in_fp32
+        self.fused_add_norm = fused_add_norm
+        self.mixer = mixer_cls(dim)
+        self.norm = norm_cls(dim)
+        self.drop_path = DropPath(drop_path) if (DropPath is not None and drop_path > 0.) else nn.Identity()
+
+        if self.fused_add_norm:
+            assert RMSNorm is not None, "需要安装 mamba_ssm 以使用 fused RMSNorm"
+            assert isinstance(self.norm, (nn.LayerNorm, RMSNorm))
+
+        self.use_mlp = use_mlp
+        if self.use_mlp:
+            self.mlp = nn.Linear(dim, dim)
+
+        # GLCE: 全局-局部上下文提取 (与 MSAmba 完全一致)
+        self.seq_len = seq_len
+        self.local_extractor = nn.Conv1d(self.seq_len, self.seq_len, kernel_size=3, stride=1, padding=1)
+        self.global_extractor = nn.Linear(self.seq_len, self.seq_len)
+        self.layer_norm_2 = norm_cls(dim)
+
+    def forward(
+        self, hidden_states: Tensor, residual: Optional[Tensor] = None,
+        inference_params=None, use_checkpoint=False,
+    ):
+        if not self.fused_add_norm:
+            # 非融合模式 fallback (一般不走这里)
+            residual = (residual + self.drop_path(hidden_states)) if residual is not None else hidden_states
+            hidden_states = self.norm(residual.to(dtype=self.norm.weight.dtype))
+            if self.residual_in_fp32:
+                residual = residual.to(torch.float32)
+        else:
+            fused_add_norm_fn = rms_norm_fn if isinstance(self.norm, RMSNorm) else layer_norm_fn
+            hidden_states, residual = fused_add_norm_fn(
+                hidden_states if residual is None else self.drop_path(hidden_states),
+                self.norm.weight,
+                self.norm.bias,
+                residual=residual,
+                prenorm=True,
+                residual_in_fp32=self.residual_in_fp32,
+                eps=self.norm.eps,
+            )
+            # GLCE: 全局 + 局部 + shortcut (与 MSAmba 完全一致)
+            hidden_states_t = hidden_states.permute(0, 2, 1)
+            hidden_states_t = self.global_extractor(hidden_states_t)
+            hidden_states = hidden_states_t.permute(0, 2, 1) + hidden_states + self.local_extractor(hidden_states)
+            # 第二个 LayerNorm (fused, prenorm=False 即后归一化)
+            hidden_states = fused_add_norm_fn(
+                hidden_states,
+                self.layer_norm_2.weight,
+                self.layer_norm_2.bias,
+                residual=None,
+                prenorm=False,
+                residual_in_fp32=self.residual_in_fp32,
+                eps=self.layer_norm_2.eps,
+            )
+
+        # BiMamba SSM (内部为 Mamba(bimamba_type="v2"), 与 MSAmba 的 Mamba(bimamba=True) 等价)
+        if use_checkpoint:
+            import torch.utils.checkpoint as cp
+            hidden_states = cp.checkpoint(self.mixer, hidden_states, inference_params)
+        else:
+            hidden_states = self.mixer(hidden_states, inference_params=inference_params)
+
+        if self.use_mlp:
+            hidden_states = self.mlp(hidden_states)
+
+        return hidden_states, residual
+
+
+# ---------------------------------------------------------------------------
+# 权重初始化 (对齐 MSAmba 的 _init_weights, GPT-2 风格)
+# ---------------------------------------------------------------------------
+def _init_weights(
+    module, n_layer, initializer_range=0.02,
+    rescale_prenorm_residual=True, n_residuals_per_layer=1,
+):
+    if isinstance(module, nn.Linear):
+        if module.bias is not None:
+            if not getattr(module.bias, "_no_reinit", False):
+                nn.init.zeros_(module.bias)
+    elif isinstance(module, nn.Embedding):
+        nn.init.normal_(module.weight, std=initializer_range)
+
+    if rescale_prenorm_residual:
+        for name, p in module.named_parameters():
+            if name in ["out_proj.weight", "fc2.weight"]:
+                nn.init.kaiming_uniform_(p, a=math.sqrt(5))
+                with torch.no_grad():
+                    p /= math.sqrt(n_residuals_per_layer * n_layer)
+
+
+# ---------------------------------------------------------------------------
+# ISMEncoder: 对齐 MSAmba 的完整 ISM 流水线
 # ---------------------------------------------------------------------------
 class ISMEncoder(nn.Module):
     """
-    堆叠 depth 层 ISMBlock，用于单模态的序列建模。
+    对齐 MSAmba 原版的单模态序列建模模块:
+        - CLS token + 可学习位置编码
+        - Block_GLCE × depth (fused_add_norm + RMSNorm + BiMamba)
+        - GPT-2 风格权重初始化
 
     Args:
-        d_model:  特征维度
-        seq_len:  序列长度
-        depth:    堆叠层数 (对应 ism_depth)
-        d_state / d_conv / expand / dropout: 透传给 ISMBlock
+        d_model:    特征维度
+        seq_len:    输入序列长度 (不含 CLS, MSAmba 中为 50)
+        depth:      堆叠层数 (MSAmba 中 sm_depth=2)
+        d_state:    Mamba SSM 状态维度 (MSAmba 默认 16)
+        d_conv:     Mamba conv 卷积核大小 (默认 4)
+        expand:     Mamba 扩展比 (默认 2)
+        dropout:    保留接口兼容 (未使用)
     """
-
     def __init__(
         self,
-        d_model: int,
+        d_model: int = 128,
         seq_len: int = 50,
-        depth: int = 1,
+        depth: int = 2,
         d_state: int = 16,
         d_conv: int = 4,
         expand: int = 2,
         dropout: float = 0.1,
+        # --- 新增: mixer 切换开关 ---
+        mixer_type: str = "bimamba",          # "bimamba" (Mamba-2 双向) | "bimamba3" (Mamba-3 双向)
+        # ↓ 仅 mixer_type == "bimamba3" 时生效
+        bimamba3_headdim: int = 64,
+        bimamba3_ngroups: int = 1,
+        bimamba3_rope_fraction: float = 0.5,
+        bimamba3_chunk_size: int = 64,
+        bimamba3_is_mimo: bool = False,
+        bimamba3_mimo_rank: int = 4,
+        bimamba3_is_outproj_norm: bool = False,
+        bimamba3_fusion: str = "add_divide2",
+        bimamba3_share_mimo: bool = True,
     ):
         super().__init__()
-        self.blocks = nn.ModuleList([
-            ISMBlock(d_model, seq_len=seq_len, d_state=d_state,
-                     d_conv=d_conv, expand=expand, dropout=dropout)
-            for _ in range(depth)
+        self.d_model = d_model
+        self.seq_len = seq_len
+        self.depth = depth
+        self.mixer_type = mixer_type
+
+        # CLS token + 位置编码 (对齐 MSAmba: trunc_normal_ std=0.02)
+        self.cls_token = nn.Parameter(torch.zeros(1, 1, d_model))
+        self.pos_embed = nn.Parameter(torch.zeros(1, seq_len + 1, d_model))
+        trunc_normal_(self.cls_token, std=0.02)
+        trunc_normal_(self.pos_embed, std=0.02)
+
+        # 根据 mixer_type 选择 mixer 类与构造参数
+        if mixer_type == "bimamba":
+            # Mamba-2 双向: 走 BiMamba (内部 Mamba(bimamba_type="v2"))
+            mixer_partial = partial(
+                BiMamba, d_state=d_state, d_conv=d_conv, expand=expand,
+            )
+        elif mixer_type == "bimamba3":
+            assert BIMAMBA3_AVAILABLE, (
+                "mixer_type='bimamba3' 需要 mamba_ssm.modules.bimamba3, "
+                "请检查 H-DCD/coupled_BI_Mamba3/mamba/mamba_ssm/modules/bimamba3.py"
+            )
+            # Mamba-3 双向: 走 BiMamba3Wrapper, Mamba-3 默认 d_state=128
+            # 这里如果用户传了 16 (Mamba-2 默认) 而不主动改 ism_d_state, 我们尊重原值,
+            # 但 Mamba-3 在小 d_state 下表现可能差, 建议 ism_d_state >= 64.
+            mixer_partial = partial(
+                BiMamba3Wrapper,
+                d_state=d_state,
+                headdim=bimamba3_headdim,
+                ngroups=bimamba3_ngroups,
+                rope_fraction=bimamba3_rope_fraction,
+                chunk_size=bimamba3_chunk_size,
+                is_mimo=bimamba3_is_mimo,
+                mimo_rank=bimamba3_mimo_rank,
+                is_outproj_norm=bimamba3_is_outproj_norm,
+                bimamba_type="v2",
+                fusion=bimamba3_fusion,
+                share_mimo=bimamba3_share_mimo,
+            )
+        else:
+            raise ValueError(f"未知的 mixer_type: {mixer_type!r}, 应为 'bimamba' 或 'bimamba3'")
+
+        # Block_GLCE 层
+        norm_cls = partial(RMSNorm, eps=1e-5) if RMSNorm is not None else partial(nn.LayerNorm, eps=1e-5)
+
+        self.layers = nn.ModuleList([
+            Block_GLCE(
+                dim=d_model,
+                mixer_cls=partial(mixer_partial, layer_idx=i),
+                norm_cls=norm_cls,
+                fused_add_norm=True,
+                residual_in_fp32=True,
+                drop_path=0.,
+                use_mlp=False,
+                seq_len=seq_len + 1,  # +1 for CLS token
+            )
+            for i in range(depth)
         ])
 
+        # GPT-2 风格权重初始化 (对齐 MSAmba)
+        self.layers.apply(partial(_init_weights, n_layer=depth))
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """x: (B, L, D) -> (B, L, D)"""
-        for blk in self.blocks:
-            x = blk(x)
-        return x
+        """
+        x: (B, L, D)   输入序列
+        返回: (B, L, D)  去掉 CLS token 后的输出 (保持与原接口兼容)
+        """
+        B = x.size(0)
+
+        # 拼接 CLS token + 位置编码 (对齐 MSAmba)
+        cls_tokens = self.cls_token.expand(B, -1, -1)
+        x = torch.cat([cls_tokens, x], dim=1)       # (B, L+1, D)
+        x = x + self.pos_embed                       # (B, L+1, D)
+
+        # 双流残差传递 (对齐 MSAmba 的 forward 循环)
+        residual = None
+        hidden_states = x
+        for layer in self.layers:
+            hidden_states, residual = layer(hidden_states, residual)
+
+        # 最终: hidden_states + residual (对齐 MSAmba 取 cls_token 前的处理)
+        if residual is not None:
+            hidden_states = hidden_states + residual
+
+        # 返回去掉 CLS token 的序列 (B, L, D)
+        return hidden_states[:, 1:, :]
