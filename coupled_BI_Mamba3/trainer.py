@@ -93,7 +93,6 @@ class Trainer:
             label = batch["labels"]["M"] if not self.is_multi_task else None
 
             if self.is_multi_task:
-                # 简化版: 主任务使用同一 logits, 子任务复用 (可后续扩展为多头)
                 loss = self.criterion({"M": logits.squeeze(-1)}, batch["labels"])
             elif self.task_type == "regression":
                 loss = self.criterion(logits.squeeze(-1), label)

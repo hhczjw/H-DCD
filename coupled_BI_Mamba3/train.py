@@ -45,6 +45,8 @@ def main():
     text_dim, audio_dim, video_dim = args.feature_dims
     # use_bert=True 时, text 输入是 (B, 3, L), 由 MSAClassifier 内置 BertTextEncoder 处理,
     # text_feat_dim 固定为 768, 这里的 text_dim 会被 use_bert 分支忽略.
+    # ism_seq_len 默认取 seq_lens[0] (text 序列长度, 对齐后的 Lt)
+    ism_seq_len = int(getattr(args, "ism_seq_len", args.seq_lens[0]))
     model = MSAClassifier(
         text_input_dim=text_dim,
         audio_input_dim=audio_dim,
@@ -58,6 +60,9 @@ def main():
         use_bert=args.use_bert,
         bert_pretrained=getattr(args, "bert_pretrained", "bert-base-uncased"),
         bert_finetune=getattr(args, "bert_finetune", True),
+        ism_depth=int(getattr(args, "ism_depth", 1)),
+        ism_seq_len=ism_seq_len,
+        ism_d_state=int(getattr(args, "ism_d_state", 16)),
         d_state=args.d_state,
         expand=args.expand,
         headdim=args.headdim,
