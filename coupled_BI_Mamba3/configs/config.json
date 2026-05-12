@@ -46,7 +46,12 @@
         "ism_bimamba3_fusion": "add_divide2",
         "ism_bimamba3_share_mimo": true,
         "contrastive_weight": 0.1,
-        "contrastive_temp": 0.07
+        "contrastive_temp": 0.07,
+        "aux_cls_weight": 0.3,
+        "aux_num_classes": 7,
+        "aux_clip_range": 3.0,
+        "aux_label_smoothing": 0.05,
+        "sub_loss_lambda": 0.0
     },
     "datasets": {
         "MOSI": {

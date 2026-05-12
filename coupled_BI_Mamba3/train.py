@@ -50,6 +50,20 @@ def parse_args():
     p.add_argument("--ism_bimamba3_fusion", type=str, default=None,
                    choices=["add_divide2", "concat_proj", "gated", "add"])
     p.add_argument("--ism_bimamba3_is_mimo", type=lambda x: x.lower() == "true", default=None)
+    # ---- 复合损失 (回归 + 离散 CE 辅助头, 直接攻 Acc7) ----
+    p.add_argument("--aux_cls_weight", type=float, default=None,
+                   help="辅助分类 loss 权重 alpha; 0 = 关闭. 推荐 0.1~0.5")
+    p.add_argument("--aux_num_classes", type=int, default=None,
+                   help="辅助分类类别数; MOSI 应为 7 (=2*clip_range+1)")
+    p.add_argument("--sub_loss_lambda", type=float, default=None,
+                   help="模态级 sub_loss 权重 (对齐 MSAmba sub_fc_T/A/V); 0 = 关闭. 推荐 0.3~0.5")
+    # ---- early stop 监控指标 (覆盖 config.json KeyEval) ----
+    p.add_argument("--key_eval", type=str, default=None,
+                   choices=["Acc2", "MAE", "F1", "Loss", "Acc7"],
+                   help="early stop 监控指标; 默认沿用 config.json")
+    # ---- EMA 影子权重 ----
+    p.add_argument("--ema_decay", type=float, default=None,
+                   help="EMA 衰减系数; >0 启用, 推荐 0.999. 0/None=关闭")
     p.add_argument("--device", type=str, default="cuda")
     # ---- 输出路径后缀, 多次实验互不覆盖 ----
     p.add_argument("--exp_tag", type=str, default="", help="可选 tag, 加在 checkpoint/log 文件名")
@@ -88,6 +102,13 @@ def main():
     _override(args, cli, "ism_mixer_type")
     _override(args, cli, "ism_bimamba3_fusion")
     _override(args, cli, "ism_bimamba3_is_mimo")
+    # 复合损失
+    _override(args, cli, "aux_cls_weight")
+    _override(args, cli, "aux_num_classes")
+    _override(args, cli, "sub_loss_lambda")
+    # 监控/EMA
+    _override(args, cli, "KeyEval", "key_eval")
+    _override(args, cli, "ema_decay")
 
     set_seed(cli.seed)
     logger = setup_logger(args.logs_dir, name=f"MSA_{cli.dataset}")
@@ -135,48 +156,82 @@ def main():
         mimo_rank=args.mimo_rank,
         chunk_size=args.chunk_size,
         is_outproj_norm=args.is_outproj_norm,
+        aux_num_classes=int(getattr(args, "aux_num_classes", 0)),
+        sub_loss_lambda=float(getattr(args, "sub_loss_lambda", 0.0) or 0.0),
     )
 
     # 3) Trainer
     trainer = Trainer(args, model, logger)
 
-    # 4) 训练循环 + early stop (修复: 直接用 KeyEval 指定的指标)
-    key_eval = args.KeyEval           # "Acc2", "F1", "Loss" 等
-    higher_better = key_eval != "Loss" and key_eval != "MAE"
-    best_score = -1e9 if higher_better else 1e9
-    patience, best_path = 0, None
+    # 4) 训练循环 + early stop + 双 ckpt
+    # 主监控: KeyEval (e.g. Acc2) 决定 early stop 与 "primary" ckpt
+    # 辅助监控: 回归任务额外保存 MAE 最优 ckpt (用于 Acc7 评估)
+    key_eval = args.KeyEval                     # "Acc2", "F1", "Loss" 等
+    higher_better = key_eval not in ("Loss", "MAE")
+    best_primary = -1e9 if higher_better else 1e9
+    patience = 0
 
-    logger.info(f"Early stop monitor: {key_eval} | higher_better={higher_better}")
+    tag = f"_{cli.exp_tag}" if cli.exp_tag else ""
+    primary_path = os.path.join(args.checkpoints_dir, f"{cli.dataset}{tag}_seed{cli.seed}_best_{key_eval}.pt")
+
+    # 仅回归任务且 KeyEval != MAE 时启用辅助 ckpt
+    use_dual_ckpt = (args.task_type == "regression") and (key_eval != "MAE")
+    best_secondary = 1e9
+    secondary_metric = "MAE"
+    secondary_path = (
+        os.path.join(args.checkpoints_dir, f"{cli.dataset}{tag}_seed{cli.seed}_best_{secondary_metric}.pt")
+        if use_dual_ckpt else None
+    )
+
+    logger.info(
+        f"Early stop monitor: {key_eval} | higher_better={higher_better} | "
+        f"dual_ckpt={'on(' + secondary_metric + ')' if use_dual_ckpt else 'off'}"
+    )
 
     for epoch in range(1, int(args.epochs) + 1):
         trainer.train_one_epoch(loaders["train"], epoch)
         val = trainer.evaluate(loaders["valid"], split="valid")
 
-        # 直接用 KeyEval 指定的指标做 early stop
-        current_score = val.get(key_eval, val.get("MAE", val.get("Loss", 0.0)))
-
-        improved = (current_score > best_score) if higher_better else (current_score < best_score)
+        # 主 ckpt: KeyEval 监控 + early stop 判定
+        primary_score = val.get(key_eval, val.get("MAE", val.get("Loss", 0.0)))
+        improved = (primary_score > best_primary) if higher_better else (primary_score < best_primary)
         if improved:
-            best_score = current_score
+            best_primary = primary_score
             patience = 0
-            tag = f"_{cli.exp_tag}" if cli.exp_tag else ""
-            best_path = os.path.join(args.checkpoints_dir, f"{cli.dataset}{tag}_seed{cli.seed}_best.pt")
-            trainer.save(best_path)
-            logger.info(f"  >> New best {key_eval}={current_score:.4f}")
+            trainer.save(primary_path)
+            logger.info(f"  >> New best {key_eval}={primary_score:.4f}  [primary ckpt]")
         else:
             patience += 1
-            if patience >= int(args.early_stop):
-                logger.info(f"Early stop at epoch {epoch}")
-                break
 
-    # 5) 测试
-    if best_path:
-        trainer.load(best_path)
-    test_metrics = trainer.evaluate(loaders["test"], split="test")
+        # 辅助 ckpt: 回归任务下用 MAE 单独保存
+        if use_dual_ckpt:
+            sec_score = val.get(secondary_metric, 1e9)
+            if sec_score < best_secondary:
+                best_secondary = sec_score
+                trainer.save(secondary_path)
+                logger.info(f"  >> New best {secondary_metric}={sec_score:.4f}  [secondary ckpt]")
+
+        if patience >= int(args.early_stop):
+            logger.info(f"Early stop at epoch {epoch}")
+            break
+
+    # 5) 测试: 分别 load 两个 ckpt 各报一次
     os.makedirs(args.results_dir, exist_ok=True)
-    tag = f"_{cli.exp_tag}" if cli.exp_tag else ""
-    with open(os.path.join(args.results_dir, f"{cli.dataset}{tag}_seed{cli.seed}_test.json"), "w", encoding="utf-8") as f:
-        json.dump(test_metrics, f, indent=2)
+    test_results = {}
+
+    logger.info(f"=== Testing with PRIMARY ckpt (best {key_eval}) ===")
+    trainer.load(primary_path)
+    test_results[f"primary_{key_eval}"] = trainer.evaluate(loaders["test"], split="test_primary")
+
+    if use_dual_ckpt and os.path.isfile(secondary_path):
+        logger.info(f"=== Testing with SECONDARY ckpt (best {secondary_metric}) ===")
+        trainer.load(secondary_path)
+        test_results[f"secondary_{secondary_metric}"] = trainer.evaluate(loaders["test"], split="test_secondary")
+
+    out_json = os.path.join(args.results_dir, f"{cli.dataset}{tag}_seed{cli.seed}_test.json")
+    with open(out_json, "w", encoding="utf-8") as f:
+        json.dump(test_results, f, indent=2)
+    logger.info(f"Test results saved: {out_json}")
 
 
 if __name__ == "__main__":

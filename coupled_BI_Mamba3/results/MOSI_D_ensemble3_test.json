@@ -1,0 +1,18 @@
+{
+  "ensemble": {
+    "MAE": 0.7610576152801514,
+    "Corr": 0.7864415645059156,
+    "Acc2": 0.8429878048780488,
+    "F1": 0.8433601952236602,
+    "Acc2_has0": 0.8250728862973761,
+    "F1_has0": 0.8248966456637373,
+    "Acc5": 0.478134110787172,
+    "Acc7": 0.42419825072886297
+  },
+  "n_ckpts": 3,
+  "ckpts": [
+    "checkpoints/MOSI_D_alpha03_ema_seed42_seed42_best_MAE.pt",
+    "checkpoints/MOSI_D_alpha03_ema_seed2024_seed2024_best_MAE.pt",
+    "checkpoints/MOSI_D_alpha03_ema_seed0_seed0_best_MAE.pt"
+  ]
+}

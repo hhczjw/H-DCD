@@ -183,11 +183,15 @@ class MSAClassifier(nn.Module):
         is_outproj_norm: bool = False,
         # --- 辅助分类头 (回归任务专用, 用于直接优化 Acc7) ---
         aux_num_classes: int = 0,   # 0 = 不启用; MOSI 推荐 7
+        # --- 模态级 sub_loss (回归任务专用, 对齐 MSAmba 的 sub_fc_T/A/V) ---
+        # 0.0 = 关闭; 推荐 0.3~0.5; 仅当 ism_depth>0 时生效
+        sub_loss_lambda: float = 0.0,
         device=None,
         dtype=None,
     ):
         super().__init__()
         self.aux_num_classes = int(aux_num_classes)
+        self.sub_loss_lambda = float(sub_loss_lambda)
         factory_kwargs = {"device": device, "dtype": dtype}
         self.task_type = task_type
         self.pool_type = pool_type
@@ -273,6 +277,21 @@ class MSAClassifier(nn.Module):
         else:
             self.aux_head = None
 
+        # 5.c) 模态级 sub_loss head (对齐 MSAmba sub_fc_T/A/V)
+        # 各模态 ISM 输出的 CLS token (D 维) → 1 维回归
+        # 仅当 sub_loss_lambda > 0 且 ism_depth > 0 且 task_type=regression 时启用
+        self.use_sub_loss = (
+            self.sub_loss_lambda > 0.0
+            and ism_depth > 0
+            and task_type == "regression"
+        )
+        if self.use_sub_loss:
+            self.sub_fc_T = nn.Linear(d_model, 1, **factory_kwargs)
+            self.sub_fc_A = nn.Linear(d_model, 1, **factory_kwargs)
+            self.sub_fc_V = nn.Linear(d_model, 1, **factory_kwargs)
+        else:
+            self.sub_fc_T = self.sub_fc_A = self.sub_fc_V = None
+
     # ------------------------------------------------------------------
     def _pool(self, x: torch.Tensor, pool_module=None) -> torch.Tensor:
         """x: (B, L, D) -> (B, D)"""
@@ -288,8 +307,12 @@ class MSAClassifier(nn.Module):
             return x.mean(dim=1)
 
     # ------------------------------------------------------------------
-    def _encode(self, text, audio, video, cu_seqlens=None):
-        """编码到融合后的三模态序列表征 (共享流水线)"""
+    def _encode(self, text, audio, video, cu_seqlens=None, return_ism_cls: bool = False):
+        """编码到融合后的三模态序列表征 (共享流水线)
+
+        Args:
+            return_ism_cls: True 时同时返回 ISM 阶段的 cls_T/A/V (sub_loss 用)
+        """
         # 0) 文本嵌入
         if self.use_bert and self.text_encoder is not None:
             text = self.text_encoder(text)
@@ -307,16 +330,24 @@ class MSAClassifier(nn.Module):
             xv = F.adaptive_avg_pool1d(xv.transpose(1, 2), Lt).transpose(1, 2)
 
         # 3) ISM
+        ism_cls_t = ism_cls_a = ism_cls_v = None
         if self.ism_depth > 0:
-            xt = self.ism_text(xt)
-            xa = self.ism_audio(xa)
-            xv = self.ism_video(xv)
+            if return_ism_cls:
+                xt, ism_cls_t = self.ism_text(xt, return_cls=True)
+                xa, ism_cls_a = self.ism_audio(xa, return_cls=True)
+                xv, ism_cls_v = self.ism_video(xv, return_cls=True)
+            else:
+                xt = self.ism_text(xt)
+                xa = self.ism_audio(xa)
+                xv = self.ism_video(xv)
 
         # 4) CoupledMamba3Fork
         out_a, out_v, out_l = xa, xv, xt
         for layer in self.layers:
             out_a, out_v, out_l = layer(out_a, out_v, out_l, cu_seqlens=cu_seqlens)
 
+        if return_ism_cls:
+            return out_l, out_a, out_v, ism_cls_t, ism_cls_a, ism_cls_v
         return out_l, out_a, out_v
 
     # ------------------------------------------------------------------
@@ -327,7 +358,13 @@ class MSAClassifier(nn.Module):
         video: torch.Tensor,
         cu_seqlens: Optional[torch.Tensor] = None,
     ):
-        out_l, out_a, out_v = self._encode(text, audio, video, cu_seqlens)
+        if self.use_sub_loss:
+            out_l, out_a, out_v, c_t, c_a, c_v = self._encode(
+                text, audio, video, cu_seqlens, return_ism_cls=True
+            )
+        else:
+            out_l, out_a, out_v = self._encode(text, audio, video, cu_seqlens)
+            c_t = c_a = c_v = None
 
         # 池化 + 拼接 + 分类头
         pl = self._pool(out_l, self.pool_text if self.pool_type == "attention" else None)
@@ -335,7 +372,20 @@ class MSAClassifier(nn.Module):
         pv = self._pool(out_v, self.pool_video if self.pool_type == "attention" else None)
         fused  = self.fusion_norm(torch.cat([pl, pa, pv], dim=-1))
         logits = self.head(fused)
-        return logits
+
+        # 当未启用任何辅助 head 时, 保持向后兼容: 直接返回 Tensor
+        has_aux = self.aux_head is not None
+        if not has_aux and not self.use_sub_loss:
+            return logits
+
+        out: dict = {"logits": logits}
+        if has_aux:
+            out["aux_logits"] = self.aux_head(fused)
+        if self.use_sub_loss:
+            out["sub_T"] = self.sub_fc_T(c_t)   # (B, 1)
+            out["sub_A"] = self.sub_fc_A(c_a)
+            out["sub_V"] = self.sub_fc_V(c_v)
+        return out
 
     # ------------------------------------------------------------------
     def get_modal_embeddings(

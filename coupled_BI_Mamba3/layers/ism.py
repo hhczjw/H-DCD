@@ -347,10 +347,18 @@ class ISMEncoder(nn.Module):
         # GPT-2 风格权重初始化 (对齐 MSAmba)
         self.layers.apply(partial(_init_weights, n_layer=depth))
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, return_cls: bool = False):
         """
         x: (B, L, D)   输入序列
-        返回: (B, L, D)  去掉 CLS token 后的输出 (保持与原接口兼容)
+
+        Args:
+            return_cls: True 时返回 (seq_without_cls, cls_token); False 保持旧接口只返回 seq
+
+        返回:
+            - return_cls=False (默认, 向后兼容): (B, L, D)  去掉 CLS token 的序列
+            - return_cls=True: (seq, cls)
+                seq: (B, L, D)   去掉 CLS token 的序列
+                cls: (B, D)      ISM 聚合后的 CLS token (用于 sub_loss / 跨模态引导)
         """
         B = x.size(0)
 
@@ -369,5 +377,9 @@ class ISMEncoder(nn.Module):
         if residual is not None:
             hidden_states = hidden_states + residual
 
-        # 返回去掉 CLS token 的序列 (B, L, D)
+        if return_cls:
+            cls = hidden_states[:, 0, :]            # (B, D)
+            seq = hidden_states[:, 1:, :]           # (B, L, D)
+            return seq, cls
+        # 向后兼容: 只返回 seq
         return hidden_states[:, 1:, :]
