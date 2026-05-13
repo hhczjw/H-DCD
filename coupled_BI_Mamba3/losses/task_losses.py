@@ -68,7 +68,7 @@ class RegressionWithDiscreteCE(nn.Module):
         self.num_aux_classes = int(num_aux_classes)
         self.clip_range = float(clip_range)
         self.reg_loss = nn.SmoothL1Loss(beta=regression_beta)
-        self.cls_loss = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
+        self.cls_loss = nn.CrossEntropyLoss(label_smoothing=label_smoothing, reduction='none')
 
     def _to_class_idx(self, labels: torch.Tensor) -> torch.Tensor:
         """连续标签 → 离散类别索引 [0, num_aux_classes)"""
@@ -89,7 +89,18 @@ class RegressionWithDiscreteCE(nn.Module):
         loss = self.reg_loss(reg_logits, labels)
         if self.alpha > 0.0 and aux_logits is not None:
             cls_idx = self._to_class_idx(labels)
-            loss = loss + self.alpha * self.cls_loss(aux_logits, cls_idx)
+            
+            # --- Distance-Aware Ordinal Penalty ---
+            ce_loss_raw = self.cls_loss(aux_logits, cls_idx)  # (B,) since reduction='none'
+            with torch.no_grad():
+                pred_idx = aux_logits.argmax(dim=-1)
+                dist = torch.abs(pred_idx - cls_idx).float()
+                # 【修改】将二次方惩罚改为柔和的线性惩罚，防止梯度爆炸吃掉ACC2
+                dist_weight = 1.0 + dist * 0.1
+                
+            ce_loss_weighted = (ce_loss_raw * dist_weight).mean()
+            loss = loss + self.alpha * ce_loss_weighted
+            
         if self.sub_loss_lambda > 0.0 and sub_outputs is not None:
             loss_sub = 0.0
             n_sub = 0
@@ -101,7 +112,8 @@ class RegressionWithDiscreteCE(nn.Module):
                 loss_sub = loss_sub + self.reg_loss(s, labels)
                 n_sub += 1
             if n_sub > 0:
-                loss = loss + self.sub_loss_lambda * loss_sub
+                # 问题 5 修复: 按分支数归一, 避免实际系数被 ×n_sub 放大
+                loss = loss + self.sub_loss_lambda * (loss_sub / n_sub)
         return loss
 
 

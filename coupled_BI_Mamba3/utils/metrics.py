@@ -24,7 +24,18 @@ def eval_regression(preds: np.ndarray, truths: np.ndarray) -> Dict[str, float]:
     truths = np.asarray(truths).reshape(-1)
 
     mae = float(np.mean(np.abs(preds - truths)))
-    corr = float(np.corrcoef(preds, truths)[0, 1]) if len(preds) > 1 else 0.0
+    # 审查4 修复: 早期 epoch / 退化模型 preds 或 truths 方差为 0 时 corrcoef → NaN
+    if len(preds) > 1:
+        # 任一序列方差≈0 直接报 0 (相关无意义)
+        p_std = float(np.std(preds))
+        t_std = float(np.std(truths))
+        if p_std < 1e-8 or t_std < 1e-8:
+            corr = 0.0
+        else:
+            c = np.corrcoef(preds, truths)[0, 1]
+            corr = float(c) if np.isfinite(c) else 0.0
+    else:
+        corr = 0.0
 
     # Acc-7: [-3,3] 离散
     preds_a7 = np.clip(preds, a_min=-3.0, a_max=3.0)

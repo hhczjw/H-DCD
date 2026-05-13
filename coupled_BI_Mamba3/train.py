@@ -35,6 +35,8 @@ def parse_args():
     p.add_argument("--dropout", type=float, default=None)
     p.add_argument("--warmup_ratio", type=float, default=None)
     p.add_argument("--grad_accum_steps", type=int, default=None)
+    p.add_argument("--grad_clip", type=float, default=None,
+                   help="梯度裁剪 max_norm; 默认 0.5. Mamba3 长训易出梯度尖峰, 不建议 > 1.0")
     p.add_argument("--early_stop", type=int, default=None)
     p.add_argument("--contrastive_weight", type=float, default=None)
     p.add_argument("--augment_prob", type=float, default=None)
@@ -50,6 +52,9 @@ def parse_args():
     p.add_argument("--ism_bimamba3_fusion", type=str, default=None,
                    choices=["add_divide2", "concat_proj", "gated", "add"])
     p.add_argument("--ism_bimamba3_is_mimo", type=lambda x: x.lower() == "true", default=None)
+    # ---- 跨模态 V_self 注入 (问题 ③ 修复) ----
+    p.add_argument("--v_self_ratio", type=float, default=None,
+                   help="cross-modal V 通道中 tgt 自身的比例; 0=关闭(默认), 推荐 0.2~0.4")
     # ---- 复合损失 (回归 + 离散 CE 辅助头, 直接攻 Acc7) ----
     p.add_argument("--aux_cls_weight", type=float, default=None,
                    help="辅助分类 loss 权重 alpha; 0 = 关闭. 推荐 0.1~0.5")
@@ -61,6 +66,11 @@ def parse_args():
     p.add_argument("--key_eval", type=str, default=None,
                    choices=["Acc2", "MAE", "F1", "Loss", "Acc7"],
                    help="early stop 监控指标; 默认沿用 config.json")
+    # ---- 辅助 ckpt 指标 (dual ckpt) ----
+    p.add_argument("--secondary_metric", type=str, default=None,
+                   choices=["MAE", "Acc7", "Acc5", "Acc2", "F1", "none"],
+                   help="辅助 ckpt 监控指标; 默认: regression -> MAE; 设为 'none' 关闭. "
+                        "想冲 Acc7 时建议设为 Acc7. 不能与 --key_eval 相同, 否则自动关闭辅助 ckpt.")
     # ---- EMA 影子权重 ----
     p.add_argument("--ema_decay", type=float, default=None,
                    help="EMA 衰减系数; >0 启用, 推荐 0.999. 0/None=关闭")
@@ -90,6 +100,7 @@ def main():
     _override(args, cli, "dropout")
     _override(args, cli, "warmup_ratio")
     _override(args, cli, "grad_accum_steps")
+    _override(args, cli, "grad_clip")
     _override(args, cli, "early_stop")
     _override(args, cli, "contrastive_weight")
     _override(args, cli, "augment_prob")
@@ -102,6 +113,7 @@ def main():
     _override(args, cli, "ism_mixer_type")
     _override(args, cli, "ism_bimamba3_fusion")
     _override(args, cli, "ism_bimamba3_is_mimo")
+    _override(args, cli, "v_self_ratio")
     # 复合损失
     _override(args, cli, "aux_cls_weight")
     _override(args, cli, "aux_num_classes")
@@ -156,6 +168,8 @@ def main():
         mimo_rank=args.mimo_rank,
         chunk_size=args.chunk_size,
         is_outproj_norm=args.is_outproj_norm,
+        v_self_ratio=float(getattr(args, "v_self_ratio", 0.0) or 0.0),
+        multi_task=bool(getattr(args, "multi_task", False)),
         aux_num_classes=int(getattr(args, "aux_num_classes", 0)),
         sub_loss_lambda=float(getattr(args, "sub_loss_lambda", 0.0) or 0.0),
     )
@@ -175,9 +189,27 @@ def main():
     primary_path = os.path.join(args.checkpoints_dir, f"{cli.dataset}{tag}_seed{cli.seed}_best_{key_eval}.pt")
 
     # 仅回归任务且 KeyEval != MAE 时启用辅助 ckpt
-    use_dual_ckpt = (args.task_type == "regression") and (key_eval != "MAE")
-    best_secondary = 1e9
-    secondary_metric = "MAE"
+    # ---- 辅助 ckpt 指标解析 (CLI 优先, 默认 MAE) ----
+    # 规则:
+    #   - cli.secondary_metric == "none"            -> 关闭辅助 ckpt
+    #   - cli.secondary_metric is not None          -> 使用 CLI 指定值
+    #   - cli.secondary_metric is None & 回归任务   -> 默认 MAE (向后兼容)
+    #   - 与 key_eval 相同                          -> 自动关闭, 避免重复
+    if cli.secondary_metric is None:
+        secondary_metric = "MAE" if args.task_type == "regression" else None
+    elif cli.secondary_metric == "none":
+        secondary_metric = None
+    else:
+        secondary_metric = cli.secondary_metric
+
+    use_dual_ckpt = (
+        args.task_type == "regression"
+        and secondary_metric is not None
+        and secondary_metric != key_eval
+    )
+    # 辅助指标方向 (higher_better)
+    sec_higher_better = (secondary_metric not in ("Loss", "MAE")) if secondary_metric else False
+    best_secondary = (-1e9 if sec_higher_better else 1e9) if use_dual_ckpt else None
     secondary_path = (
         os.path.join(args.checkpoints_dir, f"{cli.dataset}{tag}_seed{cli.seed}_best_{secondary_metric}.pt")
         if use_dual_ckpt else None
@@ -185,7 +217,7 @@ def main():
 
     logger.info(
         f"Early stop monitor: {key_eval} | higher_better={higher_better} | "
-        f"dual_ckpt={'on(' + secondary_metric + ')' if use_dual_ckpt else 'off'}"
+        f"dual_ckpt={'on(' + str(secondary_metric) + ',higher_better=' + str(sec_higher_better) + ')' if use_dual_ckpt else 'off'}"
     )
 
     for epoch in range(1, int(args.epochs) + 1):
@@ -203,10 +235,12 @@ def main():
         else:
             patience += 1
 
-        # 辅助 ckpt: 回归任务下用 MAE 单独保存
+        # 辅助 ckpt: 用 secondary_metric 单独保存
         if use_dual_ckpt:
-            sec_score = val.get(secondary_metric, 1e9)
-            if sec_score < best_secondary:
+            sec_default = -1e9 if sec_higher_better else 1e9
+            sec_score = val.get(secondary_metric, sec_default)
+            sec_improved = (sec_score > best_secondary) if sec_higher_better else (sec_score < best_secondary)
+            if sec_improved:
                 best_secondary = sec_score
                 trainer.save(secondary_path)
                 logger.info(f"  >> New best {secondary_metric}={sec_score:.4f}  [secondary ckpt]")

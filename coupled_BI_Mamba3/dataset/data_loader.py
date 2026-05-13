@@ -246,57 +246,105 @@ class MMDataset(Dataset):
         self.vision = _fit(self.vision, L_v)
 
     def _normalize(self):
-        """按特征维度做均值 / 方差归一化 (audio + vision)."""
+        """按特征维度做均值 / 方差归一化 (audio + vision).
+
+        **修复 (审查2):** 统一用 train split 统计量, 避免 valid/test 用各自统计量
+        导致评估口径不一致.
+            - mode=="train": 计算 mean/std 并存入 self._norm_stats (类级缓存)
+            - mode=="valid"/"test": 读取 train 的 mean/std, 若未加载则回退本地统计 (向后兼容)
+
+        统计口径: 对 audio/vision 各自在 (N, L) 轴取均值 (按特征维 D 保留).
+        注意: train mean/std 含 pad 区 (全 0), 会把 mean 拉向 0, std 变小; 这与原版行为一致,
+              避免不同 split pad 比例差异造成的额外偏移.
+        """
         eps = 1e-6
+        cls = type(self)
+        if not hasattr(cls, "_norm_stats"):
+            cls._norm_stats = {}      # key: (dataset_name, attr) -> (mean, std)
+
         for attr in ("audio", "vision"):
             x = getattr(self, attr)
-            mean = x.mean(axis=(0, 1), keepdims=True)
-            std = x.std(axis=(0, 1), keepdims=True)
+            stats_key = (self.dataset_name, attr)
+
+            if self.mode == "train":
+                mean = x.mean(axis=(0, 1), keepdims=True)
+                std = x.std(axis=(0, 1), keepdims=True)
+                cls._norm_stats[stats_key] = (mean, std)
+                logger.info(f"[{self.mode}] normalize {attr}: stats computed from TRAIN "
+                            f"(mean.shape={mean.shape}, std_mean={float(std.mean()):.4f})")
+            else:
+                stats = cls._norm_stats.get(stats_key, None)
+                if stats is None:
+                    # 向后兼容: valid/test 先于 train 构造时退回本地统计 + WARNING
+                    mean = x.mean(axis=(0, 1), keepdims=True)
+                    std = x.std(axis=(0, 1), keepdims=True)
+                    logger.warning(
+                        f"[{self.mode}] normalize {attr}: TRAIN stats not found, "
+                        f"fallback to local stats (this breaks eval consistency). "
+                        f"Make sure MMDataset(train) is constructed first."
+                    )
+                else:
+                    mean, std = stats
+                    logger.info(f"[{self.mode}] normalize {attr}: reuse TRAIN stats")
+
             setattr(self, attr, (x - mean) / (std + eps))
 
     # ---------- Dataset API ----------
     def __len__(self) -> int:
         return self.n_samples
 
-    def _augment_feature(self, feat: np.ndarray) -> np.ndarray:
+    def _augment_feature(self, feat: np.ndarray, valid_len: Optional[int] = None) -> np.ndarray:
         """
-        对单个样本的特征 (L, D) 做数据增强:
-            1. 随机时间 mask: 连续 mask 一段时间步
-            2. 随机特征 dropout: 某些特征维度置零
-            3. 高斯噪声: 添加微小扰动
+        对单个样本的特征 (L, D) 做数据增强 (问题 ④ 修复版):
+            - 以 augment_prob 概率决定是否对该样本增强;
+            - 若增强, 从三种里随机选 1 种 (避免叠加导致 SNR 大幅下降):
+                1. 时间 mask  (仅在 [0, valid_len) 内做)
+                2. 特征维度 dropout
+                3. 高斯噪声  (仅在 [0, valid_len) 内加, 保护 pad 为 0)
+        旧版 (已废弃): 三种各独立 prob 施加, 单样本 P(>=1种)=87.5%, P(全开)=12.5%.
+
+        valid_len: 真实有效长度 (audio_lengths/vision_lengths). None 则按全 L 处理.
         """
         L, D = feat.shape
-        p = self.augment_prob
+        # 第一道闸: 是否增强该样本
+        if random.random() >= self.augment_prob:
+            return feat
 
-        # 1) 时间 mask: 随机遮蔽连续 10-20% 的时间步
-        if random.random() < p:
-            mask_len = max(1, int(L * random.uniform(0.1, 0.2)))
-            start = random.randint(0, max(0, L - mask_len))
+        # 真实有效区间 [0, vL)
+        vL = L if valid_len is None else int(min(max(valid_len, 1), L))
+
+        # 第二道闸: 三选一
+        choice = random.randint(0, 2)
+        if choice == 0:
+            # 时间 mask: 仅在 [0, vL) 内
+            mask_len = max(1, int(vL * random.uniform(0.1, 0.2)))
+            start = random.randint(0, max(0, vL - mask_len))
             feat[start:start + mask_len, :] = 0.0
-
-        # 2) 特征维度 dropout: 随机 10-20% 的维度置零
-        if random.random() < p:
+        elif choice == 1:
+            # 特征维度 dropout: 整列置 0 (pad 行本就是 0, 不影响)
             n_drop = max(1, int(D * random.uniform(0.1, 0.2)))
             drop_dims = random.sample(range(D), n_drop)
             feat[:, drop_dims] = 0.0
-
-        # 3) 高斯噪声
-        if random.random() < p:
-            noise_std = feat.std() * 0.05  # 5% 标准差的噪声
-            noise = np.random.randn(*feat.shape).astype(feat.dtype) * noise_std
-            feat = feat + noise
-
+        else:
+            # 高斯噪声: 仅给 [0, vL) 加, pad 区域保持 0
+            valid_region = feat[:vL]
+            noise_std = valid_region.std() * 0.05 if valid_region.size > 0 else 0.0
+            if noise_std > 0:
+                noise = (np.random.randn(vL, D).astype(feat.dtype) * noise_std)
+                feat[:vL] = valid_region + noise
         return feat
 
     def __getitem__(self, idx: int) -> Dict[str, Any]:
         audio_feat = self.audio[idx].copy()
         vision_feat = self.vision[idx].copy()
 
-        # --- 数据增强 (仅训练集) ---
+        # --- 数据增强 (仅训练集, 保护 pad 位置) ---
+        audio_vL  = int(self.audio_lengths[idx])  if self.audio_lengths  is not None else None
+        vision_vL = int(self.vision_lengths[idx]) if self.vision_lengths is not None else None
         if self.augment_audio:
-            audio_feat = self._augment_feature(audio_feat)
+            audio_feat = self._augment_feature(audio_feat, valid_len=audio_vL)
         if self.augment_vision:
-            vision_feat = self._augment_feature(vision_feat)
+            vision_feat = self._augment_feature(vision_feat, valid_len=vision_vL)
 
         sample = {
             "text": torch.from_numpy(self.text[idx]),

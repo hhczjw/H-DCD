@@ -347,35 +347,67 @@ class ISMEncoder(nn.Module):
         # GPT-2 风格权重初始化 (对齐 MSAmba)
         self.layers.apply(partial(_init_weights, n_layer=depth))
 
-    def forward(self, x: torch.Tensor, return_cls: bool = False):
+    def forward(self, x: torch.Tensor, mask: torch.Tensor = None, return_cls: bool = False):
         """
         x: (B, L, D)   输入序列
+        mask: (B, L) bool, True=valid, False=pad  (可选, 用于 padding-aware 训练)
 
         Args:
+            mask: 序列有效位掩码。若提供, 在以下位置做 zero-out, 防止 pad 区污染 BiMamba 状态:
+                  - 入口 (冗余保险, 因 classifier._encode 已 zero-out 过)
+                  - 每个 Block_GLCE 之后 (BiMamba conv1d/SSM 会把 0 输入经过 bias 后变成非 0)
+                  - 最终 hidden_states (在切 CLS / seq 之前)
+                  CLS token 位置永远保持 valid (mask 拼接时左侧 pad True).
             return_cls: True 时返回 (seq_without_cls, cls_token); False 保持旧接口只返回 seq
 
         返回:
-            - return_cls=False (默认, 向后兼容): (B, L, D)  去掉 CLS token 的序列
+            - return_cls=False (默认, 向后兼容): (B, L, D)  去掉 CLS token 的序列 (已 zero-out pad)
             - return_cls=True: (seq, cls)
-                seq: (B, L, D)   去掉 CLS token 的序列
+                seq: (B, L, D)   去掉 CLS token 的序列 (已 zero-out pad)
                 cls: (B, D)      ISM 聚合后的 CLS token (用于 sub_loss / 跨模态引导)
         """
-        B = x.size(0)
+        B, L, _ = x.shape
+
+        # ---- mask 前处理: 扩展 CLS 位 (CLS 永远 valid) ----
+        if mask is not None:
+            # mask: (B, L) -> mask_ext: (B, L+1)  CLS 位填 True
+            cls_mask = torch.ones(B, 1, dtype=mask.dtype, device=mask.device)
+            mask_ext = torch.cat([cls_mask, mask], dim=1)        # (B, L+1)
+            mask_ext_f = mask_ext.unsqueeze(-1).to(x.dtype)      # (B, L+1, 1)
+            # 入口冗余 zero-out (classifier 层应已做过, 但 pos_embed 之前 x 是干净的)
+            x = x * mask.unsqueeze(-1).to(x.dtype)
+        else:
+            mask_ext_f = None
 
         # 拼接 CLS token + 位置编码 (对齐 MSAmba)
         cls_tokens = self.cls_token.expand(B, -1, -1)
         x = torch.cat([cls_tokens, x], dim=1)       # (B, L+1, D)
         x = x + self.pos_embed                       # (B, L+1, D)
 
+        # 注意: pos_embed 加到 pad 位也会有非 0 值, 这里立刻 zero-out
+        # (CLS 位 mask_ext 为 True, 不受影响)
+        if mask_ext_f is not None:
+            x = x * mask_ext_f
+
         # 双流残差传递 (对齐 MSAmba 的 forward 循环)
         residual = None
         hidden_states = x
         for layer in self.layers:
             hidden_states, residual = layer(hidden_states, residual)
+            # 每层 BiMamba 之后立刻 zero-out pad 位
+            # (conv1d 的 bias / SSM 的状态会让 0 输入变成非 0, 阻止其污染下层与跨模态)
+            if mask_ext_f is not None:
+                hidden_states = hidden_states * mask_ext_f
+                if residual is not None:
+                    residual = residual * mask_ext_f
 
         # 最终: hidden_states + residual (对齐 MSAmba 取 cls_token 前的处理)
         if residual is not None:
             hidden_states = hidden_states + residual
+
+        # 最终 zero-out (双保险, 防 LayerNorm/RMSNorm 后 pad 区漂移)
+        if mask_ext_f is not None:
+            hidden_states = hidden_states * mask_ext_f
 
         if return_cls:
             cls = hidden_states[:, 0, :]            # (B, D)

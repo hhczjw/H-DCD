@@ -99,11 +99,23 @@ class CrossMamba3Cell(nn.Module):
         mimo_rank: int = 4,
         chunk_size: int = 64,
         modality_keys: Tuple[str, str, str] = ("audio", "visual", "lexical"),
+        v_self_ratio: float = 0.0,
         device=None,
         dtype=None,
     ):
+        """
+        Args (新增):
+            v_self_ratio: float in [0, 1]
+                V 通道中目标模态自身贡献的比例:
+                    x = v_self_ratio * x_default(tgt) + (1 - v_self_ratio) * x_src_weighted
+                0.0 = 关闭(默认, 严格跨模态, 与旧行为一致);
+                推荐 0.2 ~ 0.4 (经验值, 给 tgt 一个 V 通道锚, 防止 src 含噪带偏).
+        """
         factory_kwargs = {"device": device, "dtype": dtype}
         super().__init__()
+        assert 0.0 <= float(v_self_ratio) <= 1.0, \
+            f"v_self_ratio 必须 ∈ [0,1], got {v_self_ratio}"
+        self.v_self_ratio = float(v_self_ratio)
 
         # ---------- 与 Mamba3.__init__ 完全一致的超参 ----------
         self.d_model = d_model
@@ -244,7 +256,10 @@ class CrossMamba3Cell(nn.Module):
             dim=-1,
         )
         z = rearrange(z, "b l (h p) -> b l h p", p=self.headdim)
-        # x_default 暂不使用 (策略 A 用 src 加权版本); 保留参数以便后续策略切换
+        # x_default: tgt 自身的 V 候选, 形状与 src 加权 V 一致 (B, L, H, P)
+        # 当 v_self_ratio > 0 时, 与 src 加权 V 做凸组合 (问题 ③ 修复: 给 V 通道一个 tgt 锚)
+        if self.v_self_ratio > 0.0:
+            x_default = rearrange(x_default, "b l (h p) -> b l h p", p=self.headdim)
 
         # ---------------- 2) tgt 出 C (Q) ----------------
         C = self.c_proj_tgt(u_tgt)
@@ -265,6 +280,9 @@ class CrossMamba3Cell(nn.Module):
         V1 = self.v_projs[s1_key](u_src1)
         x = w0 * V0 + w1 * V1
         x = rearrange(x, "b l (h p) -> b l h p", p=self.headdim)
+        # V_self 融合 (问题 ③): 给 V 一个 tgt 自身锚, 防止 src 含噪带偏 tgt
+        if self.v_self_ratio > 0.0:
+            x = self.v_self_ratio * x_default + (1.0 - self.v_self_ratio) * x
 
         # ---------------- 4) ADT / DT (照抄 Mamba3) ----------------
         _A = -F.softplus(dd_A.to(torch.float32))
@@ -350,6 +368,7 @@ class CoupledMamba3Fork(nn.Module):
         is_mimo: bool = False,
         mimo_rank: int = 4,
         chunk_size: int = 64,
+        v_self_ratio: float = 0.0,
         device=None,
         dtype=None,
     ):
@@ -364,6 +383,7 @@ class CoupledMamba3Fork(nn.Module):
             dt_min=dt_min, dt_max=dt_max, dt_init_floor=dt_init_floor, A_floor=A_floor,
             is_outproj_norm=is_outproj_norm, is_mimo=is_mimo, mimo_rank=mimo_rank,
             chunk_size=chunk_size, modality_keys=self.modalities,
+            v_self_ratio=v_self_ratio,
             device=device, dtype=dtype,
         )
 

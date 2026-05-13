@@ -95,6 +95,10 @@ class Trainer:
         # --- gradient accumulation ---
         self.grad_accum_steps = int(getattr(args, "grad_accum_steps", 1))
 
+        # --- gradient clipping (训练后期数值稳定性) ---
+        # Mamba3 长训末期容易出现梯度尖峰, 适当收紧 max_norm 可显著降低 NaN 概率
+        self.grad_clip = float(getattr(args, "grad_clip", 0.5))
+
         # --- 复合损失 (回归 + 离散 CE 辅助头, 仅回归任务启用) ---
         self.aux_cls_weight = float(getattr(args, "aux_cls_weight", 0.0))
         self.aux_num_classes = int(getattr(args, "aux_num_classes", 0))
@@ -151,7 +155,7 @@ class Trainer:
         self.logger.info(
             f"Optimizer: AdamW | bert_lr={bert_lr} ({len(bert_params)} params) | "
             f"main_lr={main_lr} ({len(other_params)} params) | wd={wd} | "
-            f"grad_accum={self.grad_accum_steps}"
+            f"grad_accum={self.grad_accum_steps} | grad_clip={self.grad_clip}"
         )
         if self.use_composite_loss:
             self.logger.info(
@@ -212,7 +216,13 @@ class Trainer:
         return out
 
     def _forward_pred(self, batch: Dict[str, Any]):
-        return self.model(text=batch["text"], audio=batch["audio"], video=batch["vision"])
+        return self.model(
+            text=batch["text"],
+            audio=batch["audio"],
+            video=batch["vision"],
+            audio_lengths=batch.get("audio_lengths", None),
+            vision_lengths=batch.get("vision_lengths", None),
+        )
 
     @staticmethod
     def _split_outputs(out):
@@ -239,27 +249,41 @@ class Trainer:
     def _forward_with_contrastive(self, batch: Dict[str, Any]):
         """前向 + 对比损失 (共享 _encode, 避免重复计算)"""
         model = self.model
-        # use_sub_loss 时需要 ISM cls
-        need_sub = getattr(model, "use_sub_loss", False)
-        if need_sub:
-            out_l, out_a, out_v, c_t, c_a, c_v = model._encode(
-                batch["text"], batch["audio"], batch["vision"], return_ism_cls=True
+        audio_lengths = batch.get("audio_lengths", None)
+        vision_lengths = batch.get("vision_lengths", None)
+        # 需提取 CLS 的情况：使用了 sub_loss，或者使用了 aux_head(因为现在 aux_head 需要纯净端)
+        need_cls = getattr(model, "use_sub_loss", False) or getattr(model, "aux_head", None) is not None
+        if need_cls:
+            (out_l, out_a, out_v,
+             mask_t, mask_a, mask_v,
+             c_t, c_a, c_v) = model._encode(
+                batch["text"], batch["audio"], batch["vision"], return_ism_cls=True,
+                audio_lengths=audio_lengths, vision_lengths=vision_lengths,
             )
         else:
-            out_l, out_a, out_v = model._encode(
-                batch["text"], batch["audio"], batch["vision"]
+            out_l, out_a, out_v, mask_t, mask_a, mask_v = model._encode(
+                batch["text"], batch["audio"], batch["vision"],
+                audio_lengths=audio_lengths, vision_lengths=vision_lengths,
             )
             c_t = c_a = c_v = None
-        # 池化
-        pl = model._pool(out_l, model.pool_text if model.pool_type == "attention" else None)
-        pa = model._pool(out_a, model.pool_audio if model.pool_type == "attention" else None)
-        pv = model._pool(out_v, model.pool_video if model.pool_type == "attention" else None)
+        # 池化 (带 mask)
+        pl = model._pool(out_l, model.pool_text  if model.pool_type == "attention" else None, mask=mask_t)
+        pa = model._pool(out_a, model.pool_audio if model.pool_type == "attention" else None, mask=mask_a)
+        pv = model._pool(out_v, model.pool_video if model.pool_type == "attention" else None, mask=mask_v)
         # 分类头
         fused = model.fusion_norm(torch.cat([pl, pa, pv], dim=-1))
         logits = model.head(fused)
-        aux_logits = model.aux_head(fused) if getattr(model, "aux_head", None) is not None else None
+        
+        aux_logits = None
+        if getattr(model, "aux_head", None) is not None:
+            # 双通解耦：将独立提纯的 Audio 和 Video 加入 aux_head
+            pure_a = model.aux_a_proj(c_a)
+            pure_v = model.aux_v_proj(c_v)
+            aux_feat = torch.cat([fused, pure_a, pure_v], dim=-1)
+            aux_logits = model.aux_head(aux_feat)
+            
         sub_outputs = None
-        if need_sub:
+        if getattr(model, "use_sub_loss", False):
             sub_outputs = (
                 model.sub_fc_T(c_t),
                 model.sub_fc_A(c_a),
@@ -292,7 +316,16 @@ class Trainer:
             label = batch["labels"]["M"] if not self.is_multi_task else None
 
             if self.is_multi_task:
-                loss = self.criterion({"M": logits.squeeze(-1)}, batch["labels"])
+                # 审查3 修复: 原来只把 M 传给损失, T/A/V 被丢弃, task_weights 形同虚设.
+                # 现在利用 sub_fc_T/A/V (模型端的模态级回归头) 作为 T/A/V preds.
+                # 要求: model 需设 sub_loss_lambda > 0 (或由 multi_task 自动启用) 使 sub_fc_* 生效.
+                mt_preds = {"M": logits.squeeze(-1) if logits.ndim > 1 else logits}
+                if sub_outputs is not None:
+                    s_t, s_a, s_v = sub_outputs
+                    if s_t is not None: mt_preds["T"] = s_t.squeeze(-1) if s_t.ndim > 1 else s_t
+                    if s_a is not None: mt_preds["A"] = s_a.squeeze(-1) if s_a.ndim > 1 else s_a
+                    if s_v is not None: mt_preds["V"] = s_v.squeeze(-1) if s_v.ndim > 1 else s_v
+                loss = self.criterion(mt_preds, batch["labels"])
             elif self.use_composite_loss:
                 loss = self.criterion(logits, aux_logits, label, sub_outputs=sub_outputs)
             elif self.task_type == "regression":
@@ -316,7 +349,7 @@ class Trainer:
             loss.backward()
 
             if (step_i + 1) % self.grad_accum_steps == 0 or (step_i + 1) == len(loader):
-                torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip)
                 self.optimizer.step()
                 self.scheduler.step()
                 self.optimizer.zero_grad()
@@ -343,10 +376,36 @@ class Trainer:
         try:
             self.model.eval()
             all_p, all_t = [], []
+            total_loss, total_n = 0.0, 0
             for batch in loader:
                 batch = self._to_device(batch)
                 out = self._forward_pred(batch)
                 logits, _ = self._split_logits(out)
+                aux_logits = out.get("aux_logits") if isinstance(out, dict) else None
+                sub_outputs = None
+                if isinstance(out, dict) and out.get("sub_T") is not None:
+                    sub_outputs = (out.get("sub_T"), out.get("sub_A"), out.get("sub_V"))
+
+                label = batch["labels"]["M"]
+                if self.task_type == "regression":
+                    if self.is_multi_task:
+                        mt_preds = {"M": logits.squeeze(-1) if logits.ndim > 1 else logits}
+                        if sub_outputs is not None:
+                            s_t, s_a, s_v = sub_outputs
+                            if s_t is not None: mt_preds["T"] = s_t.squeeze(-1) if s_t.ndim > 1 else s_t
+                            if s_a is not None: mt_preds["A"] = s_a.squeeze(-1) if s_a.ndim > 1 else s_a
+                            if s_v is not None: mt_preds["V"] = s_v.squeeze(-1) if s_v.ndim > 1 else s_v
+                        loss = self.criterion(mt_preds, batch["labels"])
+                    elif self.use_composite_loss:
+                        loss = self.criterion(logits, aux_logits, label, sub_outputs=sub_outputs)
+                    else:
+                        loss = self.criterion(logits.squeeze(-1), label)
+                else:
+                    loss = self.criterion(logits, label)
+
+                bs = logits.size(0)
+                total_loss += float(loss.item()) * bs
+                total_n += bs
                 if self.task_type == "regression":
                     all_p.append(logits.squeeze(-1).cpu().numpy())
                 else:
@@ -355,6 +414,7 @@ class Trainer:
             preds = np.concatenate(all_p, axis=0)
             truths = np.concatenate(all_t, axis=0)
             metrics = eval_regression(preds, truths) if self.task_type == "regression" else eval_classification(preds, truths)
+            metrics["Loss"] = total_loss / max(total_n, 1)
         finally:
             if ema_active:
                 self.ema.restore(self.model)
