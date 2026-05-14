@@ -170,8 +170,6 @@ def main():
         is_outproj_norm=args.is_outproj_norm,
         v_self_ratio=float(getattr(args, "v_self_ratio", 0.0) or 0.0),
         multi_task=bool(getattr(args, "multi_task", False)),
-        aux_num_classes=int(getattr(args, "aux_num_classes", 0)),
-        sub_loss_lambda=float(getattr(args, "sub_loss_lambda", 0.0) or 0.0),
     )
 
     # 3) Trainer

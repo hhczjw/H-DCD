@@ -7,16 +7,6 @@
     - SIMS / SIMS2         (多任务: regression_labels + T/A/V 子任务标签)
     - IEMOCAP / MELD       (分类: classification_labels)
 
-参考实现:
-    H-DCD/dataset/data_loader.py (作者原版)
-    并扩展为更标准的 MMSA 风格接口。
-
-改进:
-    - 添加训练阶段的 audio/vision 数据增强 (特征级别)
-      * 随机时间 mask: 随机遮蔽连续时间步 → 0
-      * 随机特征 dropout: 按概率随机置零部分特征维度
-      * 高斯噪声: 添加微小噪声提升鲁棒性
-
 约定:
     输入 .pkl 数据布局:
         {
@@ -28,8 +18,6 @@
                 "regression_labels": np.ndarray,         # (N,)  MOSI/MOSEI/SIMS
                 "classification_labels": np.ndarray,     # (N,)  IEMOCAP/MELD
                 "regression_labels_T/A/V": np.ndarray,   # (N,)  SIMS 多任务
-                "audio_lengths": np.ndarray,             # 非对齐 audio 真实长度 (可选)
-                "vision_lengths": np.ndarray,            # 非对齐 vision 真实长度 (可选)
                 "id": List[str]                          # 样本 id
             },
             "valid": {...}, "test": {...}
@@ -40,8 +28,6 @@
         "text":    Tensor (B, L_t, D_t)  或 (B, 3, L_t) 当 use_bert=True
         "audio":   Tensor (B, L_a, D_a)
         "vision":  Tensor (B, L_v, D_v)
-        "audio_lengths":  LongTensor (B,)   (非对齐时)
-        "vision_lengths": LongTensor (B,)   (非对齐时)
         "labels":  {
             "M":   Tensor (B,),   # 主任务标签
             "T":   Tensor (B,),   # SIMS 多任务可选
@@ -59,8 +45,6 @@ import logging
 import os
 import pickle
 from typing import Any, Dict, List, Optional
-
-import random
 
 import numpy as np
 import torch
@@ -91,11 +75,6 @@ class MMDataset(Dataset):
         self.use_bert = bool(getattr(args, "use_bert", True))
         self.need_truncated = bool(getattr(args, "need_data_aligned", False)) is False  # 非对齐时才截断/补齐
         self.need_normalize = bool(getattr(args, "need_normalized", False))
-
-        # ---- 数据增强配置 (仅训练集) ----
-        self.augment_audio = bool(getattr(args, "augment_audio", False)) and mode == "train"
-        self.augment_vision = bool(getattr(args, "augment_vision", False)) and mode == "train"
-        self.augment_prob = float(getattr(args, "augment_prob", 0.3))
 
         # ---- 1) 加载 pickle ----
         data_path = args.featurePath
@@ -144,29 +123,16 @@ class MMDataset(Dataset):
                 raise KeyError(f"classification labels missing for {self.dataset_name}")
             self.labels["M"] = np.asarray(split[label_key], dtype=np.int64)
 
-        # ---- 4) 非对齐序列长度 (可选) ----
-        self.audio_lengths = (
-            np.asarray(split["audio_lengths"], dtype=np.int64)
-            if "audio_lengths" in split else None
-        )
-        self.vision_lengths = (
-            np.asarray(split["vision_lengths"], dtype=np.int64)
-            if "vision_lengths" in split else None
-        )
-
-        # ---- 5) sample id ----
+        # ---- 4) sample id ----
         self.ids = list(split.get("id", [f"{mode}_{i}" for i in range(len(self.labels['M']))]))
 
-        # ---- 6) 外部特征替换 (动态 ablation) ----
-        self._maybe_replace_external_features()
-
-        # ---- 7) 截断 + 归一化 ----
+        # ---- 5) 截断 + 归一化 ----
         if self.need_truncated:
             self._truncate(getattr(args, "seq_lens", None))
         if self.need_normalize:
             self._normalize()
 
-        # ---- 8) 形状校验 ----
+        # ---- 6) 形状校验 ----
         self.n_samples = len(self.labels["M"])
         assert self.audio.shape[0] == self.n_samples, "audio N mismatch"
         assert self.vision.shape[0] == self.n_samples, "vision N mismatch"
@@ -185,44 +151,23 @@ class MMDataset(Dataset):
     @staticmethod
     def _maybe_transpose(x: np.ndarray) -> np.ndarray:
         """
-        统一为 (N, L, D). 如果检测到 (N, D, L) (即 D < L, 且与作者原代码 transpose(1,2) 一致),
-        则不动手; 这里采用 H-DCD 的策略: 当 axis=1 大于 axis=2 时保持, 否则不变.
-        实际场景中: BERT 分词后 L>>D, GLoVe 词向量 L<D.
-
-        简洁策略: 强制 (N, L, D) — 如果 shape[1] < shape[2] 视为 (N, D, L), 转置.
+        统一为 (N, L, D). 如果检测到 (N, D, L) (即 D < L), 则转置.
         """
         if x.ndim != 3:
             return x
-        # 经验: 通常 D < L, 若 D > L 不转
         if x.shape[1] < x.shape[2]:
             return np.transpose(x, (0, 2, 1))
         return x
 
-    def _maybe_replace_external_features(self):
-        """支持 ablation 时把某模态特征替换为外部 .npy。"""
-        for tag, attr in (("T", "text"), ("A", "audio"), ("V", "vision")):
-            key = f"feature_{tag}"
-            path = getattr(self.args, key, "")
-            if path and os.path.isfile(path):
-                logger.info(f"[{self.mode}] Replace {attr} feature with: {path}")
-                arr = np.load(path, allow_pickle=True)
-                if isinstance(arr, np.ndarray) and arr.dtype == object:
-                    # 可能是 dict 包装
-                    arr = arr.item().get(self.mode, arr)
-                arr = self._maybe_transpose(np.asarray(arr, dtype=np.float32))
-                setattr(self, attr, arr)
-
     def _truncate(self, seq_lens: Optional[List[int]]):
         """
         非对齐序列下按 seq_lens=[L_t, L_a, L_v] 截断 / pad.
-        seq_lens 长度应为 3, 与 (text, audio, vision) 对应.
         """
         if not seq_lens or len(seq_lens) != 3:
             return
         L_t, L_a, L_v = seq_lens
 
         def _fit(x: np.ndarray, L: int) -> np.ndarray:
-            # x: (N, cur_L, D)
             cur = x.shape[1]
             if cur == L:
                 return x
@@ -246,118 +191,26 @@ class MMDataset(Dataset):
         self.vision = _fit(self.vision, L_v)
 
     def _normalize(self):
-        """按特征维度做均值 / 方差归一化 (audio + vision).
-
-        **修复 (审查2):** 统一用 train split 统计量, 避免 valid/test 用各自统计量
-        导致评估口径不一致.
-            - mode=="train": 计算 mean/std 并存入 self._norm_stats (类级缓存)
-            - mode=="valid"/"test": 读取 train 的 mean/std, 若未加载则回退本地统计 (向后兼容)
-
-        统计口径: 对 audio/vision 各自在 (N, L) 轴取均值 (按特征维 D 保留).
-        注意: train mean/std 含 pad 区 (全 0), 会把 mean 拉向 0, std 变小; 这与原版行为一致,
-              避免不同 split pad 比例差异造成的额外偏移.
-        """
+        """按特征维度做均值 / 方差归一化 (audio + vision)."""
         eps = 1e-6
-        cls = type(self)
-        if not hasattr(cls, "_norm_stats"):
-            cls._norm_stats = {}      # key: (dataset_name, attr) -> (mean, std)
-
         for attr in ("audio", "vision"):
             x = getattr(self, attr)
-            stats_key = (self.dataset_name, attr)
-
-            if self.mode == "train":
-                mean = x.mean(axis=(0, 1), keepdims=True)
-                std = x.std(axis=(0, 1), keepdims=True)
-                cls._norm_stats[stats_key] = (mean, std)
-                logger.info(f"[{self.mode}] normalize {attr}: stats computed from TRAIN "
-                            f"(mean.shape={mean.shape}, std_mean={float(std.mean()):.4f})")
-            else:
-                stats = cls._norm_stats.get(stats_key, None)
-                if stats is None:
-                    # 向后兼容: valid/test 先于 train 构造时退回本地统计 + WARNING
-                    mean = x.mean(axis=(0, 1), keepdims=True)
-                    std = x.std(axis=(0, 1), keepdims=True)
-                    logger.warning(
-                        f"[{self.mode}] normalize {attr}: TRAIN stats not found, "
-                        f"fallback to local stats (this breaks eval consistency). "
-                        f"Make sure MMDataset(train) is constructed first."
-                    )
-                else:
-                    mean, std = stats
-                    logger.info(f"[{self.mode}] normalize {attr}: reuse TRAIN stats")
-
+            mean = x.mean(axis=(0, 1), keepdims=True)
+            std = x.std(axis=(0, 1), keepdims=True)
             setattr(self, attr, (x - mean) / (std + eps))
 
     # ---------- Dataset API ----------
     def __len__(self) -> int:
         return self.n_samples
 
-    def _augment_feature(self, feat: np.ndarray, valid_len: Optional[int] = None) -> np.ndarray:
-        """
-        对单个样本的特征 (L, D) 做数据增强 (问题 ④ 修复版):
-            - 以 augment_prob 概率决定是否对该样本增强;
-            - 若增强, 从三种里随机选 1 种 (避免叠加导致 SNR 大幅下降):
-                1. 时间 mask  (仅在 [0, valid_len) 内做)
-                2. 特征维度 dropout
-                3. 高斯噪声  (仅在 [0, valid_len) 内加, 保护 pad 为 0)
-        旧版 (已废弃): 三种各独立 prob 施加, 单样本 P(>=1种)=87.5%, P(全开)=12.5%.
-
-        valid_len: 真实有效长度 (audio_lengths/vision_lengths). None 则按全 L 处理.
-        """
-        L, D = feat.shape
-        # 第一道闸: 是否增强该样本
-        if random.random() >= self.augment_prob:
-            return feat
-
-        # 真实有效区间 [0, vL)
-        vL = L if valid_len is None else int(min(max(valid_len, 1), L))
-
-        # 第二道闸: 三选一
-        choice = random.randint(0, 2)
-        if choice == 0:
-            # 时间 mask: 仅在 [0, vL) 内
-            mask_len = max(1, int(vL * random.uniform(0.1, 0.2)))
-            start = random.randint(0, max(0, vL - mask_len))
-            feat[start:start + mask_len, :] = 0.0
-        elif choice == 1:
-            # 特征维度 dropout: 整列置 0 (pad 行本就是 0, 不影响)
-            n_drop = max(1, int(D * random.uniform(0.1, 0.2)))
-            drop_dims = random.sample(range(D), n_drop)
-            feat[:, drop_dims] = 0.0
-        else:
-            # 高斯噪声: 仅给 [0, vL) 加, pad 区域保持 0
-            valid_region = feat[:vL]
-            noise_std = valid_region.std() * 0.05 if valid_region.size > 0 else 0.0
-            if noise_std > 0:
-                noise = (np.random.randn(vL, D).astype(feat.dtype) * noise_std)
-                feat[:vL] = valid_region + noise
-        return feat
-
     def __getitem__(self, idx: int) -> Dict[str, Any]:
-        audio_feat = self.audio[idx].copy()
-        vision_feat = self.vision[idx].copy()
-
-        # --- 数据增强 (仅训练集, 保护 pad 位置) ---
-        audio_vL  = int(self.audio_lengths[idx])  if self.audio_lengths  is not None else None
-        vision_vL = int(self.vision_lengths[idx]) if self.vision_lengths is not None else None
-        if self.augment_audio:
-            audio_feat = self._augment_feature(audio_feat, valid_len=audio_vL)
-        if self.augment_vision:
-            vision_feat = self._augment_feature(vision_feat, valid_len=vision_vL)
-
         sample = {
             "text": torch.from_numpy(self.text[idx]),
-            "audio": torch.from_numpy(audio_feat),
-            "vision": torch.from_numpy(vision_feat),
+            "audio": torch.from_numpy(self.audio[idx].copy()),
+            "vision": torch.from_numpy(self.vision[idx].copy()),
             "id": self.ids[idx],
             "index": torch.tensor(idx, dtype=torch.long),
         }
-        # 序列长度 (非对齐时)
-        if self.audio_lengths is not None:
-            sample["audio_lengths"] = torch.tensor(self.audio_lengths[idx], dtype=torch.long)
-        if self.vision_lengths is not None:
-            sample["vision_lengths"] = torch.tensor(self.vision_lengths[idx], dtype=torch.long)
 
         # 多任务标签字典
         labels = {}
@@ -367,7 +220,6 @@ class MMDataset(Dataset):
             else:
                 labels[tag] = torch.tensor(arr[idx], dtype=torch.long)
         sample["labels"] = labels
-        # 兼容字段: 主任务标签直接放外层
         sample["label"] = labels["M"]
         return sample
 
@@ -397,16 +249,6 @@ def _collate_fn(batch: List[Dict[str, Any]]) -> Dict[str, Any]:
 def MMDataLoader(args: Any, num_workers: int = 0) -> Dict[str, DataLoader]:
     """
     构建 train / valid / test 三个 DataLoader.
-
-    args 需提供:
-        dataset_name:      str
-        featurePath:       str   (.pkl 路径)
-        batch_size:        int
-        seq_lens:          [L_t, L_a, L_v]      (非对齐时)
-        use_bert:          bool
-        need_data_aligned: bool
-        need_normalized:   bool
-        feature_T/A/V:     str  外部特征覆盖 (可空)
     """
     datasets = {
         "train": MMDataset(args, mode="train"),
