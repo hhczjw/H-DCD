@@ -31,6 +31,9 @@ def parse_args():
     p.add_argument("--batch_size", type=int, default=None)
     p.add_argument("--lr", type=float, default=None, help="main learning rate")
     p.add_argument("--bert_lr", type=float, default=None)
+    p.add_argument("--bert_pretrained", type=str, default=None,
+                   help="文本预训练模型名 (覆盖 config.json); e.g. bert-base-uncased / roberta-base")
+    p.add_argument("--bert_finetune", type=lambda x: x.lower() == "true", default=None)
     p.add_argument("--weight_decay", type=float, default=None)
     p.add_argument("--dropout", type=float, default=None)
     p.add_argument("--warmup_ratio", type=float, default=None)
@@ -96,6 +99,8 @@ def main():
     _override(args, cli, "batch_size")
     _override(args, cli, "learning_rate", "lr")
     _override(args, cli, "bert_learning_rate", "bert_lr")
+    _override(args, cli, "bert_pretrained")
+    _override(args, cli, "bert_finetune")
     _override(args, cli, "weight_decay")
     _override(args, cli, "dropout")
     _override(args, cli, "warmup_ratio")

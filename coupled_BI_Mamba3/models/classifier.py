@@ -30,60 +30,141 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from layers.ism import ISMEncoder
 
 
-# -------------------------------------------------------------
-# BERT 文本编码器
-# -------------------------------------------------------------
-class BertTextEncoder(nn.Module):
+# ============================================================
+# 改造: 通用文本预训练编码器 (支持 BERT/RoBERTa/DeBERTa 等)
+# 替换原有的 BertTextEncoder 类
+# ============================================================
+
+class TextPretrainedEncoder(nn.Module):
     """
-    输入: text_bert (B, 3, L)  包含 input_ids / attention_mask / token_type_ids
-    输出: (B, L, 768)
+    通用文本预训练编码器, 支持 BERT / RoBERTa / DeBERTa 等 HuggingFace 模型.
+    
+    与原有 BertTextEncoder 的差异:
+    1. 支持 RoBERTa (无 token_type_ids, 使用 <s>/</s> 分隔符)
+    2. 支持 DeBERTa (相对位置编码)
+    3. 自动检测模型类型, 适配不同的输入格式
+    4. ★ CAGMamba 对齐: 当输入是 BERT token ID 但模型非 BERT 时, 自动解码→重编码
+       (decode BERT ids → raw text → re-encode with current tokenizer)
     """
 
-    def __init__(self, pretrained: str = "bert-base-uncased", finetune: bool = True,
-                 strict: bool = True):
+    # 预定义模型配置映射
+    SUPPORTED_MODELS = {
+        "bert-base-uncased":    {"dim": 768, "type": "bert"},
+        "bert-large-uncased":   {"dim": 1024, "type": "bert"},
+        "roberta-base":         {"dim": 768, "type": "roberta"},
+        "roberta-large":        {"dim": 1024, "type": "roberta"},
+        "microsoft/deberta-base": {"dim": 768, "type": "deberta"},
+    }
+
+    def __init__(
+        self,
+        pretrained: str = "roberta-base",      # ★ 默认改为 RoBERTa-base
+        finetune: bool = True,
+        strict: bool = True,
+    ):
         super().__init__()
+        self.pretrained_name = pretrained
+        self.use_hf = False
+        
+        # 自动检测模型类型
+        self.model_type = "bert"  # fallback
+        for key, info in self.SUPPORTED_MODELS.items():
+            if key in pretrained.lower():
+                self.model_type = info["type"]
+                self.out_dim = info["dim"]
+                break
+        
+        # ★ 安全默认值: 防止 SUPPORTED_MODELS 未匹配时 out_dim 未定义
+        if not hasattr(self, 'out_dim'):
+            self.out_dim = 768
+        
         try:
-            from transformers import BertModel
-            self.bert = BertModel.from_pretrained(pretrained)
-            self.out_dim = self.bert.config.hidden_size
+            from transformers import AutoModel, AutoTokenizer
+            self.tokenizer = AutoTokenizer.from_pretrained(pretrained)
+            self.transformer = AutoModel.from_pretrained(pretrained)
+            self.out_dim = self.transformer.config.hidden_size
             self.use_hf = True
         except Exception as e:
-            msg = (
-                f"[BertTextEncoder] 加载 HuggingFace BertModel 失败: {e}\n"
-                f"  常见原因:\n"
-                f"  1) libstdc++ 版本太旧 -> export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH\n"
-                f"  2) 未联网下载 pretrained\n"
-                f"  3) transformers 未安装 -> pip install transformers"
-            )
             if strict:
-                raise RuntimeError(msg) from e
-            print(f"[WARN] {msg}\n  => fallback 到 nn.Embedding (效果会差)")
-            self.bert = nn.Embedding(30522, 768, padding_idx=0)
-            self.out_dim = 768
-            self.use_hf = False
+                raise RuntimeError(f"加载 {pretrained} 失败: {e}")
+            print(f"[WARN] 回退到 Embedding: {e}")
+            self.transformer = nn.Embedding(50265, self.out_dim, padding_idx=1)
+            self.tokenizer = None
+
+        # ★ CAGMamba 对齐: 当模型非 BERT 时, 预加载 BERT tokenizer 用于解码旧的 .pkl 数据
+        self._bert_tokenizer = None
+        if self.model_type != "bert" and self.use_hf:
+            try:
+                from transformers import BertTokenizer
+                self._bert_tokenizer = BertTokenizer.from_pretrained(
+                    "bert-base-uncased"
+                )
+            except Exception:
+                # 静默失败: 回退到旧行为 (依赖上游传入正确 token ID)
+                pass
+
         if self.use_hf and not finetune:
-            for p in self.bert.parameters():
+            for p in self.transformer.parameters():
                 p.requires_grad = False
 
-    def forward(self, text_bert: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+    def forward(
+        self, text_input: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
+        Args:
+            text_input: 
+                - 离线三通道模式 (兼容旧 BERT .pkl): (B, 3, L)
+                  channels -> [input_ids, attention_mask, token_type_ids]
+                  当模型非 BERT 时, 自动用 _bert_tokenizer 解码→重编码
+                - 在线模式: (B, L) 仅 input_ids
         Returns:
-            hidden:         (B, L, 768)
-            attention_mask: (B, L) long, 1=有效 0=pad
+            hidden:         (B, L, out_dim)
+            attention_mask: (B, L) long
         """
-        input_ids = text_bert[:, 0].long()
-        if self.use_hf:
-            attention_mask = text_bert[:, 1].long()
-            token_type_ids = text_bert[:, 2].long()
-            out = self.bert(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                token_type_ids=token_type_ids,
-            )
-            return out.last_hidden_state, attention_mask  # (B, L, 768), (B, L)
-        # 回退路径: 直接由 input_ids != 0 推 mask
-        attention_mask = (input_ids != 0).long()
-        return self.bert(input_ids), attention_mask
+        # ==== 检测输入格式 ====
+        if text_input.dim() == 3 and text_input.size(1) == 3:
+            # ─── 旧 BERT 三通道格式: [ids, mask, segment] ───
+            input_ids = text_input[:, 0].long()
+            attention_mask = text_input[:, 1].long()
+            old_max_len = text_input.size(2)
+
+            # ★ CAGMamba 对齐: BERT token ID → 模型 token ID 的自动转换
+            if self._bert_tokenizer is not None and self.model_type != "bert":
+                # 1) 用 BERT tokenizer 解码回原始文本
+                raw_texts = self._bert_tokenizer.batch_decode(
+                    input_ids, skip_special_tokens=True
+                )
+                # 2) 用当前模型 tokenizer 重新编码 (对齐 max_length)
+                encoded = self.tokenizer(
+                    raw_texts,
+                    padding="max_length",
+                    truncation=True,
+                    max_length=old_max_len,
+                    return_tensors="pt",
+                )
+                input_ids = encoded["input_ids"].to(text_input.device)
+                attention_mask = encoded["attention_mask"].to(text_input.device)
+
+        elif text_input.dim() == 2:
+            # ─── 纯 token ID 模式 ───
+            input_ids = text_input.long()
+            attention_mask = (
+                input_ids != self.tokenizer.pad_token_id
+            ).long() if self.tokenizer else (input_ids != 0).long()
+        else:
+            input_ids = text_input.squeeze(1).long()
+            attention_mask = (input_ids != 0).long()
+
+        if not self.use_hf:
+            return self.transformer(input_ids), attention_mask
+
+        # 根据模型类型适配参数
+        kw = {"input_ids": input_ids, "attention_mask": attention_mask}
+        # RoBERTa / DeBERTa 不需要 token_type_ids
+        # BERT 的 token_type_ids 已在重编码时被正确生成 (或在上游忽略)
+        
+        out = self.transformer(**kw)
+        return out.last_hidden_state, attention_mask
 
 
 # -------------------------------------------------------------
@@ -157,8 +238,11 @@ class MSAClassifier(nn.Module):
 
         # 0) 文本编码器 (可选 BERT)
         if use_bert:
-            self.text_encoder = BertTextEncoder(bert_pretrained, finetune=bert_finetune)
-            text_feat_dim = self.text_encoder.out_dim   # 768
+            self.text_encoder = TextPretrainedEncoder(
+            pretrained=bert_pretrained,     # ★ 默认 "roberta-base"
+            finetune=bert_finetune,
+            )
+            text_feat_dim = self.text_encoder.out_dim  # ★ 自动获取 (768 或 1024)
         else:
             self.text_encoder = None
             text_feat_dim = text_input_dim
