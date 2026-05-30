@@ -37,3 +37,19 @@ coverage.xml
 *.zip
 *.tar.gz
 *.ckpt
+
+# === 预训练模型目录 (从 HuggingFace 下载) ===
+pretrained/
+*.h5
+*.msgpack
+*.ot
+
+# === 预提取特征 ===
+features/
+*.pkl
+
+# === 模型权重目录 ===
+weights/
+
+# === 训练日志 ===
+logs/
