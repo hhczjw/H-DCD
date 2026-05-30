@@ -25,3 +25,15 @@ coverage.xml
 *.swp
 *.swo
 *~
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.onnx
+*.pdf
+*.mp4
+*.wav
+*.mp3
+*.zip
+*.tar.gz
+*.ckpt
