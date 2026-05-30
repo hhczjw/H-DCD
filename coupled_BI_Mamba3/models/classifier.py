@@ -24,147 +24,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .coupled_mamba3_fork import CoupledMamba3Fork
+from .pairwise_cross_mamba3 import PairwiseCrossMamba3Fork
+from .audio_encoder import AudioPretrainedEncoder      # Phase 3: 预训练音频编码器
+from .text_encoder import TextPretrainedEncoder        # Phase 2: 通用文本编码器
+from .context_fusion import encode_with_context         # Phase 5: 对话上下文融合
 
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from layers.ism import ISMEncoder
-
-
-# ============================================================
-# 改造: 通用文本预训练编码器 (支持 BERT/RoBERTa/DeBERTa 等)
-# 替换原有的 BertTextEncoder 类
-# ============================================================
-
-class TextPretrainedEncoder(nn.Module):
-    """
-    通用文本预训练编码器, 支持 BERT / RoBERTa / DeBERTa 等 HuggingFace 模型.
-    
-    与原有 BertTextEncoder 的差异:
-    1. 支持 RoBERTa (无 token_type_ids, 使用 <s>/</s> 分隔符)
-    2. 支持 DeBERTa (相对位置编码)
-    3. 自动检测模型类型, 适配不同的输入格式
-    4. ★ CAGMamba 对齐: 当输入是 BERT token ID 但模型非 BERT 时, 自动解码→重编码
-       (decode BERT ids → raw text → re-encode with current tokenizer)
-    """
-
-    # 预定义模型配置映射
-    SUPPORTED_MODELS = {
-        "bert-base-uncased":    {"dim": 768, "type": "bert"},
-        "bert-large-uncased":   {"dim": 1024, "type": "bert"},
-        "roberta-base":         {"dim": 768, "type": "roberta"},
-        "roberta-large":        {"dim": 1024, "type": "roberta"},
-        "microsoft/deberta-base": {"dim": 768, "type": "deberta"},
-    }
-
-    def __init__(
-        self,
-        pretrained: str = "roberta-base",      # ★ 默认改为 RoBERTa-base
-        finetune: bool = True,
-        strict: bool = True,
-    ):
-        super().__init__()
-        self.pretrained_name = pretrained
-        self.use_hf = False
-        
-        # 自动检测模型类型
-        self.model_type = "bert"  # fallback
-        for key, info in self.SUPPORTED_MODELS.items():
-            if key in pretrained.lower():
-                self.model_type = info["type"]
-                self.out_dim = info["dim"]
-                break
-        
-        # ★ 安全默认值: 防止 SUPPORTED_MODELS 未匹配时 out_dim 未定义
-        if not hasattr(self, 'out_dim'):
-            self.out_dim = 768
-        
-        try:
-            from transformers import AutoModel, AutoTokenizer
-            self.tokenizer = AutoTokenizer.from_pretrained(pretrained)
-            self.transformer = AutoModel.from_pretrained(pretrained)
-            self.out_dim = self.transformer.config.hidden_size
-            self.use_hf = True
-        except Exception as e:
-            if strict:
-                raise RuntimeError(f"加载 {pretrained} 失败: {e}")
-            print(f"[WARN] 回退到 Embedding: {e}")
-            self.transformer = nn.Embedding(50265, self.out_dim, padding_idx=1)
-            self.tokenizer = None
-
-        # ★ CAGMamba 对齐: 当模型非 BERT 时, 预加载 BERT tokenizer 用于解码旧的 .pkl 数据
-        self._bert_tokenizer = None
-        if self.model_type != "bert" and self.use_hf:
-            try:
-                from transformers import BertTokenizer
-                self._bert_tokenizer = BertTokenizer.from_pretrained(
-                    "bert-base-uncased"
-                )
-            except Exception:
-                # 静默失败: 回退到旧行为 (依赖上游传入正确 token ID)
-                pass
-
-        if self.use_hf and not finetune:
-            for p in self.transformer.parameters():
-                p.requires_grad = False
-
-    def forward(
-        self, text_input: torch.Tensor
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
-        """
-        Args:
-            text_input: 
-                - 离线三通道模式 (兼容旧 BERT .pkl): (B, 3, L)
-                  channels -> [input_ids, attention_mask, token_type_ids]
-                  当模型非 BERT 时, 自动用 _bert_tokenizer 解码→重编码
-                - 在线模式: (B, L) 仅 input_ids
-        Returns:
-            hidden:         (B, L, out_dim)
-            attention_mask: (B, L) long
-        """
-        # ==== 检测输入格式 ====
-        if text_input.dim() == 3 and text_input.size(1) == 3:
-            # ─── 旧 BERT 三通道格式: [ids, mask, segment] ───
-            input_ids = text_input[:, 0].long()
-            attention_mask = text_input[:, 1].long()
-            old_max_len = text_input.size(2)
-
-            # ★ CAGMamba 对齐: BERT token ID → 模型 token ID 的自动转换
-            if self._bert_tokenizer is not None and self.model_type != "bert":
-                # 1) 用 BERT tokenizer 解码回原始文本
-                raw_texts = self._bert_tokenizer.batch_decode(
-                    input_ids, skip_special_tokens=True
-                )
-                # 2) 用当前模型 tokenizer 重新编码 (对齐 max_length)
-                encoded = self.tokenizer(
-                    raw_texts,
-                    padding="max_length",
-                    truncation=True,
-                    max_length=old_max_len,
-                    return_tensors="pt",
-                )
-                input_ids = encoded["input_ids"].to(text_input.device)
-                attention_mask = encoded["attention_mask"].to(text_input.device)
-
-        elif text_input.dim() == 2:
-            # ─── 纯 token ID 模式 ───
-            input_ids = text_input.long()
-            attention_mask = (
-                input_ids != self.tokenizer.pad_token_id
-            ).long() if self.tokenizer else (input_ids != 0).long()
-        else:
-            input_ids = text_input.squeeze(1).long()
-            attention_mask = (input_ids != 0).long()
-
-        if not self.use_hf:
-            return self.transformer(input_ids), attention_mask
-
-        # 根据模型类型适配参数
-        kw = {"input_ids": input_ids, "attention_mask": attention_mask}
-        # RoBERTa / DeBERTa 不需要 token_type_ids
-        # BERT 的 token_type_ids 已在重编码时被正确生成 (或在上游忽略)
-        
-        out = self.transformer(**kw)
-        return out.last_hidden_state, attention_mask
 
 
 # -------------------------------------------------------------
@@ -223,11 +90,27 @@ class MSAClassifier(nn.Module):
         v_self_ratio: float = 0.0,
         # --- 多任务开关 (SIMS/SIMS2 用于自动启用 sub_fc_T/A/V) ---
         multi_task: bool = False,
+        # --- ★ Phase 3: 预训练音频编码器 ---
+        use_pretrained_audio: bool = False,
+        audio_pretrained: str = "facebook/data2vec-audio-base-960h",
+        audio_finetune: bool = True,
+        # --- ★ 跳过音频 ISM (Data2Vec 已编码时序) ---
+        skip_audio_ism: bool = False,
+        use_pairwise_mamba: bool = False,
+        # ★ Phase 19: BSSM 门控 (CAGMamba 对齐)
+        use_bssm_gate: bool = False,
+        bssm_gate_expand: int = 2,
+        # ★ Phase 20: GCMN 三流门控融合
+        use_gcmn_gate: bool = False,
+        # ★ Phase 17: 双向上下文 (CAGMamba 对齐)
+        bidirectional: bool = False,
         device=None,
         dtype=None,
     ):
         super().__init__()
         self.multi_task = bool(multi_task)
+        self.use_pretrained_audio = use_pretrained_audio
+        self.skip_audio_ism = skip_audio_ism
         factory_kwargs = {"device": device, "dtype": dtype}
         self.task_type = task_type
         self.pool_type = pool_type
@@ -235,6 +118,7 @@ class MSAClassifier(nn.Module):
         self.use_bert = use_bert
         self.ism_depth = ism_depth
         self.d_model = d_model
+        self.bidirectional = bidirectional  # ★ Phase 17
 
         # 0) 文本编码器 (可选 BERT)
         if use_bert:
@@ -247,9 +131,21 @@ class MSAClassifier(nn.Module):
             self.text_encoder = None
             text_feat_dim = text_input_dim
 
+        # ★ 0.b) 音频编码器 (Phase 3: Data2Vec 预训练)
+        if use_pretrained_audio:
+            self.audio_encoder = AudioPretrainedEncoder(
+                pretrained=audio_pretrained,
+                finetune=audio_finetune,
+                target_frames=ism_seq_len,
+            )
+            audio_feat_dim = self.audio_encoder.out_dim  # 768 or 1024
+        else:
+            self.audio_encoder = None
+            audio_feat_dim = audio_input_dim
+
         # 1) 输入投影 — 单线性层
         self.proj_text  = nn.Linear(text_feat_dim, d_model, **factory_kwargs)
-        self.proj_audio = nn.Linear(audio_input_dim, d_model, **factory_kwargs)
+        self.proj_audio = nn.Linear(audio_feat_dim, d_model, **factory_kwargs)
         self.proj_video = nn.Linear(video_input_dim, d_model, **factory_kwargs)
 
         # 2) ISM — 单模态序列建模
@@ -267,6 +163,8 @@ class MSAClassifier(nn.Module):
                 bimamba3_is_outproj_norm=ism_bimamba3_is_outproj_norm,
                 bimamba3_fusion=ism_bimamba3_fusion,
                 bimamba3_share_mimo=ism_bimamba3_share_mimo,
+                use_bssm_gate=use_bssm_gate,
+                bssm_gate_expand=bssm_gate_expand,
             )
             self.ism_text  = ISMEncoder(**ism_kwargs)
             self.ism_audio = ISMEncoder(**ism_kwargs)
@@ -274,21 +172,24 @@ class MSAClassifier(nn.Module):
         else:
             self.ism_text = self.ism_audio = self.ism_video = None
 
-        # 3) 跨模态融合: 堆叠 num_layers 层 CoupledMamba3Fork
+        # 3) 跨模态融合: 堆叠 num_layers 层 CoupledMamba3Fork 或 PairwiseCrossMamba3Fork
+        mamba_class = PairwiseCrossMamba3Fork if use_pairwise_mamba else CoupledMamba3Fork
         self.layers = nn.ModuleList([
-            CoupledMamba3Fork(
+            mamba_class(
                 d_model=d_model, d_state=d_state, expand=expand, headdim=headdim,
                 ngroups=ngroups, rope_fraction=rope_fraction,
                 is_mimo=is_mimo, mimo_rank=mimo_rank,
                 chunk_size=chunk_size, is_outproj_norm=is_outproj_norm,
                 v_self_ratio=float(v_self_ratio),
+                use_gcmn_gate=use_gcmn_gate,
                 device=device, dtype=dtype,
             )
             for _ in range(num_layers)
         ])
 
         # 4) 分类头
-        fused_dim = 3 * d_model
+        # ★ Phase 17: 双向上下文 → 6*d_model; 否则 3*d_model
+        fused_dim = 6 * d_model if self.bidirectional else 3 * d_model
         self.fusion_norm = nn.LayerNorm(fused_dim)
         self.head = nn.Sequential(
             nn.Linear(fused_dim, d_model, **factory_kwargs),
@@ -333,36 +234,61 @@ class MSAClassifier(nn.Module):
 
         Args:
             return_ism_cls: True 时同时返回 ISM 阶段的 cls_T/A/V (sub_loss 用)
-        Returns (基础): (out_l, out_a, out_v)
-                        若 return_ism_cls=True 再附 (cls_t, cls_a, cls_v)
         """
+        ism_full_frame = getattr(self, '_ism_full_frame', False)
         # 0) 文本嵌入
         if self.use_bert and self.text_encoder is not None:
             text, _ = self.text_encoder(text)
 
         # 1) 投影到 d_model
         xt = self.proj_text(text)
-        xa = self.proj_audio(audio)
+
+        # ★ Phase 3: 音频编码分支 — 检测原始波形 vs 预提取特征
+        if audio.dim() == 2 and audio.size(-1) > 500:
+            # 原始波形 (B, T_wave), T_wave≈96000 → Data2Vec 在线编码
+            if self.use_pretrained_audio and self.audio_encoder is not None:
+                audio_hidden, _ = self.audio_encoder(audio)
+                xa = self.proj_audio(audio_hidden)
+            else:
+                # 无编码器时取均值再投影 (退化路径)
+                xa = self.proj_audio(audio.mean(dim=-1, keepdim=True).expand(-1, self.ism_seq_len))
+        else:
+            xa = self.proj_audio(audio)
+
         xv = self.proj_video(video)
 
-        # 2) 序列对齐
-        Lt = xt.size(1)
-        if xa.size(1) != Lt:
-            xa = F.adaptive_avg_pool1d(xa.transpose(1, 2), Lt).transpose(1, 2)
-        if xv.size(1) != Lt:
-            xv = F.adaptive_avg_pool1d(xv.transpose(1, 2), Lt).transpose(1, 2)
+        # ★ 方案 B: ISM 全帧处理 — 跳过对齐, 让 ISM 处理原始帧长
+        if not ism_full_frame:
+            # 2) 序列对齐 (旧行为: ISM 前池化到文本长度)
+            Lt = xt.size(1)
+            if xa.size(1) != Lt:
+                xa = F.adaptive_avg_pool1d(xa.transpose(1, 2), Lt).transpose(1, 2)
+            if xv.size(1) != Lt:
+                xv = F.adaptive_avg_pool1d(xv.transpose(1, 2), Lt).transpose(1, 2)
 
         # 3) ISM (各模态独立)
         ism_cls_t = ism_cls_a = ism_cls_v = None
         if self.ism_depth > 0:
             if return_ism_cls:
                 xt, ism_cls_t = self.ism_text(xt, return_cls=True)
-                xa, ism_cls_a = self.ism_audio(xa, return_cls=True)
                 xv, ism_cls_v = self.ism_video(xv, return_cls=True)
+                if self.skip_audio_ism:
+                    ism_cls_a = xa.mean(dim=1)
+                else:
+                    xa, ism_cls_a = self.ism_audio(xa, return_cls=True)
             else:
                 xt = self.ism_text(xt)
-                xa = self.ism_audio(xa)
                 xv = self.ism_video(xv)
+                if not self.skip_audio_ism:
+                    xa = self.ism_audio(xa)
+
+        # ★ 方案 B: ISM 全帧后桥接池化 → CrossMamba 统一长度
+        if ism_full_frame:
+            Lt = xt.size(1)
+            if xa.size(1) != Lt:
+                xa = F.adaptive_avg_pool1d(xa.transpose(1, 2), Lt).transpose(1, 2)
+            if xv.size(1) != Lt:
+                xv = F.adaptive_avg_pool1d(xv.transpose(1, 2), Lt).transpose(1, 2)
 
         # 4) CoupledMamba3Fork (跨模态融合)
         out_a, out_v, out_l = xa, xv, xt
@@ -374,6 +300,13 @@ class MSAClassifier(nn.Module):
         return out_l, out_a, out_v
 
     # ------------------------------------------------------------------
+    # Phase 5+17: 对话上下文编码 (委托 context_fusion.encode_with_context)
+    # ------------------------------------------------------------------
+    def _encode_with_context(self, *args, **kwargs):
+        """委托 context_fusion.encode_with_context, 传入 self 作为 model."""
+        return encode_with_context(self, *args, **kwargs)
+
+    # ------------------------------------------------------------------
     def forward(
         self,
         text: torch.Tensor,
@@ -382,22 +315,80 @@ class MSAClassifier(nn.Module):
         cu_seqlens: Optional[torch.Tensor] = None,
         audio_lengths: Optional[torch.Tensor] = None,
         vision_lengths: Optional[torch.Tensor] = None,
+        # ★ Phase 5: 上下文输入
+        context_text: Optional[torch.Tensor] = None,
+        context_audio: Optional[torch.Tensor] = None,
+        context_video: Optional[torch.Tensor] = None,
     ):
-        if self.use_sub_loss:
-            out_l, out_a, out_v, c_t, c_a, c_v = self._encode(
-                text, audio, video, cu_seqlens, return_ism_cls=True,
-            )
+        has_context = all(x is not None for x in [
+            context_text, context_audio, context_video
+        ])
+
+        # ★ 方案 B: ISM 全帧标志 (被 _encode 通过 getattr 读取)
+        if not hasattr(self, '_ism_full_frame'):
+            self._ism_full_frame = False
+
+        if has_context:
+            # ★ 上下文路径 — Phase 17: 双向增强
+            rev_l = rev_a = rev_v = None
+            if self.use_sub_loss:
+                if self.bidirectional:
+                    out_l, out_a, out_v, rev_l, rev_a, rev_v, c_t, c_a, c_v = \
+                        self._encode_with_context(
+                            text, audio, video,
+                            context_text, context_audio, context_video,
+                            cu_seqlens, return_ism_cls=True,
+                            bidirectional=True,
+                        )
+                else:
+                    out_l, out_a, out_v, c_t, c_a, c_v = self._encode_with_context(
+                        text, audio, video,
+                        context_text, context_audio, context_video,
+                        cu_seqlens, return_ism_cls=True,
+                        bidirectional=False,
+                    )
+            else:
+                if self.bidirectional:
+                    out_l, out_a, out_v, rev_l, rev_a, rev_v = \
+                        self._encode_with_context(
+                            text, audio, video,
+                            context_text, context_audio, context_video,
+                            cu_seqlens, bidirectional=True,
+                        )
+                else:
+                    out_l, out_a, out_v = self._encode_with_context(
+                        text, audio, video,
+                        context_text, context_audio, context_video,
+                        cu_seqlens,
+                        bidirectional=False,
+                    )
+                c_t = c_a = c_v = None
         else:
-            out_l, out_a, out_v = self._encode(
-                text, audio, video, cu_seqlens,
-            )
-            c_t = c_a = c_v = None
+            # 回退: 原始单话语路径
+            if self.use_sub_loss:
+                out_l, out_a, out_v, c_t, c_a, c_v = self._encode(
+                    text, audio, video, cu_seqlens, return_ism_cls=True,
+                )
+            else:
+                out_l, out_a, out_v = self._encode(
+                    text, audio, video, cu_seqlens,
+                )
+                c_t = c_a = c_v = None
 
         # 池化 + 拼接 + 分类头
-        pl = self._pool(out_l)
-        pa = self._pool(out_a)
-        pv = self._pool(out_v)
-        fused  = self.fusion_norm(torch.cat([pl, pa, pv], dim=-1))
+        if has_context:
+            # ★ _encode_with_context 已经做了池化, 直接使用
+            pl, pa, pv = out_l, out_a, out_v
+            if self.bidirectional and rev_l is not None:
+                rl, ra, rv = rev_l, rev_a, rev_v
+                fused = self.fusion_norm(torch.cat([pl, pa, pv, rl, ra, rv], dim=-1))
+            else:
+                fused = self.fusion_norm(torch.cat([pl, pa, pv], dim=-1))
+        else:
+            pl = self._pool(out_l)
+            pa = self._pool(out_a)
+            pv = self._pool(out_v)
+            fused  = self.fusion_norm(torch.cat([pl, pa, pv], dim=-1))
         logits = self.head(fused)
 
         # 当未启用 sub_loss 时, 直接返回 Tensor

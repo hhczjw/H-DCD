@@ -101,6 +101,33 @@ class MMDataset(Dataset):
         self.vision = np.asarray(split["vision"], dtype=np.float32)
         self.vision = self._maybe_transpose(self.vision)
 
+        # ---- ★ CAGMamba 对齐: WAV 在线加载模式 ----
+        self.use_wav_audio = bool(getattr(args, 'use_wav_audio', False))
+        self.wav_dir = getattr(args, 'wav_dir', '')
+        self._feature_extractor = None
+        if self.use_wav_audio:
+            import pandas as pd
+            csv_path = getattr(args, 'audio_csv_path', '')
+            if not csv_path or not os.path.isfile(csv_path):
+                raise FileNotFoundError(f"WAV mode requires audio_csv_path: {csv_path}")
+            df = pd.read_csv(csv_path)
+            df = df[df['mode'] == mode]
+            # 构建 sample ID → WAV 路径的映射
+            self._wav_paths = {}
+            for _, row in df.iterrows():
+                vid, cid = str(row['video_id']), str(int(row['clip_id']))
+                sid = f"{vid}_{cid}"  # CSV 格式
+                wav_path = os.path.join(self.wav_dir, vid, f"{cid}.wav")
+                if os.path.isfile(wav_path):
+                    self._wav_paths[sid] = wav_path
+            # Wav2Vec2FeatureExtractor (对齐 CAGMamba)
+            from transformers import Wav2Vec2FeatureExtractor
+            self._feature_extractor = Wav2Vec2FeatureExtractor(
+                feature_size=1, sampling_rate=16000, padding_value=0.0,
+                do_normalize=True, return_attention_mask=True,
+            )
+            logger.info(f"[{mode}] WAV mode enabled: {len(self._wav_paths)} paths")
+
         # NaN 防御 (作者原代码做法: audio NaN -> 0)
         np.nan_to_num(self.audio, copy=False, nan=0.0, posinf=0.0, neginf=0.0)
         np.nan_to_num(self.vision, copy=False, nan=0.0, posinf=0.0, neginf=0.0)
@@ -126,11 +153,82 @@ class MMDataset(Dataset):
         # ---- 4) sample id ----
         self.ids = list(split.get("id", [f"{mode}_{i}" for i in range(len(self.labels['M']))]))
 
+        # ---- ★ Phase 5: 对话上下文 ----
+        self.use_context = bool(getattr(self.args, 'use_context', False))
+
+        # ---- ★ Phase 3: 动态替换特征 (外部 .pkl 预提取特征) ----
+        # ★ 必须在 _init_context 之前运行, 确保 context 特征也用新维度
+        def _load_external_feat(attr_name, feat_key):
+            """从外部 .pkl 加载特征, 按样本 ID 对齐后替换对应属性."""
+            path = getattr(self.args, attr_name, "")
+            if not path or not os.path.isfile(path):
+                return
+            logger.info(f"[{mode}] Loading external {feat_key} features: {path}")
+            with open(path, "rb") as f:
+                ext_data = pickle.load(f)
+            if mode not in ext_data or feat_key not in ext_data[mode]:
+                return
+            ext_features = np.asarray(ext_data[mode][feat_key], dtype=np.float32)
+
+            # ★ 关键: 按 ID 对齐, 不按索引
+            # ext_data 中的 id 格式为 "video_id_clip_id" (CSV 风格)
+            # self.ids (来自 .pkl) 格式为 "video_id$_$clip_id"
+            # 统一 ID 格式后按索引映射
+            ext_ids = list(ext_data[mode].get(f"{feat_key}_ids", []))
+            if not ext_ids:
+                # 如果没有存 id, 尝试从原始 label.csv 重建
+                logger.warning(
+                    f"[{mode}] External {feat_key} .pkl 缺少 id 字段, "
+                    f"无法对齐, 跳过替换!"
+                )
+                return
+
+            # 统一 ID 分隔符: "$_$" → "_", "_" → "$_$" 都映射到统一格式
+            self_ids = [str(i).replace('$_$', '_') for i in self.ids]
+            ext_ids  = [str(i).replace('$_$', '_') for i in ext_ids]
+
+            # 建立 ext ID → ext index 的映射
+            ext_id_to_idx = {eid: i for i, eid in enumerate(ext_ids)}
+
+            # 为每个 .pkl 样本找到对应的 ext 特征
+            aligned = np.zeros_like(ext_features[:len(self_ids)])
+            hit = 0
+            for i, sid in enumerate(self_ids):
+                if sid in ext_id_to_idx:
+                    aligned[i] = ext_features[ext_id_to_idx[sid]]
+                    hit += 1
+            logger.info(
+                f"[{mode}] External {feat_key}: aligned {hit}/{len(self_ids)} samples"
+            )
+            if hit == 0:
+                logger.warning(
+                    f"[{mode}] External {feat_key}: ZERO alignment! Order mismatch?"
+                )
+                return
+
+            setattr(self, feat_key, aligned)
+            dim_map = {"text": 0, "audio": 1, "vision": 2}
+            if feat_key in dim_map:
+                idx = dim_map[feat_key]
+                if hasattr(self.args, 'feature_dims') and len(self.args.feature_dims) > idx:
+                    self.args.feature_dims[idx] = int(aligned.shape[-1])
+            logger.info(f"[{mode}] Replaced self.{feat_key} → shape {aligned.shape}")
+
+        _load_external_feat("feature_T", "text")
+        _load_external_feat("feature_A", "audio")
+        _load_external_feat("feature_V", "vision")
+
         # ---- 5) 截断 + 归一化 ----
         if self.need_truncated:
             self._truncate(getattr(args, "seq_lens", None))
         if self.need_normalize:
-            self._normalize()
+            # ★ Phase 3: 外部预训练特征 (如 Data2Vec) 无需再归一化
+            self._normalize(skip_feature_A=bool(getattr(args, 'feature_A', '')),
+                           skip_feature_V=bool(getattr(args, 'feature_V', '')))
+
+        # ---- ★ Phase 5: 对话上下文初始化 (必须在外部特征加载后, 确保用新维度) ----
+        if self.use_context:
+            self._init_context(split, mode)
 
         # ---- 6) 形状校验 ----
         self.n_samples = len(self.labels["M"])
@@ -158,6 +256,49 @@ class MMDataset(Dataset):
         if x.shape[1] < x.shape[2]:
             return np.transpose(x, (0, 2, 1))
         return x
+
+    # ---- ★ Phase 5: 对话上下文初始化 ----
+    def _init_context(self, split: dict, mode: str):
+        """
+        加载 context 特征. 
+        优先从原始 pkl 读取预计算的 context, 否则使用 offset-based fallback
+        (context = 前一条话语的特征, 首条用自身).
+        """
+        # 文本 context
+        if 'context_text' in split:
+            self.context_text = np.asarray(split['context_text'], dtype=np.float32)
+        elif self.use_bert and 'text_bert' in split:
+            self.context_text = np.roll(split['text_bert'], shift=1, axis=0)
+            self.context_text[0] = split['text_bert'][0]
+        elif 'text' in split:
+            raw_text = np.asarray(split['text'], dtype=np.float32)
+            raw_text = self._maybe_transpose(raw_text)
+            self.context_text = np.roll(raw_text, shift=1, axis=0)
+            self.context_text[0] = raw_text[0]
+        else:
+            self.context_text = np.roll(self.text, shift=1, axis=0)
+            self.context_text[0] = self.text[0]
+
+        # 音频 context
+        if 'context_audio' in split:
+            self.context_audio = np.asarray(split['context_audio'], dtype=np.float32)
+        else:
+            self.context_audio = np.roll(self.audio, shift=1, axis=0)
+            self.context_audio[0] = self.audio[0]
+
+        # 视频 context
+        if 'context_vision' in split:
+            self.context_vision = np.asarray(split['context_vision'], dtype=np.float32)
+        else:
+            self.context_vision = np.roll(self.vision, shift=1, axis=0)
+            self.context_vision[0] = self.vision[0]
+
+        logger.info(
+            f"[{mode}] Context features loaded "
+            f"(text={tuple(self.context_text.shape)}, "
+            f"audio={tuple(self.context_audio.shape)}, "
+            f"video={tuple(self.context_vision.shape)})"
+        )
 
     def _truncate(self, seq_lens: Optional[List[int]]):
         """
@@ -190,10 +331,15 @@ class MMDataset(Dataset):
         self.audio = _fit(self.audio, L_a)
         self.vision = _fit(self.vision, L_v)
 
-    def _normalize(self):
-        """按特征维度做均值 / 方差归一化 (audio + vision)."""
+    def _normalize(self, skip_feature_A: bool = False, skip_feature_V: bool = False):
+        """按特征维度做均值 / 方差归一化.
+        外部预训练特征 (Data2Vec 等) 可跳过归一化, 因预训练模型已有 normalize.
+        """
         eps = 1e-6
+        skip_map = {"audio": skip_feature_A, "vision": skip_feature_V}
         for attr in ("audio", "vision"):
+            if skip_map.get(attr, False):
+                continue
             x = getattr(self, attr)
             mean = x.mean(axis=(0, 1), keepdims=True)
             std = x.std(axis=(0, 1), keepdims=True)
@@ -206,11 +352,47 @@ class MMDataset(Dataset):
     def __getitem__(self, idx: int) -> Dict[str, Any]:
         sample = {
             "text": torch.from_numpy(self.text[idx]),
-            "audio": torch.from_numpy(self.audio[idx].copy()),
-            "vision": torch.from_numpy(self.vision[idx].copy()),
             "id": self.ids[idx],
             "index": torch.tensor(idx, dtype=torch.long),
         }
+
+        # ---- ★ CAGMamba 对齐: WAV 在线加载 ----
+        if self.use_wav_audio and self._feature_extractor is not None:
+            sid = str(self.ids[idx]).replace('$_$', '_')
+            wav_path = self._wav_paths.get(sid, '')
+            if wav_path:
+                try:
+                    import torchaudio
+                    sound, sr = torchaudio.load(wav_path)
+                    sound_mono = torch.mean(sound, dim=0, keepdim=False)
+                except Exception:
+                    import librosa
+                    audio_np, _ = librosa.load(wav_path, sr=16000, mono=True)
+                    sound_mono = torch.from_numpy(audio_np.astype(np.float32))
+                feat = self._feature_extractor(
+                    sound_mono, sampling_rate=16000, max_length=96000,
+                    return_attention_mask=True, truncation=True, padding="max_length",
+                )
+                sample["audio"] = torch.tensor(np.array(feat['input_values']), dtype=torch.float32).squeeze()
+            else:
+                sample["audio"] = torch.zeros(96000, dtype=torch.float32)
+        else:
+            sample["audio"] = torch.from_numpy(self.audio[idx].copy())
+
+        sample["vision"] = torch.from_numpy(self.vision[idx].copy())
+
+        # ★ Phase 5: 上下文特征
+        if self.use_context:
+            sample["context_text"] = torch.from_numpy(
+                self.context_text[idx].copy() if self.use_bert
+                else np.asarray(self.context_text[idx])
+            )
+            sample["context_audio"] = torch.from_numpy(
+                self.context_audio[idx].copy()
+            )
+            sample["context_video"] = torch.from_numpy(
+                self.context_vision[idx].copy()
+            )
 
         # 多任务标签字典
         labels = {}

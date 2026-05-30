@@ -150,6 +150,9 @@ class Block_GLCE(nn.Module):
         self, dim, mixer_cls, norm_cls=nn.LayerNorm,
         fused_add_norm=True, residual_in_fp32=True,
         drop_path=0., use_mlp=False, seq_len=51,
+        # ★ Phase 19: BSSM 风格门控 (CAGMamba 对齐)
+        use_bssm_gate: bool = False,
+        bssm_gate_expand: int = 2,
     ):
         super().__init__()
         self.residual_in_fp32 = residual_in_fp32
@@ -165,6 +168,17 @@ class Block_GLCE(nn.Module):
         self.use_mlp = use_mlp
         if self.use_mlp:
             self.mlp = nn.Linear(dim, dim)
+
+        # ★ BSSM 门控 (CAGMamba 公式 15-16): MLP_gate → SiLU → element-wise ⊙
+        self.use_bssm_gate = use_bssm_gate
+        if use_bssm_gate:
+            gate_hidden = dim * bssm_gate_expand
+            self.bssm_gate = nn.Sequential(
+                nn.Linear(dim, gate_hidden),
+                nn.SiLU(),
+                nn.Linear(gate_hidden, dim),
+                nn.SiLU(),  # 输出 ∈ [0, ∞), 与 BSSM 原版 SiLU 一致
+            )
 
         # GLCE: 全局-局部上下文提取 (与 MSAmba 完全一致)
         self.seq_len = seq_len
@@ -214,6 +228,13 @@ class Block_GLCE(nn.Module):
             hidden_states = cp.checkpoint(self.mixer, hidden_states, inference_params)
         else:
             hidden_states = self.mixer(hidden_states, inference_params=inference_params)
+
+        # ★ Phase 19: BSSM 风格门控 (CAGMamba 公式 15-16)
+        #   G_ssm = σ_SiLU(MLP_gate(X))  →  Y = G_ssm ⊙ X
+        #   逐元素控制 SSM 输出信息流, 抑制噪声通道
+        if self.use_bssm_gate:
+            gate = self.bssm_gate(hidden_states)
+            hidden_states = gate * hidden_states
 
         if self.use_mlp:
             hidden_states = self.mlp(hidden_states)
@@ -283,12 +304,16 @@ class ISMEncoder(nn.Module):
         bimamba3_is_outproj_norm: bool = False,
         bimamba3_fusion: str = "add_divide2",
         bimamba3_share_mimo: bool = True,
+        # ★ Phase 19: BSSM 门控
+        use_bssm_gate: bool = False,
+        bssm_gate_expand: int = 2,
     ):
         super().__init__()
         self.d_model = d_model
         self.seq_len = seq_len
         self.depth = depth
         self.mixer_type = mixer_type
+        self.use_bssm_gate = use_bssm_gate
 
         # CLS token + 位置编码 (对齐 MSAmba: trunc_normal_ std=0.02)
         self.cls_token = nn.Parameter(torch.zeros(1, 1, d_model))
@@ -340,6 +365,8 @@ class ISMEncoder(nn.Module):
                 drop_path=0.,
                 use_mlp=False,
                 seq_len=seq_len + 1,  # +1 for CLS token
+                use_bssm_gate=use_bssm_gate,
+                bssm_gate_expand=bssm_gate_expand,
             )
             for i in range(depth)
         ])

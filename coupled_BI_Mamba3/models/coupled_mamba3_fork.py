@@ -369,6 +369,8 @@ class CoupledMamba3Fork(nn.Module):
         mimo_rank: int = 4,
         chunk_size: int = 64,
         v_self_ratio: float = 0.0,
+        # ★ Phase 20: GCMN 三流门控融合 (CAGMamba 对齐)
+        use_gcmn_gate: bool = False,
         device=None,
         dtype=None,
     ):
@@ -376,6 +378,7 @@ class CoupledMamba3Fork(nn.Module):
         self.d_model = d_model
         self.modalities = ("audio", "visual", "lexical")
         self.num_modalities = len(self.modalities)
+        self.use_gcmn_gate = use_gcmn_gate
 
         cell_kwargs = dict(
             d_model=d_model, d_state=d_state, expand=expand, headdim=headdim,
@@ -406,6 +409,13 @@ class CoupledMamba3Fork(nn.Module):
         self.layer_norms = nn.ModuleDict({
             m: nn.LayerNorm(d_model) for m in self.modalities
         })
+
+        # ★ Phase 20: GCMN 三流门控融合
+        if use_gcmn_gate:
+            from .gcmn_fusion import GCMNFusionModule
+            self.gcmn = GCMNFusionModule(d_model=d_model)
+        else:
+            self.gcmn = None
 
     def _src_keys_for(self, tgt: str) -> Tuple[str, str]:
         return tuple(m for m in self.modalities if m != tgt)  # type: ignore
@@ -438,6 +448,23 @@ class CoupledMamba3Fork(nn.Module):
 
             # 残差 + LN
             outs[tgt] = self.layer_norms[tgt](y + u_tgt)
+
+        # ★ Phase 20: GCMN 三流门控融合
+        if self.gcmn is not None:
+            cross_l = outs["lexical"]
+            cross_a = outs["audio"]
+            cross_v = outs["visual"]
+            # 原始 ISM 特征也传入 (用于单模态保留路径)
+            raw_l = feats["lexical"] if "lexical" in feats else cross_l
+            raw_a = feats["audio"] if "audio" in feats else cross_a
+            raw_v = feats["visual"] if "visual" in feats else cross_v
+            out_l, out_a, out_v = self.gcmn(
+                cross_l, cross_a, cross_v,
+                raw_l, raw_a, raw_v,
+            )
+            outs["lexical"] = out_l
+            outs["audio"] = out_a
+            outs["visual"] = out_v
 
         return outs["audio"], outs["visual"], outs["lexical"]
 

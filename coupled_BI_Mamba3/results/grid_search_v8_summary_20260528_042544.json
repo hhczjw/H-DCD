@@ -1,0 +1,111 @@
+{
+  "phase": "stability",
+  "total_runs": 9,
+  "best_by_acc7": {
+    "exp_name": "a0.001_dt0.001",
+    "acc7": 0.5015,
+    "acc2": 0.8857,
+    "mae": 0.616
+  },
+  "results": [
+    {
+      "exp_name": "a0.001_dt0.001",
+      "log_file": "logs/grid_search_v8/a0.001_dt0.001.log",
+      "test_mae": 0.616,
+      "test_acc2": 0.8857,
+      "test_acc7": 0.5015,
+      "val_acc7": 0.5284,
+      "has_nan": false,
+      "elapsed": 1625.5524282455444,
+      "success": true
+    },
+    {
+      "exp_name": "a0.01_dt0.001",
+      "log_file": "logs/grid_search_v8/a0.01_dt0.001.log",
+      "test_mae": 0.616,
+      "test_acc2": 0.8857,
+      "test_acc7": 0.5015,
+      "val_acc7": 0.5284,
+      "has_nan": false,
+      "elapsed": 1630.0793454647064,
+      "success": true
+    },
+    {
+      "exp_name": "a0.1_dt0.001",
+      "log_file": "logs/grid_search_v8/a0.1_dt0.001.log",
+      "test_mae": 0.6976,
+      "test_acc2": 0.8491,
+      "test_acc7": 0.4563,
+      "val_acc7": 0.5066,
+      "has_nan": true,
+      "elapsed": 1211.2561180591583,
+      "success": true
+    },
+    {
+      "exp_name": "a0.001_dt0.01",
+      "log_file": "logs/grid_search_v8/a0.001_dt0.01.log",
+      "test_mae": 0.6285,
+      "test_acc2": 0.8826,
+      "test_acc7": 0.4694,
+      "val_acc7": 0.5066,
+      "has_nan": false,
+      "elapsed": 1285.881199836731,
+      "success": true
+    },
+    {
+      "exp_name": "a0.01_dt0.01",
+      "log_file": "logs/grid_search_v8/a0.01_dt0.01.log",
+      "test_mae": 0.6473,
+      "test_acc2": 0.875,
+      "test_acc7": 0.484,
+      "val_acc7": 0.5284,
+      "has_nan": false,
+      "elapsed": 1600.8752694129944,
+      "success": true
+    },
+    {
+      "exp_name": "a0.1_dt0.01",
+      "log_file": "logs/grid_search_v8/a0.1_dt0.01.log",
+      "test_mae": 0.6888,
+      "test_acc2": 0.8582,
+      "test_acc7": 0.484,
+      "val_acc7": 0.5153,
+      "has_nan": false,
+      "elapsed": 1287.752653837204,
+      "success": true
+    },
+    {
+      "exp_name": "a0.001_dt0.1",
+      "log_file": "logs/grid_search_v8/a0.001_dt0.1.log",
+      "test_mae": 0.6473,
+      "test_acc2": 0.875,
+      "test_acc7": 0.484,
+      "val_acc7": 0.5284,
+      "has_nan": false,
+      "elapsed": 1589.559158563614,
+      "success": true
+    },
+    {
+      "exp_name": "a0.01_dt0.1",
+      "log_file": "logs/grid_search_v8/a0.01_dt0.1.log",
+      "test_mae": 0.616,
+      "test_acc2": 0.8857,
+      "test_acc7": 0.5015,
+      "val_acc7": 0.5284,
+      "has_nan": false,
+      "elapsed": 1598.1581988334656,
+      "success": true
+    },
+    {
+      "exp_name": "a0.1_dt0.1",
+      "log_file": "logs/grid_search_v8/a0.1_dt0.1.log",
+      "test_mae": 0.616,
+      "test_acc2": 0.8857,
+      "test_acc7": 0.5015,
+      "val_acc7": 0.5284,
+      "has_nan": false,
+      "elapsed": 1593.6409771442413,
+      "success": true
+    }
+  ]
+}

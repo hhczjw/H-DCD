@@ -216,13 +216,19 @@ class Trainer:
         return out
 
     def _forward_pred(self, batch: Dict[str, Any]):
-        return self.model(
+        kw = dict(
             text=batch["text"],
             audio=batch["audio"],
             video=batch["vision"],
             audio_lengths=batch.get("audio_lengths", None),
             vision_lengths=batch.get("vision_lengths", None),
         )
+        # ★ Phase 5: 上下文传入
+        if "context_text" in batch:
+            kw["context_text"] = batch["context_text"]
+            kw["context_audio"] = batch["context_audio"]
+            kw["context_video"] = batch["context_video"]
+        return self.model(**kw)
 
     @staticmethod
     def _split_outputs(out):
@@ -251,6 +257,13 @@ class Trainer:
         model = self.model
         audio_lengths = batch.get("audio_lengths", None)
         vision_lengths = batch.get("vision_lengths", None)
+        ctx_kw = {}
+        if "context_text" in batch:
+            ctx_kw = {
+                "context_text": batch["context_text"],
+                "context_audio": batch["context_audio"],
+                "context_video": batch["context_video"],
+            }
         # 需提取 CLS 的情况：使用了 sub_loss，或者使用了 aux_head(因为现在 aux_head 需要纯净端)
         need_cls = getattr(model, "use_sub_loss", False) or getattr(model, "aux_head", None) is not None
         if need_cls:

@@ -1,0 +1,12 @@
+exp,phase,ds,hd,ng,cs,rp,fs,mo,lr,dep,do,wd,bge,test_mae,test_acc2,test_acc7,val_mae,val_acc2,val_acc7
+p1_ds32_hd32_ng1_cs64_rp0.5_fsadd_div2_mooff_lr2e-4_dep3_do0.7_wd1e-4_bge2,p1,32,32,1,64,0.5,add_div2_mooff_lr2e,off_lr2e,2e-4_dep3_do0.7_wd1e-4_bge2,3,0.7,1e-4_bge2,2,0.6481,0.8765,0.4854,0.6383,0.8843,0.4978
+p1_ds32_hd64_ng1_cs64_rp0.5_fsadd_div2_mooff_lr2e-4_dep3_do0.7_wd1e-4_bge2,p1,32,64,1,64,0.5,add_div2_mooff_lr2e,off_lr2e,2e-4_dep3_do0.7_wd1e-4_bge2,3,0.7,1e-4_bge2,2,0.6327,0.8735,0.4825,0.6184,0.8935,0.5197
+p1_ds128_hd32_ng1_cs64_rp0.5_fsadd_div2_mooff_lr2e-4_dep3_do0.7_wd1e-4_bge2,p1,128,32,1,64,0.5,add_div2_mooff_lr2e,off_lr2e,2e-4_dep3_do0.7_wd1e-4_bge2,3,0.7,1e-4_bge2,2,0.6783,0.8613,0.4767,0.6629,0.8889,0.5109
+p1_ds128_hd64_ng1_cs64_rp0.5_fsadd_div2_mooff_lr2e-4_dep3_do0.7_wd1e-4_bge2,p1,128,64,1,64,0.5,add_div2_mooff_lr2e,off_lr2e,2e-4_dep3_do0.7_wd1e-4_bge2,3,0.7,1e-4_bge2,2,0.6709,0.8598,0.4446,0.6626,0.8843,0.4716
+p2_ds64_hd64_ng2_cs32_rp0.5_fsadd_div2_mooff_lr2e-4_dep3_do0.7_wd1e-4_bge2,p2,64,64,2,32,0.5,add_div2_mooff_lr2e,off_lr2e,2e-4_dep3_do0.7_wd1e-4_bge2,3,0.7,1e-4_bge2,2,0.6915,0.8659,0.4636,0.6369,0.8981,0.4934
+p2_ds64_hd64_ng2_cs128_rp0.5_fsadd_div2_mooff_lr2e-4_dep3_do0.7_wd1e-4_bge2,p2,64,64,2,128,0.5,add_div2_mooff_lr2e,off_lr2e,2e-4_dep3_do0.7_wd1e-4_bge2,3,0.7,1e-4_bge2,2,0.6313,0.8796,0.4985,0.6139,0.9074,0.5371
+p2_ds64_hd64_ng4_cs32_rp0.5_fsadd_div2_mooff_lr2e-4_dep3_do0.7_wd1e-4_bge2,p2,64,64,4,32,0.5,add_div2_mooff_lr2e,off_lr2e,2e-4_dep3_do0.7_wd1e-4_bge2,3,0.7,1e-4_bge2,2,0.6398,0.8780,0.4810,0.6368,0.9028,0.4891
+p2_ds64_hd64_ng4_cs128_rp0.5_fsadd_div2_mooff_lr2e-4_dep3_do0.7_wd1e-4_bge2,p2,64,64,4,128,0.5,add_div2_mooff_lr2e,off_lr2e,2e-4_dep3_do0.7_wd1e-4_bge2,3,0.7,1e-4_bge2,2,0.7004,0.8689,0.4402,0.6363,0.9028,0.4891
+p3_ds64_hd64_ng1_cs64_rp0.5_fsadd_mooff_lr2e-4_dep3_do0.7_wd1e-4_bge2,p3,64,64,1,64,0.5,add_mooff_lr2e,off_lr2e,2e-4_dep3_do0.7_wd1e-4_bge2,3,0.7,1e-4_bge2,2,0.6873,0.8506,0.4708,0.6404,0.9028,0.5022
+p3_ds64_hd64_ng1_cs64_rp0.5_fsgated_mooff_lr2e-4_dep3_do0.7_wd1e-4_bge2,p3,64,64,1,64,0.5,gated_mooff_lr2e,off_lr2e,2e-4_dep3_do0.7_wd1e-4_bge2,3,0.7,1e-4_bge2,2,0.7424,0.8628,0.4577,0.6855,0.8843,0.4978
+p3_ds64_hd64_ng1_cs64_rp0.5_fsconcat_proj_mooff_lr2e-4_dep3_do0.7_wd1e-4_bge2,p3,64,64,1,64,0.5,concat_proj_mooff_lr2e,off_lr2e,2e-4_dep3_do0.7_wd1e-4_bge2,3,0.7,1e-4_bge2,2,0.7476,0.8521,0.4592,0.6491,0.8889,0.5022

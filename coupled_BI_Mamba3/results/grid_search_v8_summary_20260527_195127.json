@@ -1,0 +1,144 @@
+{
+  "phase": "model_structure",
+  "total_runs": 12,
+  "best_by_acc7": {
+    "exp_name": "id2_nl1",
+    "acc7": 0.4854,
+    "acc2": 0.8735,
+    "mae": 0.6684
+  },
+  "results": [
+    {
+      "exp_name": "id1_nl1",
+      "log_file": "logs/grid_search_v8/id1_nl1.log",
+      "test_mae": 0.6536,
+      "test_acc2": 0.8643,
+      "test_acc7": 0.484,
+      "val_acc7": 0.5066,
+      "has_nan": true,
+      "elapsed": 1226.0437932014465,
+      "success": true
+    },
+    {
+      "exp_name": "id2_nl1",
+      "log_file": "logs/grid_search_v8/id2_nl1.log",
+      "test_mae": 0.6684,
+      "test_acc2": 0.8735,
+      "test_acc7": 0.4854,
+      "val_acc7": 0.5197,
+      "has_nan": false,
+      "elapsed": 989.57830119133,
+      "success": true
+    },
+    {
+      "exp_name": "id3_nl1",
+      "log_file": "logs/grid_search_v8/id3_nl1.log",
+      "test_mae": 0.6444,
+      "test_acc2": 0.8765,
+      "test_acc7": 0.4854,
+      "val_acc7": 0.5197,
+      "has_nan": false,
+      "elapsed": 2275.1437940597534,
+      "success": true
+    },
+    {
+      "exp_name": "id4_nl1",
+      "log_file": "logs/grid_search_v8/id4_nl1.log",
+      "test_mae": 0.651,
+      "test_acc2": 0.8704,
+      "test_acc7": 0.484,
+      "val_acc7": 0.5109,
+      "has_nan": false,
+      "elapsed": 1857.0805568695068,
+      "success": true
+    },
+    {
+      "exp_name": "id1_nl2",
+      "log_file": "logs/grid_search_v8/id1_nl2.log",
+      "test_mae": 0.6618,
+      "test_acc2": 0.8598,
+      "test_acc7": 0.484,
+      "val_acc7": 0.4891,
+      "has_nan": true,
+      "elapsed": 825.6319572925568,
+      "success": true
+    },
+    {
+      "exp_name": "id2_nl2",
+      "log_file": "logs/grid_search_v8/id2_nl2.log",
+      "test_mae": 0.6874,
+      "test_acc2": 0.8628,
+      "test_acc7": 0.4592,
+      "val_acc7": 0.5109,
+      "has_nan": true,
+      "elapsed": 1353.8222246170044,
+      "success": true
+    },
+    {
+      "exp_name": "id3_nl2",
+      "log_file": "logs/grid_search_v8/id3_nl2.log",
+      "test_mae": 0.6429,
+      "test_acc2": 0.8765,
+      "test_acc7": 0.4767,
+      "val_acc7": 0.5197,
+      "has_nan": true,
+      "elapsed": 1115.456222295761,
+      "success": true
+    },
+    {
+      "exp_name": "id4_nl2",
+      "log_file": "logs/grid_search_v8/id4_nl2.log",
+      "test_mae": 0.6817,
+      "test_acc2": 0.875,
+      "test_acc7": 0.4854,
+      "val_acc7": 0.5066,
+      "has_nan": true,
+      "elapsed": 991.2750883102417,
+      "success": true
+    },
+    {
+      "exp_name": "id1_nl3",
+      "log_file": "logs/grid_search_v8/id1_nl3.log",
+      "test_mae": 0.6832,
+      "test_acc2": 0.8567,
+      "test_acc7": 0.465,
+      "val_acc7": 0.5109,
+      "has_nan": false,
+      "elapsed": 1414.4568157196045,
+      "success": true
+    },
+    {
+      "exp_name": "id2_nl3",
+      "log_file": "logs/grid_search_v8/id2_nl3.log",
+      "test_mae": 0.6639,
+      "test_acc2": 0.8582,
+      "test_acc7": 0.4781,
+      "val_acc7": 0.4934,
+      "has_nan": true,
+      "elapsed": 1317.0719001293182,
+      "success": true
+    },
+    {
+      "exp_name": "id3_nl3",
+      "log_file": "logs/grid_search_v8/id3_nl3.log",
+      "test_mae": 0.6575,
+      "test_acc2": 0.8659,
+      "test_acc7": 0.484,
+      "val_acc7": 0.5022,
+      "has_nan": false,
+      "elapsed": 1310.8998446464539,
+      "success": true
+    },
+    {
+      "exp_name": "id4_nl3",
+      "log_file": "logs/grid_search_v8/id4_nl3.log",
+      "test_mae": 0.6672,
+      "test_acc2": 0.875,
+      "test_acc7": 0.4752,
+      "val_acc7": 0.5153,
+      "has_nan": true,
+      "elapsed": 1548.575912475586,
+      "success": true
+    }
+  ]
+}

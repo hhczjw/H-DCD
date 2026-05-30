@@ -1,0 +1,144 @@
+{
+  "phase": "fusion_headdim",
+  "total_runs": 12,
+  "best_by_acc7": {
+    "exp_name": "fusionconcat_proj_hd64",
+    "acc7": 0.4942,
+    "acc2": 0.8689,
+    "mae": 0.6565
+  },
+  "results": [
+    {
+      "exp_name": "fusionadd_hd32",
+      "log_file": "logs/grid_search_v8/fusionadd_hd32.log",
+      "test_mae": 0.6872,
+      "test_acc2": 0.8598,
+      "test_acc7": 0.4636,
+      "val_acc7": 0.5022,
+      "has_nan": false,
+      "elapsed": 1445.5649037361145,
+      "success": true
+    },
+    {
+      "exp_name": "fusionadd_hd64",
+      "log_file": "logs/grid_search_v8/fusionadd_hd64.log",
+      "test_mae": 0.6872,
+      "test_acc2": 0.8598,
+      "test_acc7": 0.4636,
+      "val_acc7": 0.5022,
+      "has_nan": false,
+      "elapsed": 1439.566522359848,
+      "success": true
+    },
+    {
+      "exp_name": "fusionadd_hd128",
+      "log_file": "logs/grid_search_v8/fusionadd_hd128.log",
+      "test_mae": 0.6619,
+      "test_acc2": 0.8704,
+      "test_acc7": 0.4563,
+      "val_acc7": 0.5109,
+      "has_nan": true,
+      "elapsed": 1279.2887542247772,
+      "success": true
+    },
+    {
+      "exp_name": "fusionadd_divide2_hd32",
+      "log_file": "logs/grid_search_v8/fusionadd_divide2_hd32.log",
+      "test_mae": 0.638,
+      "test_acc2": 0.8902,
+      "test_acc7": 0.4883,
+      "val_acc7": 0.5066,
+      "has_nan": true,
+      "elapsed": 1199.5817437171936,
+      "success": true
+    },
+    {
+      "exp_name": "fusionadd_divide2_hd64",
+      "log_file": "logs/grid_search_v8/fusionadd_divide2_hd64.log",
+      "test_mae": 0.6285,
+      "test_acc2": 0.8826,
+      "test_acc7": 0.4694,
+      "val_acc7": 0.5066,
+      "has_nan": false,
+      "elapsed": 1295.9563739299774,
+      "success": true
+    },
+    {
+      "exp_name": "fusionadd_divide2_hd128",
+      "log_file": "logs/grid_search_v8/fusionadd_divide2_hd128.log",
+      "test_mae": 0.7083,
+      "test_acc2": 0.8643,
+      "test_acc7": 0.4694,
+      "val_acc7": 0.5066,
+      "has_nan": false,
+      "elapsed": 1483.151932001114,
+      "success": true
+    },
+    {
+      "exp_name": "fusionconcat_proj_hd32",
+      "log_file": "logs/grid_search_v8/fusionconcat_proj_hd32.log",
+      "test_mae": 0.6919,
+      "test_acc2": 0.8628,
+      "test_acc7": 0.4679,
+      "val_acc7": 0.5197,
+      "has_nan": false,
+      "elapsed": 2670.491244316101,
+      "success": true
+    },
+    {
+      "exp_name": "fusionconcat_proj_hd64",
+      "log_file": "logs/grid_search_v8/fusionconcat_proj_hd64.log",
+      "test_mae": 0.6565,
+      "test_acc2": 0.8689,
+      "test_acc7": 0.4942,
+      "val_acc7": 0.524,
+      "has_nan": true,
+      "elapsed": 2275.9736590385437,
+      "success": true
+    },
+    {
+      "exp_name": "fusionconcat_proj_hd128",
+      "log_file": "logs/grid_search_v8/fusionconcat_proj_hd128.log",
+      "test_mae": 0.6469,
+      "test_acc2": 0.875,
+      "test_acc7": 0.4636,
+      "val_acc7": 0.524,
+      "has_nan": false,
+      "elapsed": 1604.667991399765,
+      "success": true
+    },
+    {
+      "exp_name": "fusiongated_hd32",
+      "log_file": "logs/grid_search_v8/fusiongated_hd32.log",
+      "test_mae": 0.7192,
+      "test_acc2": 0.8643,
+      "test_acc7": 0.4475,
+      "val_acc7": 0.4978,
+      "has_nan": true,
+      "elapsed": 1192.4049804210663,
+      "success": true
+    },
+    {
+      "exp_name": "fusiongated_hd64",
+      "log_file": "logs/grid_search_v8/fusiongated_hd64.log",
+      "test_mae": 0.646,
+      "test_acc2": 0.872,
+      "test_acc7": 0.4738,
+      "val_acc7": 0.5066,
+      "has_nan": false,
+      "elapsed": 2726.371621608734,
+      "success": true
+    },
+    {
+      "exp_name": "fusiongated_hd128",
+      "log_file": "logs/grid_search_v8/fusiongated_hd128.log",
+      "test_mae": 0.6638,
+      "test_acc2": 0.8613,
+      "test_acc7": 0.4913,
+      "val_acc7": 0.5197,
+      "has_nan": true,
+      "elapsed": 1665.126127243042,
+      "success": true
+    }
+  ]
+}

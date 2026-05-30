@@ -1,0 +1,144 @@
+{
+  "phase": "loss_weights",
+  "total_runs": 12,
+  "best_by_acc7": {
+    "exp_name": "aux0.0_sub0.3",
+    "acc7": 0.5015,
+    "acc2": 0.8857,
+    "mae": 0.616
+  },
+  "results": [
+    {
+      "exp_name": "aux0.0_sub0.0",
+      "log_file": "logs/grid_search_v8/aux0.0_sub0.0.log",
+      "test_mae": 0.6371,
+      "test_acc2": 0.8735,
+      "test_acc7": 0.4956,
+      "val_acc7": 0.5284,
+      "has_nan": false,
+      "elapsed": 1618.484337568283,
+      "success": true
+    },
+    {
+      "exp_name": "aux0.1_sub0.0",
+      "log_file": "logs/grid_search_v8/aux0.1_sub0.0.log",
+      "test_mae": 0.6548,
+      "test_acc2": 0.8674,
+      "test_acc7": 0.4913,
+      "val_acc7": 0.524,
+      "has_nan": false,
+      "elapsed": 1467.0554373264313,
+      "success": true
+    },
+    {
+      "exp_name": "aux0.3_sub0.0",
+      "log_file": "logs/grid_search_v8/aux0.3_sub0.0.log",
+      "test_mae": 0.6471,
+      "test_acc2": 0.8613,
+      "test_acc7": 0.4898,
+      "val_acc7": 0.5153,
+      "has_nan": false,
+      "elapsed": 1658.4504706859589,
+      "success": true
+    },
+    {
+      "exp_name": "aux0.0_sub0.1",
+      "log_file": "logs/grid_search_v8/aux0.0_sub0.1.log",
+      "test_mae": 0.6285,
+      "test_acc2": 0.8826,
+      "test_acc7": 0.4694,
+      "val_acc7": 0.5066,
+      "has_nan": false,
+      "elapsed": 1309.834776878357,
+      "success": true
+    },
+    {
+      "exp_name": "aux0.1_sub0.1",
+      "log_file": "logs/grid_search_v8/aux0.1_sub0.1.log",
+      "test_mae": 0.6285,
+      "test_acc2": 0.8826,
+      "test_acc7": 0.4694,
+      "val_acc7": 0.5066,
+      "has_nan": false,
+      "elapsed": 1306.9849796295166,
+      "success": true
+    },
+    {
+      "exp_name": "aux0.3_sub0.1",
+      "log_file": "logs/grid_search_v8/aux0.3_sub0.1.log",
+      "test_mae": 0.6285,
+      "test_acc2": 0.8826,
+      "test_acc7": 0.4694,
+      "val_acc7": 0.5066,
+      "has_nan": false,
+      "elapsed": 1305.5873763561249,
+      "success": true
+    },
+    {
+      "exp_name": "aux0.0_sub0.3",
+      "log_file": "logs/grid_search_v8/aux0.0_sub0.3.log",
+      "test_mae": 0.616,
+      "test_acc2": 0.8857,
+      "test_acc7": 0.5015,
+      "val_acc7": 0.5284,
+      "has_nan": false,
+      "elapsed": 1615.2270531654358,
+      "success": true
+    },
+    {
+      "exp_name": "aux0.1_sub0.3",
+      "log_file": "logs/grid_search_v8/aux0.1_sub0.3.log",
+      "test_mae": 0.616,
+      "test_acc2": 0.8857,
+      "test_acc7": 0.5015,
+      "val_acc7": 0.5284,
+      "has_nan": false,
+      "elapsed": 1619.4405217170715,
+      "success": true
+    },
+    {
+      "exp_name": "aux0.3_sub0.3",
+      "log_file": "logs/grid_search_v8/aux0.3_sub0.3.log",
+      "test_mae": 0.6157,
+      "test_acc2": 0.8887,
+      "test_acc7": 0.4956,
+      "val_acc7": 0.5197,
+      "has_nan": false,
+      "elapsed": 1454.4240896701813,
+      "success": true
+    },
+    {
+      "exp_name": "aux0.0_sub0.5",
+      "log_file": "logs/grid_search_v8/aux0.0_sub0.5.log",
+      "test_mae": 0.6429,
+      "test_acc2": 0.8765,
+      "test_acc7": 0.4767,
+      "val_acc7": 0.5197,
+      "has_nan": true,
+      "elapsed": 1130.9197869300842,
+      "success": true
+    },
+    {
+      "exp_name": "aux0.1_sub0.5",
+      "log_file": "logs/grid_search_v8/aux0.1_sub0.5.log",
+      "test_mae": 0.6351,
+      "test_acc2": 0.872,
+      "test_acc7": 0.484,
+      "val_acc7": 0.5284,
+      "has_nan": false,
+      "elapsed": 1633.2759926319122,
+      "success": true
+    },
+    {
+      "exp_name": "aux0.3_sub0.5",
+      "log_file": "logs/grid_search_v8/aux0.3_sub0.5.log",
+      "test_mae": 0.6888,
+      "test_acc2": 0.8582,
+      "test_acc7": 0.484,
+      "val_acc7": 0.5153,
+      "has_nan": false,
+      "elapsed": 1314.6768889427185,
+      "success": true
+    }
+  ]
+}
