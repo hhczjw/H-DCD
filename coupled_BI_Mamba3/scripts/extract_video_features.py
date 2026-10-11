@@ -351,6 +351,8 @@ def run_openface(args, device):
         for f in files:
             if f.endswith(('.mp4', '.avi', '.mkv')):
                 video_files.append(_os.path.join(root, f))
+    if getattr(args, "video_paths", None) is not None:
+        video_files = list(args.video_paths)
     
     with torch.no_grad():
         for vid_path in tqdm(video_files, desc="Extracting OpenFace 3.0"):
@@ -367,6 +369,8 @@ def run_openface(args, device):
                 cap.release()
                 n_fallback = args.num_frames if args.num_frames > 0 else 50
                 results[vid_id] = np.zeros((n_fallback, 18), dtype=np.float32)
+                if getattr(args, "on_feature", None):
+                    args.on_feature(vid_id, results[vid_id])
                 continue
             
             indices = np.linspace(0, total_frames - 1, 
@@ -408,6 +412,8 @@ def run_openface(args, device):
                 frame_feats.append(frame_feats[-1] if frame_feats else np.zeros(18, dtype=np.float32))
             
             results[vid_id] = np.stack(frame_feats[:n_out]).astype(np.float32)
+            if getattr(args, "on_feature", None):
+                args.on_feature(vid_id, results[vid_id])
     
     return results
 

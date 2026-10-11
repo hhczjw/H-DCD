@@ -110,14 +110,20 @@ def parse_args():
                    help="early stop 监控指标; 默认沿用 config.json")
     # ---- 辅助 ckpt 指标 (dual ckpt) ----
     p.add_argument("--secondary_metric", type=str, default=None,
-                   choices=["MAE", "Acc7", "Acc5", "Acc2", "F1", "none"],
+                   choices=["MAE", "Acc7", "Acc5", "Acc2", "F1", "Acc2_has0", "F1_has0", "none"],
                    help="辅助 ckpt 监控指标; 默认: regression -> MAE; 设为 'none' 关闭. "
                         "想冲 Acc7 时建议设为 Acc7. 不能与 --key_eval 相同, 否则自动关闭辅助 ckpt.")
     # ---- 第三 ckpt 指标 (triple ckpt) ----
     p.add_argument("--tertiary_metric", type=str, default=None,
-                   choices=["Acc7", "MAE", "Acc5", "Acc2", "F1", "none"],
+                   choices=["Acc7", "MAE", "Acc5", "Acc2", "F1", "Acc2_has0", "F1_has0", "none"],
                    help="第三 ckpt 监控指标; 默认: regression -> Acc7; 设为 'none' 关闭. "
                         "不能与 --key_eval 或 --secondary_metric 相同, 否则自动关闭.")
+    # ---- 第四 ckpt 指标 (quaternary ckpt: has0/F1 口径专用, P0-1) ----
+    p.add_argument("--quaternary_metric", type=str, default=None,
+                   choices=["F1_has0", "Acc2_has0", "Acc5", "Acc2", "F1", "Acc7", "MAE", "none"],
+                   help="第四 ckpt 监控指标 (推荐 F1_has0 或 Acc2_has0; 直接优化含0/F1 口径); "
+                        "默认从 config 读 quaternary_metric, 无则关闭. "
+                        "不能与其它 ckpt 指标重复, 否则自动关闭.")
     # ---- EMA 影子权重 ----
     p.add_argument("--ema_decay", type=float, default=None,
                    help="EMA 衰减系数; >0 启用, 推荐 0.999. 0/None=关闭")
@@ -193,6 +199,7 @@ def main():
     _override(args, cli, "KeyEval", "key_eval")
     _override(args, cli, "secondary_metric")
     _override(args, cli, "tertiary_metric")
+    _override(args, cli, "quaternary_metric")
     _override(args, cli, "ema_decay")
 
     set_seed(cli.seed)
@@ -339,11 +346,29 @@ def main():
         if use_triple_ckpt else None
     )
 
+    # ---- 第四 ckpt 指标解析 (CLI 优先, 默认从 config 读; has0/F1 口径, P0-1) ----
+    quaternary_metric = getattr(args, "quaternary_metric", None)
+    if cli.quaternary_metric is not None:
+        quaternary_metric = None if cli.quaternary_metric == "none" else cli.quaternary_metric
+
+    use_quad_ckpt = (
+        args.task_type == "regression"
+        and quaternary_metric is not None
+        and quaternary_metric not in (key_eval, secondary_metric, tertiary_metric)
+    )
+    quad_higher_better = (quaternary_metric not in ("Loss", "MAE")) if quaternary_metric else False
+    best_quaternary = (-1e9 if quad_higher_better else 1e9) if use_quad_ckpt else None
+    quaternary_path = (
+        os.path.join(args.checkpoints_dir, f"{cli.dataset}{tag}_seed{cli.seed}_best_{quaternary_metric}.pt")
+        if use_quad_ckpt else None
+    )
+
     dual_info = f"dual={'on(' + str(secondary_metric) + ')' if use_dual_ckpt else 'off'}"
     triple_info = f"triple={'on(' + str(tertiary_metric) + ')' if use_triple_ckpt else 'off'}"
+    quad_info = f"quad={'on(' + str(quaternary_metric) + ')' if use_quad_ckpt else 'off'}"
     logger.info(
         f"Early stop monitor: {key_eval} | higher_better={higher_better} | "
-        f"{dual_info} | {triple_info}"
+        f"{dual_info} | {triple_info} | {quad_info}"
     )
 
     for epoch in range(1, int(args.epochs) + 1):
@@ -381,6 +406,16 @@ def main():
                 trainer.save(tertiary_path)
                 logger.info(f"  >> New best {tertiary_metric}={ter_score:.4f}  [tertiary ckpt]")
 
+        # 第四 ckpt: 用 quaternary_metric 单独保存 (has0/F1 口径, P0-1)
+        if use_quad_ckpt:
+            quad_default = -1e9 if quad_higher_better else 1e9
+            quad_score = val.get(quaternary_metric, quad_default)
+            quad_improved = (quad_score > best_quaternary) if quad_higher_better else (quad_score < best_quaternary)
+            if quad_improved:
+                best_quaternary = quad_score
+                trainer.save(quaternary_path)
+                logger.info(f"  >> New best {quaternary_metric}={quad_score:.4f}  [quaternary ckpt]")
+
         if patience >= int(args.early_stop):
             logger.info(f"Early stop at epoch {epoch}")
             break
@@ -402,6 +437,11 @@ def main():
         logger.info(f"=== Testing with TERTIARY ckpt (best {tertiary_metric}) ===")
         trainer.load(tertiary_path)
         test_results[f"tertiary_{tertiary_metric}"] = trainer.evaluate(loaders["test"], split="test_tertiary")
+
+    if use_quad_ckpt and os.path.isfile(quaternary_path):
+        logger.info(f"=== Testing with QUATERNARY ckpt (best {quaternary_metric}) ===")
+        trainer.load(quaternary_path)
+        test_results[f"quaternary_{quaternary_metric}"] = trainer.evaluate(loaders["test"], split="test_quaternary")
 
     out_json = os.path.join(args.results_dir, f"{cli.dataset}{tag}_seed{cli.seed}_test.json")
     with open(out_json, "w", encoding="utf-8") as f:

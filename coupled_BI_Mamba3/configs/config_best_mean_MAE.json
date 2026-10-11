@@ -1,0 +1,21 @@
+{
+    "description": "Best mean MAE config across 3 seeds (42, 1111, 2024)",
+    "metrics": {
+        "mean_best_acc2": 0.8841,
+        "mean_best_acc7": 0.4903,
+        "mean_best_mae": 0.6165
+    },
+    "config": {
+        "batch_size": 16,
+        "dropout": 0.5,
+        "learning_rate": 4e-4,
+        "ism_depth": 1,
+        "sub_loss_lambda": 0.3,
+        "d_state": 64
+    },
+    "ranking": {
+        "acc2_rank": 3,
+        "acc7_rank": 14,
+        "mae_rank": 1
+    }
+}

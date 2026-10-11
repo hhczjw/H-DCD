@@ -53,3 +53,18 @@ weights/
 
 # === 训练日志 ===
 logs/
+references/
+**/references/
+**/codebases/
+*.whl
+*.so
+*.npz
+*.npy
+*.pem
+*.key
+*secret*
+.env
+.trash/
+!published_checkpoints/
+!published_checkpoints/*.pt
+!published_checkpoints/*.pth

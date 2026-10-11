@@ -4,14 +4,14 @@
         "use_bert": true,
         "bert_pretrained": "roberta-base",
         "bert_finetune": true,
-        "bert_learning_rate": 1e-5,
+        "bert_learning_rate": 0.00001,
         "need_data_aligned": false,
         "need_normalized": true,
         "early_stop": 30,
         "num_workers": 4,
         "pin_memory": true,
         "save_checkpoints": true,
-        "checkpoints_dir": "checkpoints",
+        "checkpoints_dir": "/media/zjw/951FB31A9E1EB7E0/H-DCD/coupled_bi_mamba3/references/codebases/coupled_BI_Mamba3/checkpoints",
         "logs_dir": "logs",
         "results_dir": "results",
         "loss_type": "l1",
@@ -53,68 +53,158 @@
             "task_type": "regression",
             "num_classes": 1,
             "featurePath": "CMU-MOSI/Processed/unaligned_50.pkl",
-            "feature_dims": [768, 5, 20],
-            "seq_lens": [50, 50, 50],
+            "feature_dims": [
+                768,
+                5,
+                20
+            ],
+            "seq_lens": [
+                50,
+                50,
+                50
+            ],
             "train_samples": 1284,
-            "batch_size": 16,
-            "learning_rate": 5e-4,
+            "batch_size": 4,
+            "learning_rate": 0.0004,
             "weight_decay": 0.0001,
             "epochs": 120,
             "KeyEval": "MAE",
             "secondary_metric": "Acc2",
-            "tertiary_metric": "Acc7"
+            "tertiary_metric": "Acc7",
+            "quaternary_metric": "F1_has0",
+            "bert_pretrained": "roberta-large",
+            "dropout": 0.6,
+            "ism_depth": 1,
+            "feature_A": "features/mosi_audio_data2vec_full.pkl",
+            "feature_V": "features/split_vision_openface3.pkl",
+            "multi_task": true,
+            "sub_loss_lambda": 0.3,
+            "ism_full_frame": true,
+            "grad_accum_steps": 1,
+            "ema_decay": 0,
+            "aux_cls_weight": 0,
+            "contrastive_weight": 0,
+            "early_stop": 30,
+            "logs_dir": "logs/p0B_rollback",
+            "results_dir": "results/p0B_rollback",
+            "checkpoints_dir": "/media/zjw/951FB31A9E1EB7E0/H-DCD/coupled_bi_mamba3/references/codebases/coupled_BI_Mamba3/checkpoints/p0B_rollback"
         },
         "MOSEI": {
+            "bert_pretrained": "roberta-large",
+            "checkpoints_dir": "checkpoints/MOSEI_p0B",
+            "logs_dir": "/home/zjw/桌面/H-DCD/coupled_BI_Mamba3/logs/mosei_p0B",
+            "results_dir": "/home/zjw/桌面/H-DCD/coupled_BI_Mamba3/results/mosei_p0B",
+            "dropout": 0.6,
+            "ism_depth": 1,
             "task_type": "regression",
             "num_classes": 1,
-            "featurePath": "CMU-MOSEI/Processed/unaligned_50.pkl",
-            "feature_dims": [768, 74, 35],
-            "seq_lens": [50, 500, 375],
+            "feature_dims": [
+                768,
+                768,
+                18
+            ],
+            "seq_lens": [
+                50,
+                50,
+                50
+            ],
             "train_samples": 16326,
-            "batch_size": 32,
-            "learning_rate": 1e-4,
-            "weight_decay": 1e-4,
-            "epochs": 30,
-            "KeyEval": "Loss"
+            "batch_size": 4,
+            "learning_rate": 0.0004,
+            "epochs": 120,
+            "KeyEval": "MAE",
+            "secondary_metric": "Acc2",
+            "tertiary_metric": "Acc7",
+            "quaternary_metric": "F1_has0",
+            "feature_A": "features/mosei_audio_data2vec_full.pkl",
+            "feature_V": "features/mosei_vision_openface3.pkl",
+            "sub_loss_lambda": 0.3,
+            "multi_task": true,
+            "ism_full_frame": true,
+            "grad_accum_steps": 1,
+            "ema_decay": 0,
+            "featurePath": "CMU-MOSEI/Processed/unaligned_50.pkl"
         },
         "SIMS": {
             "task_type": "regression",
             "num_classes": 1,
             "multi_task": true,
-            "task_weights": {"M": 1.0, "T": 0.4, "A": 0.4, "V": 0.4},
+            "task_weights": {
+                "M": 1,
+                "T": 0.4,
+                "A": 0.4,
+                "V": 0.4
+            },
             "featurePath": "SIMS/Processed/unaligned_39.pkl",
-            "feature_dims": [768, 33, 709],
-            "seq_lens": [39, 400, 55],
+            "feature_dims": [
+                768,
+                33,
+                709
+            ],
+            "seq_lens": [
+                39,
+                400,
+                55
+            ],
             "train_samples": 1368,
             "batch_size": 32,
-            "learning_rate": 1e-4,
-            "weight_decay": 1e-4,
+            "learning_rate": 0.0001,
+            "weight_decay": 0.0001,
             "epochs": 50,
             "KeyEval": "Loss"
         },
         "IEMOCAP": {
             "task_type": "classification",
             "num_classes": 4,
-            "class_names": ["happy", "sad", "neutral", "angry"],
+            "class_names": [
+                "happy",
+                "sad",
+                "neutral",
+                "angry"
+            ],
             "featurePath": "IEMOCAP/Processed/iemocap_unaligned.pkl",
-            "feature_dims": [768, 100, 342],
-            "seq_lens": [50, 1500, 500],
+            "feature_dims": [
+                768,
+                100,
+                342
+            ],
+            "seq_lens": [
+                50,
+                1500,
+                500
+            ],
             "batch_size": 32,
-            "learning_rate": 1e-4,
-            "weight_decay": 1e-4,
+            "learning_rate": 0.0001,
+            "weight_decay": 0.0001,
             "epochs": 50,
             "KeyEval": "F1"
         },
         "MELD": {
             "task_type": "classification",
             "num_classes": 7,
-            "class_names": ["neutral", "surprise", "fear", "sadness", "joy", "disgust", "anger"],
+            "class_names": [
+                "neutral",
+                "surprise",
+                "fear",
+                "sadness",
+                "joy",
+                "disgust",
+                "anger"
+            ],
             "featurePath": "MELD/Processed/meld_unaligned.pkl",
-            "feature_dims": [768, 300, 342],
-            "seq_lens": [50, 1500, 500],
+            "feature_dims": [
+                768,
+                300,
+                342
+            ],
+            "seq_lens": [
+                50,
+                1500,
+                500
+            ],
             "batch_size": 32,
-            "learning_rate": 1e-4,
-            "weight_decay": 1e-4,
+            "learning_rate": 0.0001,
+            "weight_decay": 0.0001,
             "epochs": 30,
             "KeyEval": "F1"
         }
